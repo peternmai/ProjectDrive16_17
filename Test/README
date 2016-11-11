@@ -1,0 +1,20 @@
+===============================================================================
+                               GIT EXERCISE README
+===============================================================================
+
+Great! You have all finished setting up your GitHub account to sync with this
+ProjectDrive16_17 repository. If you need extra practice, feel free to test out
+creating and saving your github files in this directory.
+
+
+===============================================================================
+                                 TEST OUT GITHUB                     
+===============================================================================
+
+Create the following simple C++ program.
+
+Your program should print out the following
+    > FirstName LastName Here, Hello World!
+
+Name your program FirstInitial LastInitial Hello World.
+    > e.g. pm_HelloWorld.cpp
