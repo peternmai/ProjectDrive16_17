@@ -18,3 +18,61 @@ Your program should print out the following
 
 Name your program FirstInitial LastInitial Hello World.
     > e.g. pm_HelloWorld.cpp
+
+
+
+===============================================================================
+                            COMPILING C++ AND RUNNING IT
+===============================================================================
+
+g++ myCppProgram.cpp
+
+A program called a.out or a.exe should be created. You can run it by typing in
+./a.out or ./a.exe
+
+If you're using windows, you can compile C++ by
+   1) Install Linux Subsystem for Windows
+      http://www.howtogeek.com/265900/everything-you-can-do-with-windows-10s-new-bash-shell/
+        - Once install run the following commands
+	   sudo apt update
+	   sudo apt upgrade
+	   sudo apt install build-essential
+	- If you want to use git through bash rather than windows
+	   sudo apt install git
+   2) Using Cygwin (Mimics Linux Commands on Windows)
+      https://cygwin.com/install.html
+
+If you're using a Mac
+   1) Install XCode
+
+
+==============================================================================
+                           C++ STANDARD LIBRARY
+==============================================================================
+
+This is a great way to find many of the functionalities and data structures
+built directly into C++ such as LinkedList, ArrayList, PriorityQueue, Hash
+Map, etc. You can find most information of these libraries on the web.
+
+cplusplus.com
+
+
+===============================================================================
+                                      SAMPLE CODE
+===============================================================================
+
+#include <iostream>     // Uses the input/output standard library of C++
+
+// Main takes in an int argc (number of arguments from command line) and a
+// character array, holding each argument.
+int main( int argc, char ** [] ) {
+
+  // Print out Hello world message
+  //   std::cout means we are using the "cout" functionalities of the "std"
+  //   (C++ standard) library. "cout" means to print to standard output. endl
+  //   means to insert a new line
+  std::cout << "First Last Here, Hello World!" << std::endl;
+
+  // return 0 for successful execution
+  return 0;
+}
