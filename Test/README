@@ -65,7 +65,7 @@ cplusplus.com
 
 // Main takes in an int argc (number of arguments from command line) and a
 // character array, holding each argument.
-int main( int argc, char ** [] ) {
+int main( int argc, char ** argv ) {
 
   // Print out Hello world message
   //   std::cout means we are using the "cout" functionalities of the "std"
