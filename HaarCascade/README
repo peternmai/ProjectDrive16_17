@@ -1,0 +1,124 @@
+------------------------------------------------------------[     README     ]--
+
+HAAR CASCADE IMAGE RECOGNITION TRAINING
+Reference: https://pythonprogramming.net/haar-cascade-object-detection-python-opencv-tutorial/
+
+------------------------------------------------------------[  PREREQUISITE  ]--
+
+- Ensure that you have Python 3 installed
+- Ensure Python 3 is linked to OpenCV3
+- Ensure the opencv_traincascade and opencv_createsamples is in your $PATH
+
+------------------------------------------------------------[ FILE STRUCTURE ]--
+
+Create the following directories so your file structure looks like this.
+Note: > Indicate directory and |- indicates a file in the above directory
+
+> ProjectDrive16_16
+  > HaarCascade
+    |- NegImgGenerator.py
+    |- ObjectTracking.py
+    > data
+    > info
+    > neg
+    > pos
+    > bad_images
+    > trained
+      |- HaarCasecade_example_trained_file.xml
+
+------------------------------------------------------------[  INTRODUCTION  ]--
+
+1) Collect "Negative" or "background" images.
+    - Any image will do, just make sure your object is not present in them.
+    - Get thousands of these.
+
+2) Collect or create "positive" images.
+    - We'll need thousands of these. This can be generated or manually collected.
+
+3) Create a positive vector file by stitching together all positives.
+    - This is done with an OpenCV command.
+
+4) Train cascade.
+    - Done with OpenCV command
+
+------------------------------------------------------------[    IN DEPTH    ]--
+
+Prerequisite: If you're starting from scratch (new negative, new positve),
+delete bg.txt, positives.vec, everything in /neg, /info, /data, and /bad_images.
+
+
+1) Collect "Negative" or "background images"
+
+    - Run: python3 NegImgGenerator.py all
+        This will go through all three stages.
+          - Collect file from specified source and scale them
+          - Remove any bad images found
+          - Generate background file, bg.txt
+
+    - Program will ask you to specify height and width. We want these size to
+      be small and the same ratio as our positive images. If our positive images
+      are 50x100 pixels, we want negative to be double that, 100x200.
+    - Program will also ask you to specify how many negative images to collect.
+      Specify in the range of 5000+.
+
+    - Then it'll ask you to specify where to get these files from
+    - You can get a list of negative images from http://image-net.org
+    - Search your image, go to Downloads > URLS to get a source file with a list
+      of urls to get the image.
+      Ex. http://image-net.org/api/text/imagenet.synset.geturls?wnid=n03841666
+
+    - Once program is done collecting images, it'll ask you if you want to remove
+      any images. If you find a bad image in /neg, copy that to the /bad_images
+      folder and type yes.
+
+    - A background file would be generated once complete, bg.txt
+
+2) Collect and create "positive" images
+
+    - Main Idea: We can't create thousands of positive images so we'll collect
+                 a few (40+) and then generate thousands of samples from that.
+
+    - Place all your positive images in the "pos" directory. Make sure these files
+      are small (half the size of the negative).
+    - Make sure you have pictures in various lighting conditions and angles.
+    - The picture of what we are trying to identify should span the entire size
+      of the positive picture file.
+
+    - Run: opencv_createsamples -img YourImage1.JPG -bg bg.txt -info info/info1.lst -pngoutput info -maxxangle 0.5 maxyangle -0.5 -maxzangle 0.5 -num 5000
+
+        - Let the num flag be number of negatives divide number of positive you collected
+
+        - For the first image, set -info flag to info/info1.lst
+        - For the second image, set -info flag to info/info2.lst
+        - Do this for all your images.
+        - Once done, combine them all into info/info.lst
+            cat info/info1.lst >> info/info.lst
+            cat info/info2.lst >> info/info.lst
+            etc.
+
+3) Create a positive vector file by stitching together all positives.
+
+    - Run: opencv_createsamples -info info/info.lst -num 5000 -w 20 -h 20 -vec positives.vec
+
+        - num should the the number of negatives we have
+        - w and h should be half of positive size. Could be bigger but it'll take
+          longer to generate.
+
+4) Train cascade.
+
+    - Run: opencv_traincascade -data data -vec positives.vec -bg bg.txt -numPos 1000 -numNeg 500 -numStages 10 -w 20 -h 20
+
+        - Set w and h to be the same as that specified in step 3
+        - numPos should be a couple hundred below the number of positve you have
+        - numNeg should be half of numPos
+        - numStages should be minimum 10. Higher = more accurate
+        - This takes around 3 GB ram and could run for 24 hours
+        - It'll generate a cascade.xml file once complete in the /data directory
+            - Copy that file to /trained and rename it accordingly
+
+
+------------------------------------------------------------[     RUN IT     ]--
+
+Run: python3 ObjectDetection.py
+
+------------------------------------------------------------[      DONE      ]--
