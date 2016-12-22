@@ -24,7 +24,8 @@ Note: > Indicate directory and |- indicates a file in the above directory
     > pos
     > bad_images
     > trained
-      |- HaarCasecade_example_trained_file.xml
+      |- haarcascade_eye.xml
+      |- haarcascade_frontalface_default.xml
 
 ------------------------------------------------------------[  INTRODUCTION  ]--
 
