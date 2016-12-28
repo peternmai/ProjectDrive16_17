@@ -1,0 +1,16 @@
+# HaarCascade Training Files
+HaarCascade/bad_images/*
+HaarCascade/data/*
+HaarCascade/info/*
+HaarCascade/neg/*
+HaarCascade/bg.txt
+HaarCascade/positives.vec
+
+# Object Files
+*.o
+*.ln
+*.sw*
+*~
+
+# MacOS Icon File
+.DS_Store
