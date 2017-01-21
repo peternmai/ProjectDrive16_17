@@ -5,21 +5,28 @@
  *              and send it back to ROS. The input has to fit the LaserScan
  *              Message which could be found in <sensor_msgs/LaserScan.h>.
  *
- * Prerequisite:
+ * Prerequisite: Ensure ROS is running.
  *
- * Compilation: g++ PublishSensorStream.cpp -o laser_scan_publisher
- * -I/opt/ros/kinetic/include -L/opt/ros/kinetic/lib -W
- * Run:
+ * Compilation:  Add executable dependencies to ../CMakeLists.txt
+ *               cd /<path_to_...>/ProjectDrive16_17/Navigation
+ *               catkin_make
  *
- * Effect/Outcome
+ * Run:          rosrun setup publish_laser_scan
  *
- * Return:
+ * Effect/Outcome: The program will continuously publish new sensor information
+ *                 to ROS environment once every 1/rate second(s).
+ *
+ * Return: None - Program will run until ROS is terminated.
  */
 
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 
+#include <iostream>
+
 int main( int argc, char ** argv ) {
+
+  std::cout << "Publishing Laser Scan Information..." << std::endl;
 
   // Announce to ROS this program as a node called "laser_scan_publisher"
   ros::init(argc, argv, "laser_scan_publisher");
@@ -35,26 +42,38 @@ int main( int argc, char ** argv ) {
   double intensities[num_readings];
 
   int count = 0;
+
+  // Rate of publish. Publish once per 1/rate second(s).
   ros::Rate r(1.0);
+
+  // Continuously publish new sensor data
   while(n.ok()){
+
     //generate some fake data for our laser scan
     for(unsigned int i = 0; i < num_readings; ++i){
       ranges[i] = count;
       intensities[i] = 100 + count;
     }
     ros::Time scan_time = ros::Time::now();
+
+    std::cout << scan_time << std::endl;
   
     //populate the LaserScan message
-    sensor_msgs::LaserScan scan;
-    scan.header.stamp = scan_time;
-    scan.header.frame_id = "laser_frame";
-    scan.angle_min = -1.57;
-    scan.angle_max = 1.57;
+    sensor_msgs::LaserScan scan;            // Laser scan object
+    scan.header.stamp = scan_time;          // Specify current time [sec]
+    scan.header.frame_id = "laser_frame";   // Specify frame_id
+    scan.angle_min = -1.57;                 // Start angle of scan [rad]
+    scan.angle_max = 1.57;                  // End angle of scan [rad]
+    scan.range_min = 0.0;                   // Minimum range value [m]
+    scan.range_max = 100.0;                 // Maximum range value [m]
+
+    // Distance between measurement [rad]
     scan.angle_increment = 3.14 / num_readings;
+
+    // Time between measurements [seconds]
     scan.time_increment = (1 / laser_frequency) / (num_readings);
-    scan.range_min = 0.0;
-    scan.range_max = 100.0;
-   
+    
+    // Range and intensity data during that one second of collection
     scan.ranges.resize(num_readings);
     scan.intensities.resize(num_readings);
     for(unsigned int i = 0; i < num_readings; ++i){
@@ -62,6 +81,7 @@ int main( int argc, char ** argv ) {
       scan.intensities[i] = intensities[i];
     }
   
+    // Publish Laser Scan message back to ROS environment
     scan_pub.publish(scan);
     ++count;
     r.sleep();
