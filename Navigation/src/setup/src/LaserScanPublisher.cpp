@@ -33,7 +33,7 @@ int main( int argc, char ** argv ) {
 
   // Create publisher to be used later and send LaserScan to ROS
   ros::NodeHandle n;
-  ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("scan", 50);
+  ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("laser_scan", 50);
 
   // These informations are pulled from laser driver
   unsigned int num_readings = 100;
@@ -62,6 +62,7 @@ int main( int argc, char ** argv ) {
     sensor_msgs::LaserScan scan;            // Laser scan object
     scan.header.stamp = scan_time;          // Specify current time [sec]
     scan.header.frame_id = "laser_frame";   // Specify frame_id
+    //scan.scan_time = scan_time;
     scan.angle_min = -1.57;                 // Start angle of scan [rad]
     scan.angle_max = 1.57;                  // End angle of scan [rad]
     scan.range_min = 0.0;                   // Minimum range value [m]

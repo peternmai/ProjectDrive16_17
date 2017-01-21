@@ -7,6 +7,4 @@
 # new environment variables
 
 # modified environment variables
-export LD_LIBRARY_PATH="/home/ubuntu/ProjectDrive16_17/Sensor/devel/lib:/opt/ros/kinetic/lib:/usr/local/cuda-8.0/lib64"
-export PKG_CONFIG_PATH="/home/ubuntu/ProjectDrive16_17/Sensor/devel/lib/pkgconfig:/opt/ros/kinetic/lib/pkgconfig"
 export PWD="/home/ubuntu/ProjectDrive16_17/Navigation/build"

@@ -7,10 +7,11 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   sensor_msgs
+  tf
 )
 
 
-# Specify config files for package
+## Specify config files for package
 catkin_package()
 
 
@@ -27,7 +28,19 @@ add_dependencies( publish_laser_scan ${catkin_EXPORTED_TARGETS} )
 target_link_libraries( publish_laser_scan ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
 
 
+## Make Transform Publisher Node Executable
+add_executable( broadcast_transform src/TransformPublisher.cpp )
+add_dependencies( broadcast_transform ${catkin_EXPORTED_TARGETS} )
+target_link_libraries( broadcast_transform ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
+
+
+
 ## Make Test Node Executable
 add_executable( test_node src/test.cpp )
 add_dependencies( test_node ${catkin_EXPORTED_TARGETS} )
 target_link_libraries( test_node ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
+
+## Make Range Listener Node Executable
+add_executable(range_listener src/RangeListener.cpp)
+target_link_libraries(range_listener ${catkin_LIBRARIES})
+add_dependencies(range_listener ${catkin_LIBRARIES} ${GSL_LIBRARIES})
