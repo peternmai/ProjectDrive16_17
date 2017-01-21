@@ -1,0 +1,2 @@
+terarangerone-ros
+-DCATKIN_DEVEL_PREFIX=/home/ubuntu/ProjectDrive16_17/Sensor/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/ProjectDrive16_17/Sensor/install -G Unix Makefiles

@@ -1,0 +1,7 @@
+\subsubsection usage Usage
+\verbatim
+<node name="terarangerone" pkg="terarangerone" type="terarangerone">
+  <param name="Mode" type="int" value="0" />
+</node>
+\endverbatim
+

@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/ProjectDrive16_17/Sensor/devel
+
+Name: terarangerone
+Description: Description of terarangerone
+Version: 0.1.2
+Cflags: -I/home/ubuntu/ProjectDrive16_17/Sensor/devel/include -I/home/ubuntu/ProjectDrive16_17/Sensor/src/terarangerone-ros/include
+Libs: -L/home/ubuntu/ProjectDrive16_17/Sensor/devel/lib 
+Requires: roscpp sensor_msgs std_msgs dynamic_reconfigure
