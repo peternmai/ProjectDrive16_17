@@ -1,11 +1,25 @@
-
+/**
+ * Name: BroadcastingaTransform.cpp
+ * Description: This program is for TF Transformation. A TF Transform allows translation and rotation.
+ *
+ * Pre-requisite:  Need to have data that is being collected by the laser.
+ *
+ * Compilation:    g++ BroadcastingaTransform.cpp
+ * Run:            a.out
+ *
+ * Effect/Outcome: Rotation from quaternion and translation from vector
+ *
+ * Return Value:   None
+ */
 
 
 //Including the ros.h file
 #include <ros/ros.h>
-//Need to include tf package to help publishing transforms. This is necessary in order to
-//use methods like sendTransform.
-/*“This class provides an easy way to publish coordinate frame transform information. It will handle all the messaging and stuffing of messages. And the function prototypes lay out all the necessary data needed for each message.” */
+/* Need to include tf package to help publishing transforms. This is necessary 
+in order to use methods like sendTransform. */
+/*“This class provides an easy way to publish coordinate frame transform information. 
+It will handle all the messaging and stuffing of messages. And the function prototypes 
+lay out all the necessary data needed for each message.” */
 #include <tf/transform_broadcaster.h>
 
 int main(int argc, char** argv){
@@ -14,8 +28,8 @@ int main(int argc, char** argv){
 	//The string is the node name
 	ros::init(argc, argv, "robot_tf_publisher");
 
-	//Starting the roscpp Node. This will call ros::start() until the last node is destroyed,
-	//then it will call ros::shutdown().
+	//Starting the roscpp Node. This will call ros::start() until the last node is 
+	//destroyed, then it will call ros::shutdown().
 	ros::NodeHandle n;
 	
 	//Creates a rate and the parameter is the frequency (type is a double and is measured in Hz).
