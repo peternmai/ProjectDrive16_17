@@ -4,14 +4,14 @@ You have 2 Options:
 
   a. Use package manager
     // NOTE: replace <distro> with the ros distro installed, e.g. indigo, kinetic
-    sudo apt-get install ros-<distro>-xv-11-laser-driver
+    $ sudo apt-get install ros-<distro>-xv-11-laser-driver
 
   b. Clone from github repository
-    cd catkin_ws/src
-    git clone https://github.com/rohbotics/xv_11_laser_driver.git
-    cd ..
-    catkin_make
-    source devel/setup.bash
+    $ cd catkin_ws/src
+    $ git clone https://github.com/rohbotics/xv_11_laser_driver.git
+    $ cd ..
+    $ catkin_make
+    $ source devel/setup.bash
 
 2. [Optional] Set up udev for FTDI devices
   // Only need it if we want XV-11 laser to have constant device identifier
@@ -21,24 +21,24 @@ You have 2 Options:
 3. Start the XV11 Driver
 
   // Start roscore
-  roscore
+  $ roscore
 
   // Start up driver with appropriate device path. /dev/ttyUSB0 (zero) assumes
   // the 2nd step was not set up and the laser was the FIRST ttyUSB device 
   // plugged into computer.
-  rosrun xv_11_laser_driver neato_laser_publisher _port:=/dev/ttyUSB0
+  $ rosrun xv_11_laser_driver neato_laser_publisher _port:=/dev/ttyUSB0
 
   // Alternatively, if this doesn't work since our XV11 is too new, this might
   // work:
 
-  rosrun xv_11_laser_driver neato_laser_publisher _port:=/dev/ttyUSB0 _firmware_version:=2
+  $ rosrun xv_11_laser_driver neato_laser_publisher _port:=/dev/ttyUSB0 _firmware_version:=2
 
 4. Run rviz to view the data
 // NOTE: I'm not sure about how this step works, but it will be easier when I have the vehicle.
 // This portion of the guide currently assumes we are using the Indigo distribution of ROS
   
   //Start up rviz
-  rosrun rviz rviz
+  $ rosrun rviz rviz
 
   //Set fixed frame
   Edit the "Fixed Frame" value (top-left) in rviz window. Click "map" and type in /neato_laser.
@@ -48,3 +48,23 @@ You have 2 Options:
 
   //Add scan topic
   Expand LaserScan and click to right of "Topic". Select "/scan" from drop-down list.
+
+  Building map in real time:
+1. Power up robot
+2. Start Gmapping process
+$ ssh mrp2@<IP OF ROBOT HERE>
+Note: Default pass is temppwd
+
+$ roslaunch mrp2_navigation gmapping_demo.launch
+
+To move the robot via joystick or controller, open up a new terminal and enter in 
+$ rosrun rqt_robot_steering rqt_robot_steering
+
+3. Visualize mapping
+$ roslaunch mrp2_viz view_gmapping.launch
+
+4. To save map, open up a new terminal and run 
+$ rosrun map_server map_saver -f <map directory/name>
+
+This generates two files: mapName.pgm and mapName.yaml
+These can be used with amcl later.
