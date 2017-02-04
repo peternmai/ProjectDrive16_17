@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/ProjectDrive16_17/Sensor/install
+
+Name: rosserial_msgs
+Description: Description of rosserial_msgs
+Version: 0.7.5
+Cflags: -I/home/ubuntu/ProjectDrive16_17/Sensor/install/include
+Libs: -L/home/ubuntu/ProjectDrive16_17/Sensor/install/lib 
+Requires: message_runtime
