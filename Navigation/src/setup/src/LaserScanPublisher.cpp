@@ -31,13 +31,18 @@
 
 // Shared Static Variables
 static float         sensor_ranges[ NUM_READINGS ] = {0};
+static float         sensor_range_min = 0;
+static float         sensor_range_max = 100;
 static unsigned int  callback_instance = 0;
 
 // Retrieve information from TeraRanger One Sensor
 static void terarangeroneCallback( const sensor_msgs::Range::ConstPtr& msg ) {
   sensor_ranges[ callback_instance ] = msg->range;
+  sensor_range_min = msg->min_range;
+  sensor_range_max = msg->max_range;
   callback_instance = ( callback_instance + 1 ) % NUM_READINGS;
 }
+
 
 int main( int argc, char ** argv ) {
 
@@ -70,8 +75,8 @@ int main( int argc, char ** argv ) {
     scan.header.frame_id = "laser_frame";   // Specify frame_id
     scan.angle_min = -1.57;                 // Start angle of scan [rad]
     scan.angle_max = 1.57;                  // End angle of scan [rad]
-    scan.range_min = 0.0;                   // Minimum range value [m]
-    scan.range_max = 100.0;                 // Maximum range value [m]
+    scan.range_min = sensor_range_min;      // Minimum range value [m]
+    scan.range_max = sensor_range_max;      // Maximum range value [m]
 
     // Distance between measurement [rad]
     scan.angle_increment = 3.14 / NUM_READINGS;
