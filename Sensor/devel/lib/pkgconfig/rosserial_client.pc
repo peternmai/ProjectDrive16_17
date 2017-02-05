@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/ProjectDrive16_17/Sensor/devel
-
-Name: rosserial_client
-Description: Description of rosserial_client
-Version: 0.7.5
-Cflags: 
-Libs: -L/home/ubuntu/ProjectDrive16_17/Sensor/devel/lib 
-Requires: 

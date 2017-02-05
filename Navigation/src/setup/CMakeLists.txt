@@ -48,5 +48,5 @@ target_link_libraries( test_node ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
 ## Make Laswer Scan Publisher and Range Listener Executable
 add_executable(range_listener src/LaserScanPublisherAndRangeListener.cpp)
 add_dependencies(range_listener ${catkin_EXPORTED_TARGETS})
-target_link_libraries( test_node ${catkin_LIBRARIES} ${GSL_LIBRARIES})
+target_link_libraries( range_listener ${catkin_LIBRARIES} ${GSL_LIBRARIES})
 

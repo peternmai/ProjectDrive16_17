@@ -1,8 +1,0 @@
-prefix=/home/ubuntu/ProjectDrive16_17/Sensor/install
-
-Name: rosserial_server
-Description: Description of rosserial_server
-Version: 0.7.5
-Cflags: -I/home/ubuntu/ProjectDrive16_17/Sensor/install/include
-Libs: -L/home/ubuntu/ProjectDrive16_17/Sensor/install/lib 
-Requires: roscpp rosserial_msgs topic_tools
