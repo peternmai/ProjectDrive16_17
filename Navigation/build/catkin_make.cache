@@ -1,2 +1,0 @@
-setup
--DCATKIN_DEVEL_PREFIX=/home/ubuntu/ProjectDrive16_17/Navigation/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/ProjectDrive16_17/Navigation/install -G Unix Makefiles

@@ -21,27 +21,42 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
+#include <sensor_msgs/Range.h>
 
 #include <iostream>
 
+// Constant Variables
+#define NUM_READINGS    100
+#define LASER_FREQUENCY  40
+
+// Shared Static Variables
+static float         sensor_ranges[ NUM_READINGS ] = {0};
+static float         sensor_range_min = 0;
+static float         sensor_range_max = 100;
+static unsigned int  callback_instance = 0;
+
+// Retrieve information from TeraRanger One Sensor
+static void terarangeroneCallback( const sensor_msgs::Range::ConstPtr& msg ) {
+  sensor_ranges[ callback_instance ] = msg->range;
+  sensor_range_min = msg->min_range;
+  sensor_range_max = msg->max_range;
+  callback_instance = ( callback_instance + 1 ) % NUM_READINGS;
+}
+
+
 int main( int argc, char ** argv ) {
 
-  std::cout << "Publishing Laser Scan Information..." << std::endl;
+  ROS_INFO("Publishing Laser Scan Information...");
 
   // Announce to ROS this program as a node called "laser_scan_publisher"
   ros::init(argc, argv, "laser_scan_publisher");
 
-  // Create publisher to be used later and send LaserScan to ROS
+  // Create publisher and subscribers to be used later and send LaserScan to ROS
   ros::NodeHandle n;
-  ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("scan", 50);
+  ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("laser_scan", 50);
+  ros::Subscriber teraranger_sub = n.subscribe("terarangerone", NUM_READINGS,
+    terarangeroneCallback );
 
-  // These informations are pulled from laser driver
-  unsigned int num_readings = 100;
-  double laser_frequency = 40;
-  double ranges[num_readings];
-  double intensities[num_readings];
-
-  int count = 0;
 
   // Rate of publish. Publish once per 1/rate second(s).
   ros::Rate r(1.0);
@@ -49,41 +64,34 @@ int main( int argc, char ** argv ) {
   // Continuously publish new sensor data
   while(n.ok()){
 
-    //generate some fake data for our laser scan
-    for(unsigned int i = 0; i < num_readings; ++i){
-      ranges[i] = count;
-      intensities[i] = 100 + count;
-    }
+    // Retrive data from sensors being used
     ros::Time scan_time = ros::Time::now();
+    callback_instance = 0;
+    ros::spinOnce();
 
-    std::cout << scan_time << std::endl;
-  
     //populate the LaserScan message
     sensor_msgs::LaserScan scan;            // Laser scan object
     scan.header.stamp = scan_time;          // Specify current time [sec]
     scan.header.frame_id = "laser_frame";   // Specify frame_id
     scan.angle_min = -1.57;                 // Start angle of scan [rad]
     scan.angle_max = 1.57;                  // End angle of scan [rad]
-    scan.range_min = 0.0;                   // Minimum range value [m]
-    scan.range_max = 100.0;                 // Maximum range value [m]
+    scan.range_min = sensor_range_min;      // Minimum range value [m]
+    scan.range_max = sensor_range_max;      // Maximum range value [m]
 
     // Distance between measurement [rad]
-    scan.angle_increment = 3.14 / num_readings;
+    scan.angle_increment = 3.14 / NUM_READINGS;
 
     // Time between measurements [seconds]
-    scan.time_increment = (1 / laser_frequency) / (num_readings);
+    scan.time_increment = (1 / LASER_FREQUENCY) / (NUM_READINGS);
     
     // Range and intensity data during that one second of collection
-    scan.ranges.resize(num_readings);
-    scan.intensities.resize(num_readings);
-    for(unsigned int i = 0; i < num_readings; ++i){
-      scan.ranges[i] = ranges[i];
-      scan.intensities[i] = intensities[i];
-    }
+    scan.ranges.resize(NUM_READINGS);
+    scan.intensities.resize(NUM_READINGS);
+    for(unsigned int i = 0; i < NUM_READINGS; ++i)
+      scan.ranges[i] = sensor_ranges[i];
   
     // Publish Laser Scan message back to ROS environment
     scan_pub.publish(scan);
-    ++count;
     r.sleep();
   }
 }

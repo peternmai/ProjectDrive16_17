@@ -39,3 +39,14 @@ target_link_libraries( broadcast_transform ${catkin_LIBRARIES} ${GSL_LIBRARIES} 
 add_executable( test_node src/test.cpp )
 add_dependencies( test_node ${catkin_EXPORTED_TARGETS} )
 target_link_libraries( test_node ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
+
+## Make Range Listener Node Executable
+##add_executable(range_listener src/RangeListener.cpp)
+##target_link_libraries(range_listener ${catkin_LIBRARIES})
+##add_dependencies(range_listener ${catkin_LIBRARIES} ${GSL_LIBRARIES})
+
+## Make Laswer Scan Publisher and Range Listener Executable
+add_executable(range_listener src/LaserScanPublisherAndRangeListener.cpp)
+add_dependencies(range_listener ${catkin_EXPORTED_TARGETS})
+target_link_libraries( range_listener ${catkin_LIBRARIES} ${GSL_LIBRARIES})
+
