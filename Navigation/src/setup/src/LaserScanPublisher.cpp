@@ -26,8 +26,8 @@
 #include <iostream>
 
 // Constant Variables
-#define NUM_READINGS    100
-#define LASER_FREQUENCY  40
+#define NUM_READINGS    600
+#define LASER_FREQUENCY 600
 
 // Shared Static Variables
 static float         sensor_ranges[ NUM_READINGS ] = {0};
@@ -37,6 +37,11 @@ static unsigned int  callback_instance = 0;
 
 // Retrieve information from TeraRanger One Sensor
 static void terarangeroneCallback( const sensor_msgs::Range::ConstPtr& msg ) {
+
+  std::cout << callback_instance << ") ";
+  std::cout << "Actual Time: " << ros::Time::now() << " | Sensor Time: " <<
+  msg->header.stamp << " | Range: " << msg->range << std::endl;
+
   sensor_ranges[ callback_instance ] = msg->range;
   sensor_range_min = msg->min_range;
   sensor_range_max = msg->max_range;
@@ -53,7 +58,7 @@ int main( int argc, char ** argv ) {
 
   // Create publisher and subscribers to be used later and send LaserScan to ROS
   ros::NodeHandle n;
-  ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("laser_scan", 50);
+  ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("laser_scan", 1);
   ros::Subscriber teraranger_sub = n.subscribe("terarangerone", NUM_READINGS,
     terarangeroneCallback );
 
