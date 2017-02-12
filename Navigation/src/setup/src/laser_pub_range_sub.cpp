@@ -1,11 +1,5 @@
-#include "ros/ros.h"
-#include "sensor_msgs/LaserScan.h"
-#include "sensor_msgs/Range.h"
-#include "std_msgs/String.h"
-#include <iostream>
-#include <string>
+#include "nav_headers.h"
 
-const unsigned int NUM_READINGS = 100;
 float terarangerone_ranges[NUM_READINGS] = {0};
 int callback_instance = 0;
 
@@ -16,7 +10,7 @@ void terarangeroneCallback( const sensor_msgs::Range::ConstPtr& msg) {
 
 int main (int argc, char **argv) {
   std::cout << "Starting\n";
-  ros::init(argc, argv, "laser_scan_publisher_and_range_listener");
+  ros::init(argc, argv, "laser_pub_range_sub");
   ros::NodeHandle n;
   ros::Subscriber sub = n.subscribe("terarangerone", NUM_READINGS, terarangeroneCallback);
 

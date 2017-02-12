@@ -45,10 +45,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   optical_encoder.msg
- )
+# add_message_files(
+ #  FILES
+  # optical_encoder.msg
+ # )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -128,11 +128,11 @@ include_directories(
 # add_dependencies(msg ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(msg_node src/msg_node.cpp)
+# add_executable(msg_node src/test_optical_encoder.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(msg_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#add_dependencies(msg_node ${${optical_encoder}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(msg_node
@@ -179,9 +179,9 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_msg.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+# catkin_add_gtest(${optical_encoder} -test src/test_optical_encoder.cpp)
+# if(TARGET ${optical_encoder}-test)
+#   target_link_libraries(${optical_encode}-test ${optical_encoder})
 # endif()
 
 ## Add folders to be run by python nosetests

@@ -21,32 +21,22 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-
 ## Make Laser Scan Publisher Node Executable
-add_executable( publish_laser_scan src/LaserScanPublisher.cpp )
-add_dependencies( publish_laser_scan ${catkin_EXPORTED_TARGETS} )
-target_link_libraries( publish_laser_scan ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
+##add_executable(laser_pub src/laser_pub_range_sub.cpp )
+##add_dependencies(laser_pub ${catkin_EXPORTED_TARGETS} )
+##target_link_libraries(laser_pub ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
 
+add_executable(laser_scan_publisher src/LaserScanPublisher.cpp)
+##add_dependencies(laser_scan_publisher ${catkin_EXPORTED_TAGETS})
+target_link_libraries(laser_scan_publisher ${catkin_LIBRARIES} ${GSL_LIBRARIES})
 
-## Make Transform Publisher Node Executable
-add_executable( broadcast_transform src/TransformPublisher.cpp )
-add_dependencies( broadcast_transform ${catkin_EXPORTED_TARGETS} )
-target_link_libraries( broadcast_transform ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
+## Make Laser Scan Publisher and Range Listener Executable
+##add_executable(laser_pub_range_sub src/laser_pub_range_sub.cpp)
+##add_dependencies(laser_pub_range_sub ${catkin_EXPORTED_TARGETS})
+##target_link_libraries(laser_pub_range_sub ${catkin_LIBRARIES} ${GSL_LIBRARIES})
 
-
-
-## Make Test Node Executable
-add_executable( test_node src/test.cpp )
-add_dependencies( test_node ${catkin_EXPORTED_TARGETS} )
-target_link_libraries( test_node ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
-
-## Make Range Listener Node Executable
-##add_executable(range_listener src/RangeListener.cpp)
-##target_link_libraries(range_listener ${catkin_LIBRARIES})
-##add_dependencies(range_listener ${catkin_LIBRARIES} ${GSL_LIBRARIES})
-
-## Make Laswer Scan Publisher and Range Listener Executable
-add_executable(range_listener src/LaserScanPublisherAndRangeListener.cpp)
-add_dependencies(range_listener ${catkin_EXPORTED_TARGETS})
-target_link_libraries( range_listener ${catkin_LIBRARIES} ${GSL_LIBRARIES})
-
+## Make tf_broadcaster and tf_listener Executable
+##add_executable(tf_pub src/tf_pub.cpp)
+##add_executable(tf_sub src/tf_sub.cpp)
+##target_link_libraries(tf_pub ${catkin_LIBRARIES})
+##target_link_libraries(tf_sub ${catkin_LIBRARIES})
