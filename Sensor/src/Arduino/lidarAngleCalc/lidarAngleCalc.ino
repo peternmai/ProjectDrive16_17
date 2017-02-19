@@ -7,42 +7,116 @@
  File Name:       lidarAngleCalc.ino
  Description:     Uses light sensor to determine what angle lidar is reading at.
  *****************************************************************************/
+
+#define USB_CON
+#define SAME_THRES 3
+
+//#depend("msg/msg")
+
+#include <ros.h>
+//#include <std_msgs/UInt64.h>
+//#include <std_msgs/Float64.h>
+//#include <ros/time.h>
+//#include <std_msgs/Time.h>
+#include <msg/optical_encoder.h>
+ros::NodeHandle nh;
+
+//std_msgs::Time currTime;
+//std_msgs::Float64MultiArray angles;
+//std_msgs::Float64 currAngle; //rads
+//std_msgs::Float64 avgAngleChange; //rads per sec
+//ros::Publisher pCurrAngle("lidarAngle", &currAngle);
+//ros::Publisher pAvgAngle("lidarAngleChange", &avgAngleChange);
+//ros::Publisher pCurrTime("lidarTime", &currTime);
+msg::optical_encoder message;
+ros::Publisher p("optical_encoder", &message);
 //TODO implement threshold before state changes can occur
 //#define STATE_CHANGE_THRESHOLD ____
 
 unsigned long times[15];   //first times of 15 notches
 unsigned long lengths[15]; //lengths of 15 notches (in units of time)
 double lastAngle;   //last angle returned to ROS
-bool lastPoints[5]; //last 5 light readings for smoothing
+bool lastPoints[SAME_THRES]; //last 5 light readings for smoothing
 int currNotch;      //current notch
 int lightPin = 5;   //pin id of light sensor
+int motorPin = 3;   //pin id of lidar motor
 bool currState;     //state of light
 
 int debugInt;
 bool debugBool;
 
+ros::Time now = nh.now();
+unsigned long lastArd = millis();
+unsigned long nowArd = millis();
+
+int tries;
+
+
+
 bool debug = true;
 
  /********************************************************************
- | Routine Name: setup22
+ | Routine Name: setup
  | File:         lidarAngleCalc.ino
  | 
  | Description: Reads in 15 notches, initializes some values.
  ********************************************************************/
 void setup() {
+  nh.initNode();
+  nh.advertise(p);
+  //nh.advertise(pCurrAngle);
+  //nh.advertise(pAvgAngle);
+  //nh.advertise(pCurrTime);
+  
+  //currAngle.data = 0;
+  //avgAngleChange.data = 0;
+  //currTime.data = nh.now();
+  //pCurrAngle.publish(&currAngle);
+  //pAvgAngle.publish(&avgAngleChange);
+  //pCurrTime.publish(&currTime);
+  //nh.spinOnce();
+  //delay(10);
+  
   int i;
+  
+  /*
   Serial.begin(9600);
   if(debug)
     Serial.println("Start setup");
-
-  pinMode(lightPin, INPUT); //
-
+  */
+  pinMode(0, INPUT);
+  pinMode(lightPin, INPUT);
+  pinMode(motorPin, OUTPUT);
+  
+  analogWrite(motorPin, 200);
+    
   currState = 0;
   lastAngle = 0;
   currNotch = 0;
 
   debugInt = 0;
   debugBool = false;
+  
+  /*
+  for(i = 0; i < 10; i++) {
+    message.time = nh.now();
+    message.angle = 0;
+    message.avg_angular_velocity = 0;
+    
+    p.publish(&message);
+    nh.spinOnce();
+    delay(1000);
+  }
+  */
+  /*
+  int k = 0;
+  
+  //for(i = 0; i < 1000; i++) {
+  while(true){
+    k = analogRead(0) / 4;
+    analogWrite(motorPin, k);
+  }
+  */
   
   recalibrateNotch();
 }
@@ -58,6 +132,8 @@ void loop() {
   //  Serial.println("Start loop");
   double avgLen;
   int i, minLen, count;
+  
+  recalibrateNotch();
 
   //calculate average length of notch as a threshold for the small notch
   for(i = 0; i < 15; i++)
@@ -66,10 +142,12 @@ void loop() {
 
   count = 0;
   minLen = -1;
-
+  tries = 0;
   //try to uniquely determine small notch, and recalibrate until it can be determined.
   while(count != 1) {
-
+    
+    analogWrite(motorPin, analogRead(0) / 4);
+    
     count = 0;
     minLen = -1;
 
@@ -86,8 +164,7 @@ void loop() {
         minLen = i;
       }
     }
-    Serial.print(count);
-    Serial.print(" ");
+    //Serial.print(count);
     /*
     Serial.print(avgLen);
     Serial.print('\n');
@@ -103,12 +180,14 @@ void loop() {
     */
 
     if(count != 1) {
-      Serial.println("- Bad");
+      //Serial.println("B");
       currNotch = 0;
       recalibrateNotch();
     }
+    
+    tries++;
   }
-  Serial.println("+");
+  //Serial.println("+");
 
   //small notch uniquely determined
   if(minLen > 0) {
@@ -141,6 +220,26 @@ void loop() {
   }
   Serial.print('\n');
   */
+  
+  now = nh.now();
+  nowArd = millis();
+    
+  message.time = now;
+  message.angle = getAngle(nowArd, true);
+  message.avg_angular_velocity = message.angle / ((double) (nowArd - lastArd) / 1000);
+  
+  lastArd = nowArd;
+
+  
+  //currAngle.data = getAngle(millis());
+  //avgAngleChange.data = calcAngleInterval();
+  //currTime.data = nh.now();
+  
+  //pCurrAngle.publish(&currAngle);
+  //pAvgAngle.publish(&avgAngleChange);
+  //pCurrTime.publish(&currTime);
+  p.publish(&message);
+  nh.spinOnce();
 }
 
  /********************************************************************
@@ -162,6 +261,13 @@ void recalibrateNotch() {
   
   //fill up times and lengths array
   for(i = 0; i < 15; i++) {
+    
+    /*
+    if(i == 8) {
+      now = nh.now();
+      nowArd = millis();
+    }
+    */
     readNotch();
   }
 }
@@ -198,7 +304,7 @@ void readNotch() {
  | Routine Name: stateDetector
  | File:         lidarAngleCalc.ino
  | 
- | Description: Uses last 5 light readings to detect changes in state 
+ | Description: Uses last light readings to detect changes in state 
  |              robustly.
  |              lastPoints should be up to date before calling function.
  | 
@@ -213,14 +319,14 @@ bool stateDetector() {
   int i, count;
 
   count = 0;
-  for(i = 0; i < 5; i++)
+  for(i = 0; i < SAME_THRES; i++)
     if(lastPoints[i])
       count++;
 
-  //all 5 readings must be 1 or 0 to trigger a state change
+  //all readings must be 1 or 0 to trigger a state change
   if(count == 0)
     currState = 0;
-  else if(count == 5)
+  else if(count == SAME_THRES)
     currState = 1;
   
   return currState;
@@ -238,14 +344,14 @@ void pollLight() {
   int i;
 
   //shift lastPoints data
-  for(i = 0; i < 4; i++)
+  for(i = 0; i < SAME_THRES - 1; i++)
     lastPoints[i] = lastPoints[i + 1];
 
   //read in new data
-  lastPoints[4] = digitalRead(5);
+  lastPoints[SAME_THRES - 1] = digitalRead(lightPin);
 
   /*
-  lastPoints[4] = debugBool;
+  lastPoints[SAME_THRES - 1] = debugBool;
   debugInt++;
 
   if(debugInt == 10) {
@@ -258,7 +364,7 @@ void pollLight() {
   */
 
   /*
-  for(i = 0; i < 5; i++) {
+  for(i = 0; i < SAME_THRES; i++) {
     Serial.print(lastPoints[i]);
     Serial.print(" ");
   }
@@ -276,14 +382,17 @@ void pollLight() {
  | name               description
  | ------------------ -----------------------------------------------
  | t                  time from TeraRanger
+ | rads               whether to return in radians
  | return             angle that corresponds to time
  ********************************************************************/
-double getAngle(unsigned long t) {
+double getAngle(unsigned long t, boolean rads) {
   //if(debug)
   //  Serial.println("Start getAngle");
   unsigned long higher, lower, intervalTime, tOnInterval;
   int i = 0;
   
+  int lowInd;
+  /*
   while(i < 15 && t >= times[i])
     i++;
 
@@ -293,22 +402,38 @@ double getAngle(unsigned long t) {
   if(i == 0) {
     higher = 0;
     lower = 14;
+    lowInd = 14;
   }
   else if(i == 15) {
-    higher = 0;
-    lower = 14;
+    higher = times[14] * 2 - times[13];
+    lower = times[14];
+    lowInd = 14;
   }
   else {
-    higher = i + 1;
-    lower = i;
+    higher = times[i + 1];
+    lower = times[i];
+    lowInd = i;
+  }
+  */
+  
+  int intervalIncrease = times[14] - times[13];
+  int intervals = 1;
+  while(times[14] + intervalIncrease * intervals < t) {
+    intervals++;
   }
   
-  
+  higher = times[14] + intervalIncrease * intervals;
+  lower = times[14];
+  lowInd = 14;
   
   //idea is to create interval from higher and lower times, then find where t is on that interval
   intervalTime = higher - lower;
   tOnInterval = higher - t;
-  return lower * 24 + tOnInterval / intervalTime * 24;
+  double result = (lowInd + i) * 24 + ((double) tOnInterval / intervalTime) * 24;
+  
+  if(rads)
+    result *= 3.14159265 / 180;
+  return result;
 }
 
  /********************************************************************
@@ -320,14 +445,23 @@ double getAngle(unsigned long t) {
  | Parameter Descriptions:
  | name               description
  | ------------------ -----------------------------------------------
+ | rads               whether to return in radians
  | return             angle change since last call
  ********************************************************************/
-double calcAngleInterval() {
-  if(debug)
-    Serial.println("Start calcAngleInterval");
+double calcAngleInterval(boolean rads) {
+  //if(debug)
+  //  Serial.println("Start calcAngleInterval");
   double angleChange;
-  angleChange = getAngle(millis()) - lastAngle;
-  lastAngle = getAngle(millis());
+  angleChange = getAngle(millis(), rads) + 360 * tries - lastAngle;
+  lastAngle = getAngle(millis(), rads);
   return angleChange;
 }
+
+/*
+double calcAvgChange(double angle, unsigned long time) {
+  double avgChange = angle / ((time - lastTime) / 1000);
+  lastTime = time;
+  return avgChange;
+}
+*/
 

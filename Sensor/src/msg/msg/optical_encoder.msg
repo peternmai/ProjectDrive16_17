@@ -1,5 +1,5 @@
 Header header
 
-ROS::time time
+time time
 float32 angle
 float32 avg_angular_velocity

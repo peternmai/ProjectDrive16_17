@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   tf
+  msg
 )
 
 
@@ -21,22 +22,19 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+
 ## Make Laser Scan Publisher Node Executable
-##add_executable(laser_pub src/laser_pub_range_sub.cpp )
-##add_dependencies(laser_pub ${catkin_EXPORTED_TARGETS} )
-##target_link_libraries(laser_pub ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
+add_executable(laser_scan_pub src/LaserScanPublisher.cpp )
+add_dependencies(laser_scan_pub ${catkin_EXPORTED_TARGETS} )
+target_link_libraries(laser_scan_pub ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
 
-add_executable(laser_scan_publisher src/LaserScanPublisher.cpp)
-##add_dependencies(laser_scan_publisher ${catkin_EXPORTED_TAGETS})
-target_link_libraries(laser_scan_publisher ${catkin_LIBRARIES} ${GSL_LIBRARIES})
-
-## Make Laser Scan Publisher and Range Listener Executable
-##add_executable(laser_pub_range_sub src/laser_pub_range_sub.cpp)
-##add_dependencies(laser_pub_range_sub ${catkin_EXPORTED_TARGETS})
-##target_link_libraries(laser_pub_range_sub ${catkin_LIBRARIES} ${GSL_LIBRARIES})
+## Make Test Node Executable
+add_executable( test_node src/Test.cpp )
+add_dependencies( test_node ${catkin_EXPORTED_TARGETS} )
+target_link_libraries( test_node ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
 
 ## Make tf_broadcaster and tf_listener Executable
-##add_executable(tf_pub src/tf_pub.cpp)
-##add_executable(tf_sub src/tf_sub.cpp)
-##target_link_libraries(tf_pub ${catkin_LIBRARIES})
-##target_link_libraries(tf_sub ${catkin_LIBRARIES})
+add_executable(tf_pub src/tf_pub.cpp)
+add_executable(tf_sub src/tf_sub.cpp)
+target_link_libraries(tf_pub ${catkin_LIBRARIES})
+target_link_libraries(tf_sub ${catkin_LIBRARIES})
