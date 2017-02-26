@@ -8,51 +8,31 @@
  Description:     Uses light sensor to determine what angle lidar is reading at.
  *****************************************************************************/
 
+//TODO implement threshold before state changes can occur
+//#define STATE_CHANGE_THRESHOLD ____
 #define USB_CON
 #define SAME_THRES 3
 
-//#depend("msg/msg")
-
 #include <ros.h>
-//#include <std_msgs/UInt64.h>
-//#include <std_msgs/Float64.h>
-//#include <ros/time.h>
-//#include <std_msgs/Time.h>
 #include <msg/optical_encoder.h>
-ros::NodeHandle nh;
 
-//std_msgs::Time currTime;
-//std_msgs::Float64MultiArray angles;
-//std_msgs::Float64 currAngle; //rads
-//std_msgs::Float64 avgAngleChange; //rads per sec
-//ros::Publisher pCurrAngle("lidarAngle", &currAngle);
-//ros::Publisher pAvgAngle("lidarAngleChange", &avgAngleChange);
-//ros::Publisher pCurrTime("lidarTime", &currTime);
+ros::NodeHandle nh;
 msg::optical_encoder message;
 ros::Publisher p("optical_encoder", &message);
-//TODO implement threshold before state changes can occur
-//#define STATE_CHANGE_THRESHOLD ____
-
+ros::Time now = nh.now();
 unsigned long times[15];   //first times of 15 notches
 unsigned long lengths[15]; //lengths of 15 notches (in units of time)
+unsigned long lastArd = millis();
+unsigned long nowArd = millis();
 double lastAngle;   //last angle returned to ROS
 bool lastPoints[SAME_THRES]; //last 5 light readings for smoothing
 int currNotch;      //current notch
 int lightPin = 5;   //pin id of light sensor
 int motorPin = 3;   //pin id of lidar motor
-bool currState;     //state of light
-
 int debugInt;
-bool debugBool;
-
-ros::Time now = nh.now();
-unsigned long lastArd = millis();
-unsigned long nowArd = millis();
-
 int tries;
-
-
-
+bool currState;     //state of light
+bool debugBool;
 bool debug = true;
 
  /********************************************************************
@@ -64,26 +44,14 @@ bool debug = true;
 void setup() {
   nh.initNode();
   nh.advertise(p);
-  //nh.advertise(pCurrAngle);
-  //nh.advertise(pAvgAngle);
-  //nh.advertise(pCurrTime);
-  
-  //currAngle.data = 0;
-  //avgAngleChange.data = 0;
-  //currTime.data = nh.now();
-  //pCurrAngle.publish(&currAngle);
-  //pAvgAngle.publish(&avgAngleChange);
-  //pCurrTime.publish(&currTime);
-  //nh.spinOnce();
-  //delay(10);
   
   int i;
   
-  /*
-  Serial.begin(9600);
-  if(debug)
+  if(debug) {
+    Serial.begin(9600);
     Serial.println("Start setup");
-  */
+  }
+  
   pinMode(0, INPUT);
   pinMode(lightPin, INPUT);
   pinMode(motorPin, OUTPUT);
@@ -108,15 +76,6 @@ void setup() {
     delay(1000);
   }
   */
-  /*
-  int k = 0;
-  
-  //for(i = 0; i < 1000; i++) {
-  while(true){
-    k = analogRead(0) / 4;
-    analogWrite(motorPin, k);
-  }
-  */
   
   recalibrateNotch();
 }
@@ -132,6 +91,8 @@ void loop() {
   //  Serial.println("Start loop");
   double avgLen;
   int i, minLen, count;
+  
+  analogWrite(motorPin, analogRead(0) / 4);
   
   recalibrateNotch();
 
@@ -164,23 +125,26 @@ void loop() {
         minLen = i;
       }
     }
-    //Serial.print(count);
-    /*
-    Serial.print(avgLen);
-    Serial.print('\n');
-    */
-
-    /*
-    Serial.print("Lens:\t");
-    for(i = 0; i < 15; i++) {
-      Serial.print(lengths[i]);
-      Serial.print(" ");
+    
+    if(debug) {
+      Serial.print(count);
+      
+      //Serial.print(avgLen);
+      Serial.print('\n');
+  
+      /*
+      Serial.print("Lens:\t");
+      for(i = 0; i < 15; i++) {
+        Serial.print(lengths[i]);
+        Serial.print(" ");
+      }
+      Serial.print('\n');
+      */
     }
-    Serial.print('\n');
-    */
 
     if(count != 1) {
-      //Serial.println("B");
+      if(debug)
+        Serial.println("B");
       currNotch = 0;
       recalibrateNotch();
     }
@@ -221,6 +185,7 @@ void loop() {
   Serial.print('\n');
   */
   
+  /*
   now = nh.now();
   nowArd = millis();
     
@@ -229,17 +194,10 @@ void loop() {
   message.avg_angular_velocity = message.angle / ((double) (nowArd - lastArd) / 1000);
   
   lastArd = nowArd;
-
+  */
   
-  //currAngle.data = getAngle(millis());
-  //avgAngleChange.data = calcAngleInterval();
-  //currTime.data = nh.now();
-  
-  //pCurrAngle.publish(&currAngle);
-  //pAvgAngle.publish(&avgAngleChange);
-  //pCurrTime.publish(&currTime);
-  p.publish(&message);
-  nh.spinOnce();
+  //p.publish(&message);
+  //nh.spinOnce();
 }
 
  /********************************************************************
@@ -298,6 +256,16 @@ void readNotch() {
     lengths[currNotch] = millis() - times[currNotch];
 
     currNotch = (currNotch + 1) % 15;
+    
+  now = nh.now();   
+  nowArd = millis();
+  message.time = now;
+  message.angle = currNotch * 0.418879;
+  message.avg_angular_velocity = 0.418879 / ((double) (nowArd - lastArd) / 1000);
+  lastArd = nowArd;
+  
+  p.publish(&message);
+  nh.spinOnce();
 }
 
  /********************************************************************

@@ -6,20 +6,30 @@ static unsigned int callback_instance = 0;
 
 void tfpubCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
   static tf::TransformBroadcaster pub;
-  tf::Transform transform;
+
+  tf::Transform baseframe_laserframe_transform;
+  tf::Transform map_baseframe_transform;
+  tf::Quaternion btl_q;
+  tf::Quaternion mtb_q;
 
   float dist = msg->ranges[callback_instance];
-  float angle = msg->angle_min + msg->angle_increment * callback_instance;
-  float x = dist * sin(angle);
-  float y = dist * cos(angle);
+  float angle = msg->angle_min;
+  float x = dist * cos(angle);
+  float y = dist * sin(angle);
+  ros::Time s_t = msg->header.stamp;
 
-  transform.setOrigin(tf::Vector3(x, y, 0.0));
-  tf::Quaternion q;
-  q.setRPY(0, 0, angle);
-  transform.setRotation(q);
-  //needs numbers for transform to base_link from laser
-  pub.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world",
-  "base_link"));
+  baseframe_laserframe_transform.setOrigin(tf::Vector3(0, 0, 0));
+  btl_q.setRPY(0, 0, angle);
+  baseframe_laserframe_transform.setRotation(btl_q);
+  
+  map_baseframe_transform.setOrigin(tf::Vector3(x, y, 0.0));
+  mtb_q.setRPY(0, 0, 0);
+  map_baseframe_transform.setRotation(mtb_q);
+
+  pub.sendTransform(tf::StampedTransform(
+  map_baseframe_transform, s_t,"map","base_frame"));
+  pub.sendTransform(tf::StampedTransform(
+  baseframe_laserframe_transform, s_t, "base_frame", "laser_frame"));
   callback_instance++;
 } 
 
@@ -27,8 +37,7 @@ int main(int argc, char** argv) {
   ros::init(argc, argv, "tf_pub");
   ros::NodeHandle n;
 
-  ros::Subscriber sub = n.subscribe("laser_scan", 100,
-  tfpubCallback);
+  ros::Subscriber sub = n.subscribe("laser_scan", 600, tfpubCallback);
 
   ros::spin();
   return 0;

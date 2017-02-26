@@ -38,3 +38,13 @@ add_executable(tf_pub src/tf_pub.cpp)
 add_executable(tf_sub src/tf_sub.cpp)
 target_link_libraries(tf_pub ${catkin_LIBRARIES})
 target_link_libraries(tf_sub ${catkin_LIBRARIES})
+
+## Make Laser Scan Publisher Node Executable - Test Version 2
+add_executable(laser_scan_pub_v2 src/LaserScanPublisherV2.cpp )
+add_dependencies(laser_scan_pub_v2 ${catkin_EXPORTED_TARGETS} )
+target_link_libraries(laser_scan_pub_v2 ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
+
+## Make Laser Scan Publisher Node Executable - Test Version 3
+add_executable(laser_scan_pub_v3 src/LaserScanPublisherV3.cpp )
+add_dependencies(laser_scan_pub_v3 ${catkin_EXPORTED_TARGETS} )
+target_link_libraries(laser_scan_pub_v3 ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
