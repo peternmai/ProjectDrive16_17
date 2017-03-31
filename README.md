@@ -1,23 +1,23 @@
 # UCSD Project Drive 2016/17 *- [ WORK IN PROGRESS ]*
 
-Project Drive is a year long student run project hosted and funded by the IEEE Branch of the 
+Project Drive is a year long student run project hosted and funded by the IEEE Branch of the
 University of California, San Diego. The premise of this project is to build a 1/10 scale fully
-autnonomous RC vehicle that will compete in this year's 2017 
-[SparkFun Classic AVC](https://avc.sparkfun.com/2016/rules#AVC) Competition. 
+autonomous RC vehicle that will compete in this year's 2017
+[SparkFun Classic AVC](https://avc.sparkfun.com/2016/rules#AVC) Competition.
 
 For this year's competition, the team will be focusing on designing and implementing a vehicle that
 could explore and map out any given flat environment. We therefore will be building our own 360
-LIDAR system which would be used for spatial mapping in conjunction with ROS's Hector SLAM.
-We will also be working with OpenCV to implement various image recognition softwares that will
+LIDAR system which would be used for spatial mapping and localization in conjunction with ROS's Hector
+SLAM. We will also be working with OpenCV to implement various image recognition softwares that will
 further allow our vehicle to interact with its environment by picking up both obstacles and goal
 points scattered throughout the race course.
 
 ## Progress Update
 
 #### Brief Update
-As of March 31st, 2017, the team currently has spatial mapping up and running while our 360
-LIDAR system is stationary. We have fully completed designing and testing our power system that will
-ensure power is delievered to all the components of our vehicle in a safe and reliable manner.
+As of March 31st, 2017, the team currently has spatial mapping and localization up and running while our
+360 LIDAR system is stationary. We have fully completed designing and testing our power system that will
+ensure power is delivered to all the components of our vehicle in a safe and reliable manner.
 Our next step would be to attach the power system  to our vehicle and begin testing spatial
 mapping while the 360 LIDAR system is in motion.
 
@@ -52,7 +52,7 @@ it with you in a comprehensive website in the future. Stay tune!
 * Peter Mai - *p1mai [at] ucsd.edu*
 
 #### Software Team
-* Luzanne Battoon - *lbatoon [at] ucsd.edu*
+* Luzanne Batoon - *lbatoon [at] ucsd.edu*
 * Shirley Han - *smh022 [at] ucsd.edu*
 * Jason Ma - *jam043 [at] ucsd.edu*
 * William Ma - *wim001 [at] ucsd.edu*
