@@ -28,11 +28,6 @@ add_executable(laser_scan_pub src/LaserScanPublisher.cpp )
 add_dependencies(laser_scan_pub ${catkin_EXPORTED_TARGETS} )
 target_link_libraries(laser_scan_pub ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
 
-## Make Test Node Executable
-add_executable( test_node src/Test.cpp )
-add_dependencies( test_node ${catkin_EXPORTED_TARGETS} )
-target_link_libraries( test_node ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
-
 ## Make tf_broadcaster and tf_listener Executable
 add_executable(tf_pub src/tf_pub.cpp)
 add_executable(tf_sub src/tf_sub.cpp)
