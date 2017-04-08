@@ -29,7 +29,7 @@
 
 // Constant Variables
 #define PUBLISH_RATE      1
-#define LASER_FREQUENCY   600
+#define LASER_FREQUENCY   1000
 #define MAX_READINGS      LASER_FREQUENCY / PUBLISH_RATE
 
 // Shared Static Variables
@@ -75,7 +75,7 @@ angular_velocity ) {
 static void opticalEncoderCallback( const msg::optical_encoder::ConstPtr& msg ) {
 
   //if( msg->angle < 1 && msg->angle < encoder_latest_angle )
-  if(msg->angle < encoder_latest_angle)
+  if(msg->angle + M_PI < encoder_latest_angle)
     encoder_full_rotation_count++;
 
   if( optical_encoder_callback_instance == 0 ) {
@@ -206,7 +206,7 @@ int main( int argc, char ** argv ) {
 
     //populate the LaserScan message
     sensor_msgs::LaserScan scan;            // Laser scan object
-    scan.header.stamp = scan_time;          // Specify current time [sec]
+    scan.header.stamp = sensor_times[0];    // Specify first reading time [sec]
     scan.header.frame_id = "laser_frame";   // Specify frame_id
     scan.angle_min = calculateStartAngle(); // Start angle of scan [rad]
     scan.angle_max = calculateEndAngle();   // End angle of scan [rad]

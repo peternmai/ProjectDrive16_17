@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node name="tf_pub" pkg="setup" type="tf_pub"/>
+  <node name="laser_scan_pub_v3" pkg="setup" type="laser_scan_pub_v3" />
+
+  <node ns="arduino_un" name="oe_ardiuno" pkg="rosserial_python"
+  type="serial_node.py" args="/dev/ttyUSB0" output="screen" />
+
+  <node ns="arduino_deux" name="steering_arduino" pkg="rosserial_python"
+  type="serial_node.py" args="/dev/ttyUSB1" output="screen" />
+</launch>

@@ -33,7 +33,7 @@ int debugInt;
 int tries;
 bool currState;     //state of light
 bool debugBool;
-bool debug = true;
+bool debug = false;
 
  /********************************************************************
  | Routine Name: setup
@@ -46,11 +46,12 @@ void setup() {
   nh.advertise(p);
   
   int i;
-  
+  /*
   if(debug) {
     Serial.begin(9600);
     Serial.println("Start setup");
   }
+  */
   
   pinMode(0, INPUT);
   pinMode(lightPin, INPUT);
@@ -126,6 +127,7 @@ void loop() {
       }
     }
     
+    /*
     if(debug) {
       Serial.print(count);
       
@@ -140,11 +142,12 @@ void loop() {
       }
       Serial.print('\n');
       */
-    }
+      
+    //}
 
     if(count != 1) {
-      if(debug)
-        Serial.println("B");
+      //if(debug)
+      //  Serial.println("B");
       currNotch = 0;
       recalibrateNotch();
     }
@@ -240,22 +243,22 @@ void readNotch() {
   //if(debug)
   //  Serial.println("Start readNotch");
   while(stateDetector() == 1) {
-      pollLight();
-    }     
+    pollLight();
+  }     
     
-    //store first 1 in times[i] 
-    times[currNotch] = millis();
+  //store first 1 in times[i] 
+  times[currNotch] = millis();
     
-    //check to make sure first 1 is reasonably spaced from previous times
+  //check to make sure first 1 is reasonably spaced from previous times
 
-    //read until 5 0s are read in a row
-    while(stateDetector() == 0) {
-      pollLight();
-    }
+  //read until 5 0s are read in a row
+  while(stateDetector() == 0) {
+    pollLight();
+  }
 
-    lengths[currNotch] = millis() - times[currNotch];
+  lengths[currNotch] = millis() - times[currNotch];
 
-    currNotch = (currNotch + 1) % 15;
+  currNotch = (currNotch + 1) % 15;
     
   now = nh.now();   
   nowArd = millis();
