@@ -1,0 +1,12 @@
+digraph G {
+"odom" -> "base_link"[label="Broadcaster: /tf_pub\nAverage rate: 2.064 Hz\nMost recent transform: 1492487467.362 ( 0.353 sec old)\nBuffer length: 4.846 sec\n"];
+"base_link" -> "laser_frame"[label="Broadcaster: /tf_pub\nAverage rate: 1.251 Hz\nMost recent transform: 1492487466.512 ( 1.203 sec old)\nBuffer length: 3.995 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1492487467.715"[ shape=plaintext ] ;
+ }->"odom";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1492487467.715"[ shape=plaintext ] ;
+ }->"map";
+}

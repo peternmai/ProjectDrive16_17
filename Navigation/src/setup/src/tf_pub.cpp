@@ -16,7 +16,7 @@ void tfpubCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     //float angle = msg->angle_min + callback_instance * msg->angle_increment;
     //ros::Time s_t = msg->header.stamp + ros::Duration(msg->time_increment * callback_instance);
 
-    float angle = msg->angle_min;
+    float angle = msg->angle_max;
     ros::Time s_t = msg->header.stamp;
 
     baselink_laserframe_transform.setOrigin(tf::Vector3(0, 0, 0));
@@ -28,13 +28,9 @@ void tfpubCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     map_baselink_transform.setRotation(mtb_q);
 
     pub.sendTransform(tf::StampedTransform(
-    map_baselink_transform, s_t,"/map","/base_link"));
+    map_baselink_transform, s_t,"/map","/odom"));
     pub.sendTransform(tf::StampedTransform(
     baselink_laserframe_transform, s_t, "/base_link", "/laser_frame"));
-  
-    std::cout << angle << "\n";
-    callback_instance++;
-  //}
 } 
 
 int main(int argc, char** argv) {

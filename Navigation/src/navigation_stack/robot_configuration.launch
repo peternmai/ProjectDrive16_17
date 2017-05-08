@@ -1,0 +1,13 @@
+<launch>
+  <node pkg="setup" type="laser_scan_pub" name="LaserScanPublisher" output="screen">
+  </node>
+  
+  <node pkg="setup" type="odom" name="odom"
+  ouput="screen">
+  </node>
+  
+  <node pkg="setup" type="tf_pub" name="tf_pub" output="screen">
+  	<param name="tf_param" value="param_value" />
+	</node>
+
+</launch>
