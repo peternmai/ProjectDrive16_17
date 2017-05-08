@@ -31,6 +31,7 @@ mapping while the 360 LIDAR system is in motion.
   * [Progress Report 2](https://drive.google.com/file/d/0B6CW6u5gBz_JWXpjdWFvQ19TdEk/view?usp=sharing)
   * [Progress Report 3](https://drive.google.com/file/d/0B6CW6u5gBz_JcG5YcWlhSWw2ZGM/view?usp=sharing)
 * **Spring Quarter** *(SLAM Testing and Navigation)*
+  * [Progress Report 1](https://drive.google.com/file/d/0B6CW6u5gBz_JOVlabW1iZTRVNjA/view?usp=sharing)
   * Coming Soon!
 
 #### 360 LIDAR System And SLAM
