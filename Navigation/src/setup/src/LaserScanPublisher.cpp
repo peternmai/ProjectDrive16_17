@@ -61,11 +61,8 @@ static float         encoder_full_rotation_count = 0;
 static unsigned int  teraranger_callback_instance = 0;
 static unsigned int  optical_encoder_callback_instance = 0;
 
-// At 4 rotations per second, can use for (2^64)/(2*pi*4) seconds
-static unsigned long long angle_sum = 0;
-static unsigned long long average_rotation = 0;
-static unsigned long long broadcast_count = 0; 
-
+static float         min_angular_velocity = 12;
+static float         max_angular_velocity = 18;
 
 // Calcualte the angle at the specified teraranger time
 static float calculateAngle( const ros::Time & teraranger_time, const ros::Time
@@ -96,6 +93,8 @@ static void opticalEncoderCallback( const msg::optical_encoder::ConstPtr& msg ) 
 
   encoder_latest_angular_velocity = msg->avg_angular_velocity;
   encoder_latest_angle = msg->angle;
+
+  std::cout << encoder_latest_angular_velocity << std::endl;
 
   encoder_latest_time  = msg->time;
   optical_encoder_callback_instance++;
@@ -174,7 +173,7 @@ static void displayData( const sensor_msgs::LaserScan & data ) {
   std::cout << "\nDisplaying scan data..." << std::endl;
   std::cout << "\tINDEX\t\tTIME\t\t\tANGLE\t\tDISTANCE" << std::endl;
   if( teraranger_callback_instance > 0 ) {
-    for( int i = 0; i < (teraranger_callback_instance-1); i += 1){//(teraranger_callback_instance/20) ) {
+    for( int i = 0; i < (teraranger_callback_instance-1); i += 100){//(teraranger_callback_instance/20) ) {
       std::cout << "\t" << i << "\t\t" << sensor_times[i] << "\t";
       std::cout << sensor_angles[i] << "\t\t" << sensor_ranges[i] << std::endl;
     }
@@ -231,27 +230,14 @@ int main( int argc, char ** argv ) {
 
     // Time between measurements [seconds]
     scan.time_increment = scan.scan_time / teraranger_callback_instance;
-
-    float total_rotation = calculateEndAngle() - calculateStartAngle();
-    float low_rotation_threshold = average_rotation * LOW_ROTATION_THRESHOLD;
-    float high_rotation_threshold = average_rotation * HIGH_ROTATION_THRESHOLD;
     
-    // Set range during that scan time of collections if rotation is resonable
-    //if( broadcast_count == 0 || (total_rotation > low_rotation_threshold &&
-    //  total_rotation < high_rotation_threshold )) {
-      
-      scan.ranges.resize( teraranger_callback_instance );
-      for(unsigned int i = 0; i < teraranger_callback_instance; ++i)
-        scan.ranges[i] = sensor_ranges[i];
+    scan.ranges.resize( teraranger_callback_instance );
+    for(unsigned int i = 0; i < teraranger_callback_instance; ++i)
+      scan.ranges[i] = sensor_ranges[i];
 
-      broadcast_count++;
-      angle_sum += total_rotation;
-      average_rotation = angle_sum / broadcast_count;
-    //}
-    //else
-    //  scan.ranges.resize( 0 );
+    //std::cout << (scan.angle_max - scan.angle_min) << " | " << encoder_latest_angular_velocity << std::endl;
 
-    displayData( scan );
+    //displayData( scan );
     teraranger_callback_instance = 0;
     optical_encoder_callback_instance = 0;
   

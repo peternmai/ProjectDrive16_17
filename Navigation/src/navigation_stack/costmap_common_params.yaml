@@ -4,6 +4,7 @@ footprint: [[-0.122,-0.229 ], [0.122, -0.229], [-0.122, 0.229], [0.122, 0.229] ]
 #robot_radius: ir_of_robot
 inflation_radius: 0.55
 transform_tolerance: 10
+meter_scoring: true
 
 observation_sources: laser_scan_sensor
 

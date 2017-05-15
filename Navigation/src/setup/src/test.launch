@@ -3,6 +3,7 @@
   <arg name="tera" />
   <arg name="optic" />
   <arg name="steering" />
+  <!--arg name="mode" default="0"/-->
 
   <node name="oe_ardiuno" pkg="rosserial_python"
   type="serial_node.py" args="$(arg optic)" output="screen" />
@@ -11,9 +12,11 @@
   type="serial_node.py" args="$(arg steering)" output="screen" />
 
   <node name="tera" pkg="terarangerone" type="terarangerone_node"
-  args="_portname:=$(arg tera)" />
+  args="_portname:=$(arg tera)"/>
+  <param name="/tera/Mode" value="1"/>
   
   <node name="odom" pkg="setup" type="odom" />
   <node name="tf_pub" pkg="setup" type="tf_pub"/>
   <node name="laser_scan_pub" pkg="setup" type="laser_scan_pub" output="screen" />
+
 </launch>

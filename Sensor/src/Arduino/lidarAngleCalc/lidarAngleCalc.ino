@@ -35,6 +35,8 @@ bool currState;     //state of light
 bool debugBool;
 bool debug = false;
 
+int LED = 13;
+
  /********************************************************************
  | Routine Name: setup
  | File:         lidarAngleCalc.ino
@@ -46,25 +48,27 @@ void setup() {
   nh.advertise(p);
   
   int i;
-  /*
+  
+  pinMode(LED, OUTPUT);
+  
   if(debug) {
     Serial.begin(9600);
     Serial.println("Start setup");
   }
-  */
+  
   
   pinMode(0, INPUT);
   pinMode(lightPin, INPUT);
   pinMode(motorPin, OUTPUT);
   
-  analogWrite(motorPin, 200);
+  analogWrite(motorPin, 100);
     
   currState = 0;
   lastAngle = 0;
   currNotch = 0;
 
   debugInt = 0;
-  debugBool = false;
+  debugBool = true;
   
   /*
   for(i = 0; i < 10; i++) {
@@ -88,8 +92,8 @@ void setup() {
  | Description: Sees if recallibration is needed, then 
  ********************************************************************/
 void loop() {
-  //if(debug)
-  //  Serial.println("Start loop");
+  if(debug)
+    Serial.println("Start loop");
   double avgLen;
   int i, minLen, count;
   
@@ -127,13 +131,23 @@ void loop() {
       }
     }
     
-    /*
+    
     if(debug) {
       Serial.print(count);
       
       //Serial.print(avgLen);
       Serial.print('\n');
-  
+      
+      /*
+      Serial.print("Times:\t");
+      //print times and lengths
+      for(i = 0; i < 15; i++) {
+        Serial.print(times[i]);
+        Serial.print(" ");
+      }
+      Serial.print('\n');
+      */
+      
       /*
       Serial.print("Lens:\t");
       for(i = 0; i < 15; i++) {
@@ -143,18 +157,18 @@ void loop() {
       Serial.print('\n');
       */
       
-    //}
+    }
 
     if(count != 1) {
-      //if(debug)
-      //  Serial.println("B");
+      if(debug)
+        Serial.println("B");
       currNotch = 0;
       recalibrateNotch();
     }
     
     tries++;
   }
-  //Serial.println("+");
+  Serial.println("+");
 
   //small notch uniquely determined
   if(minLen > 0) {
@@ -244,7 +258,9 @@ void readNotch() {
   //  Serial.println("Start readNotch");
   while(stateDetector() == 1) {
     pollLight();
-  }     
+  }
+  
+  digitalWrite(LED, HIGH);
     
   //store first 1 in times[i] 
   times[currNotch] = millis();
@@ -255,11 +271,13 @@ void readNotch() {
   while(stateDetector() == 0) {
     pollLight();
   }
-
+  
+  digitalWrite(LED, LOW);
   lengths[currNotch] = millis() - times[currNotch];
 
   currNotch = (currNotch + 1) % 15;
-    
+  
+  
   now = nh.now();   
   nowArd = millis();
   message.time = now;
@@ -269,6 +287,7 @@ void readNotch() {
   
   p.publish(&message);
   nh.spinOnce();
+  
 }
 
  /********************************************************************
