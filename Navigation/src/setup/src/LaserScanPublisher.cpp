@@ -28,13 +28,9 @@
 #include <iostream>
 
 // Constant Variables
-#define PUBLISH_RATE      1
+#define PUBLISH_RATE      3
 #define LASER_FREQUENCY   1000
-#define MAX_READINGS      LASER_FREQUENCY / PUBLISH_RATE
-
-// Allowable deviation threshold from average rotation
-#define LOW_ROTATION_THRESHOLD 0.9
-#define HIGH_ROTATION_THRESHOLD 1.1
+#define MAX_READINGS      long(LASER_FREQUENCY / PUBLISH_RATE)
 
 // Shared Static Variables
 static float         sensor_ranges[ MAX_READINGS ] = {0};
@@ -56,13 +52,17 @@ static float         encoder_latest_angle = 0;
 static float         encoder_start_angular_velocity = 0;
 static float         encoder_latest_angular_velocity = 0;
 
-static float         encoder_full_rotation_count = 0;
-
 static unsigned int  teraranger_callback_instance = 0;
 static unsigned int  optical_encoder_callback_instance = 0;
 
 static float         min_angular_velocity = 12;
 static float         max_angular_velocity = 18;
+
+// Since teraranger's distance readings arent broadcasted at a consistent
+// rate, this array will hold the range readings with respect to time. Each
+// increment in the array has an adjusted time increment of scan duration
+// divided by the number of scans.
+static float         sensor_adjusted_ranges[ MAX_READINGS ] = {0};
 
 // Calcualte the angle at the specified teraranger time
 static float calculateAngle( const ros::Time & teraranger_time, const ros::Time
@@ -80,21 +80,16 @@ angular_velocity ) {
 // Retrieve information from optical encoder to get sensor angle information
 static void opticalEncoderCallback( const msg::optical_encoder::ConstPtr& msg ) {
 
-  //if( msg->angle < 1 && msg->angle < encoder_latest_angle )
-  if(msg->angle + M_PI < encoder_latest_angle)
-    encoder_full_rotation_count++;
-
   if( optical_encoder_callback_instance == 0 ) {
     encoder_start_angular_velocity = msg->avg_angular_velocity;
     encoder_start_angle = msg->angle;
     encoder_start_time  = msg->time;
-    encoder_full_rotation_count = 0;
   }
 
   encoder_latest_angular_velocity = msg->avg_angular_velocity;
   encoder_latest_angle = msg->angle;
 
-  std::cout << encoder_latest_angular_velocity << std::endl;
+  // std::cout << encoder_latest_angular_velocity << std::endl;
 
   encoder_latest_time  = msg->time;
   optical_encoder_callback_instance++;
@@ -109,15 +104,10 @@ static void terarangeroneCallback( const sensor_msgs::Range::ConstPtr& msg ) {
 
   if( teraranger_callback_instance == 0 ) {
     teraranger_start_time = msg->header.stamp;
-    //while( encoder_latest_angle > 0 )
-    //  encoder_latest_angle -= 2*M_PI;
   }
   else
     teraranger_latest_time = msg->header.stamp;
 
-  //encoder_latest_angle = encoder_full_rotation_count * M_PI * 2 +
-  //encoder_latest_angle;
-  
   sensor_times[  teraranger_callback_instance ] = msg->header.stamp;
   sensor_ranges[ teraranger_callback_instance ] = msg->range;
   sensor_angles[ teraranger_callback_instance ] = calculateAngle( teraranger_latest_time,
@@ -134,26 +124,62 @@ static float calculateStartAngle() {
     return sensor_angles[0];
   else
     return 0;
-  //return calculateAngle( teraranger_start_time, encoder_start_time,
-  //encoder_start_angle, encoder_start_angular_velocity );
 }
 
 static float calculateEndAngle() {
+
+  // Count restart in rotation
+  int rotation_restart_counter = 0;
+  for( int i = 1; i < teraranger_callback_instance; i++ )
+    if( sensor_angles[i] + M_PI < sensor_angles[i-1] )
+      rotation_restart_counter++;
+
   if ( teraranger_callback_instance > 0 )
     return sensor_angles[ teraranger_callback_instance - 1 ] +
-    encoder_full_rotation_count * M_PI * 2;
+    rotation_restart_counter * M_PI * 2;
   else
     return 0;
-  //return calculateAngle( teraranger_latest_time, encoder_latest_time,
-  //encoder_latest_angle, encoder_latest_angular_velocity );
+}
+
+static void generateAdjustedRanges() {
+
+  int index, i;
+std::cout << "Entering\n";
+  if( teraranger_callback_instance > 0 ) {
+    // Calculate the seconds between each range reading  
+    float timeBetweenRange = ( sensor_times[ teraranger_callback_instance - 1 ] -
+                  sensor_times[0] ).toSec() / MAX_READINGS;
+    std::cout << "Time between range: " << timeBetweenRange << std::endl;
+    // Clear data in previous array
+    for( i = 0; i < MAX_READINGS; i++ )
+      sensor_adjusted_ranges[i] = 0;
+
+    // Go through each range reading and set to adjust ranges
+    for( i = 0; i < teraranger_callback_instance; i++ ) {
+      index = (sensor_times[i] - sensor_times[0]).toSec() / timeBetweenRange;
+      if( index >= 0 && index < MAX_READINGS )
+        sensor_adjusted_ranges[index] = sensor_ranges[i];
+      else
+        std::cout << "Bad attempt to write tera reading " << i <<" to adjusted "
+	          << "range array index " << index << std::endl;
+    }
+  }
+std::cout << "Exiting\n";
 }
 
 static void displayData( const sensor_msgs::LaserScan & data ) {
   
-
+/**
   // Clear Screen
   for( int i = 0; i < 5; i++ )
     std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+**/
+
+  // Figure out max time difference between scan
+  ros::Duration maxTimeDiff = ros::Time::now() - ros::Time::now();
+  for( int i = 1; i < teraranger_callback_instance; i++ )
+    if( sensor_times[i] - sensor_times[i-1] > maxTimeDiff )
+      maxTimeDiff = sensor_times[i] - sensor_times[i-1];
 
   std::cout << "Publishing Laser Scan Information..." << std::endl;
   std::cout << data.header.stamp << " | Total Scan Duration: " << 
@@ -163,9 +189,10 @@ static void displayData( const sensor_msgs::LaserScan & data ) {
   std::cout << "\tEnd Angle:\t\t"   << data.angle_max << " rad\n"  <<std::endl;
 
   std::cout << "\tAngle Increment:\t" << data.angle_increment << " rad\n";
-  std::cout << "\tIncrement Time:\t\t" << data.time_increment << " sec\n";
+  std::cout << "\tAvg Increment Time:\t" << data.time_increment << " sec\n";
+  std::cout << "\tMax Increment Time:\t" << maxTimeDiff.toSec() << " sec\n";
   std::cout << "\tAngular Velocity:\t" <<
-    encoder_latest_angular_velocity << " rad/sec\n" << std::endl;
+    (data.angle_max - data.angle_min) * PUBLISH_RATE << " rad/sec\n" << std::endl;
 
   std::cout << "\t# of Distance Readings:\t" << teraranger_callback_instance << std::endl;
   std::cout << "\t# of Angle Readings:\t" << optical_encoder_callback_instance << std::endl;
@@ -173,7 +200,8 @@ static void displayData( const sensor_msgs::LaserScan & data ) {
   std::cout << "\nDisplaying scan data..." << std::endl;
   std::cout << "\tINDEX\t\tTIME\t\t\tANGLE\t\tDISTANCE" << std::endl;
   if( teraranger_callback_instance > 0 ) {
-    for( int i = 0; i < (teraranger_callback_instance-1); i += 100){//(teraranger_callback_instance/20) ) {
+    //TODO change back to printing every 10
+    for( int i = 0; i < 1; i++) {//(teraranger_callback_instance-1); i += 1){
       std::cout << "\t" << i << "\t\t" << sensor_times[i] << "\t";
       std::cout << sensor_angles[i] << "\t\t" << sensor_ranges[i] << std::endl;
     }
@@ -212,6 +240,9 @@ int main( int argc, char ** argv ) {
     ros::Time scan_time = ros::Time::now();
     ros::spinOnce();
 
+    // Adjust angle ranges so that it's time increment is consistent
+    generateAdjustedRanges();
+
     //populate the LaserScan message
     sensor_msgs::LaserScan scan;            // Laser scan object
     scan.header.stamp = sensor_times[0];    // Specify first reading time [sec]
@@ -222,22 +253,21 @@ int main( int argc, char ** argv ) {
     scan.range_max = sensor_range_max;      // Maximum range value [m]
 
     // Distance between measurement [rad]
-    scan.angle_increment = (scan.angle_max - scan.angle_min) /
-      teraranger_callback_instance;
+    scan.angle_increment = (scan.angle_max - scan.angle_min) / MAX_READINGS;
 
     // Total Scan Time [seconds]
     scan.scan_time = teraranger_latest_time.toSec() - teraranger_start_time.toSec();
 
     // Time between measurements [seconds]
-    scan.time_increment = scan.scan_time / teraranger_callback_instance;
+    scan.time_increment = scan.scan_time / MAX_READINGS;
     
-    scan.ranges.resize( teraranger_callback_instance );
-    for(unsigned int i = 0; i < teraranger_callback_instance; ++i)
-      scan.ranges[i] = sensor_ranges[i];
+    scan.ranges.resize( MAX_READINGS );
+    for(unsigned int i = 0; i < MAX_READINGS; ++i)
+      scan.ranges[i] = sensor_adjusted_ranges[i];
 
     //std::cout << (scan.angle_max - scan.angle_min) << " | " << encoder_latest_angular_velocity << std::endl;
 
-    //displayData( scan );
+    displayData( scan );
     teraranger_callback_instance = 0;
     optical_encoder_callback_instance = 0;
   

@@ -21,13 +21,14 @@
 const int STEERING_SERVO_PIN = 9;
 const int ESC_SERVO_PIN = 10;
 
-const float MIN_THROTTLE = 80;         // min throttle (0-180)
-const float MAX_THROTTLE = 100;        // max throttle (0-180)
+const float MIN_THROTTLE = 80;            // min throttle (0-180)
+const float MAX_THROTTLE = 100;           // max throttle (0-180)
 
-const float MIN_STEERING_ANGLE = 20;
-const float MAX_STEERING_ANGLE = 160;
+const float MIN_STEERING_ANGLE = 20;      // min steering angle (0-180)
+const float MAX_STEERING_ANGLE = 160;     // max steering angle (0-180)
 
-const int DELAY = 50;
+const float THROTTLE_WEIGHT_OFFSET = 0.7; // Offset car's weight in throttle
+const int   DELAY = 50;
 
 Servo steeringServo;
 Servo electronicSpeedController;
@@ -51,7 +52,13 @@ void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann 
 {
   // Convert steering angle from radian to degree that fits in range of (0-180)
   float steering_angle = ackermann.drive.steering_angle * (180 / M_PI) + 90;
+  
+  // Get throttle in range of 0-180 and offset the weight
   float throttle = ackermann.drive.speed * 10 + 90;
+  if (throttle > 90)
+    throttle += THROTTLE_WEIGHT_OFFSET * 10;
+  if (throttle < 90)
+    throttle -= THROTTLE_WEIGHT_OFFSET * 10;
   
   // Check for allowed min steering angle
   if( steering_angle < MIN_STEERING_ANGLE )

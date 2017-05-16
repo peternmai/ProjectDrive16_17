@@ -97,124 +97,130 @@ void loop() {
   double avgLen;
   int i, minLen, count;
   
-  analogWrite(motorPin, analogRead(0) / 4);
+  Serial.println( now.toSec() );
   
-  recalibrateNotch();
-
-  //calculate average length of notch as a threshold for the small notch
-  for(i = 0; i < 15; i++)
-    avgLen += lengths[i];
-  avgLen /= 15.0;
-
-  count = 0;
-  minLen = -1;
-  tries = 0;
-  //try to uniquely determine small notch, and recalibrate until it can be determined.
-  while(count != 1) {
-    
+  if( 1 ) {
     analogWrite(motorPin, analogRead(0) / 4);
     
-    count = 0;
-    minLen = -1;
-
+    recalibrateNotch();
+  
     //calculate average length of notch as a threshold for the small notch
     for(i = 0; i < 15; i++)
       avgLen += lengths[i];
     avgLen /= 15.0;
   
-    //if can uniquely determine one notch that is short, set that notch to be the "0" notch
+    count = 0;
+    minLen = -1;
+    tries = 0;
+    //try to uniquely determine small notch, and recalibrate until it can be determined.
+    while(count != 1) {
+      
+      analogWrite(motorPin, analogRead(0) / 4);
+      
+      count = 0;
+      minLen = -1;
+  
+      //calculate average length of notch as a threshold for the small notch
+      for(i = 0; i < 15; i++)
+        avgLen += lengths[i];
+      avgLen /= 15.0;
+    
+      //if can uniquely determine one notch that is short, set that notch to be the "0" notch
+      for(i = 0; i < 15; i++) {
+        //finds number of lengths lower than average, if things are working properly should only be 1.
+        if(lengths[i] < avgLen - 4) {
+          count++;
+          minLen = i;
+        }
+      }
+      
+      
+      if(debug) {
+        Serial.print(count);
+        
+        //Serial.print(avgLen);
+        Serial.print('\n');
+        
+        /*
+        Serial.print("Times:\t");
+        //print times and lengths
+        for(i = 0; i < 15; i++) {
+          Serial.print(times[i]);
+          Serial.print(" ");
+        }
+        Serial.print('\n');
+        */
+        
+        /*
+        Serial.print("Lens:\t");
+        for(i = 0; i < 15; i++) {
+          Serial.print(lengths[i]);
+          Serial.print(" ");
+        }
+        Serial.print('\n');
+        */
+        
+      }
+  
+      if(count != 1) {
+        if(debug)
+          Serial.println("B");
+        currNotch = 0;
+        recalibrateNotch();
+      }
+      
+      tries++;
+    }
+    Serial.println("+");
+  
+    //small notch uniquely determined
+    if(minLen > 0) {
+      //shift values in array so that notch is at "0" location
+      for(i = minLen; i < 15; i++) {
+        times[i - minLen] = times[i];
+        lengths[i - minLen] = lengths[i];
+      }
+  
+      //adjust currNotch so it is "pointing" after the last read notch time
+      currNotch = 14 - minLen + 1;
+    }
+  
+    //continue reading notches
+    readNotch();
+  
+    /*
+    Serial.print("Times:\t");
+    //print times and lengths
     for(i = 0; i < 15; i++) {
-      //finds number of lengths lower than average, if things are working properly should only be 1.
-      if(lengths[i] < avgLen - 4) {
-        count++;
-        minLen = i;
-      }
+      Serial.print(times[i]);
+      Serial.print(" ");
     }
-    
-    
-    if(debug) {
-      Serial.print(count);
-      
-      //Serial.print(avgLen);
-      Serial.print('\n');
-      
-      /*
-      Serial.print("Times:\t");
-      //print times and lengths
-      for(i = 0; i < 15; i++) {
-        Serial.print(times[i]);
-        Serial.print(" ");
-      }
-      Serial.print('\n');
-      */
-      
-      /*
-      Serial.print("Lens:\t");
-      for(i = 0; i < 15; i++) {
-        Serial.print(lengths[i]);
-        Serial.print(" ");
-      }
-      Serial.print('\n');
-      */
-      
-    }
-
-    if(count != 1) {
-      if(debug)
-        Serial.println("B");
-      currNotch = 0;
-      recalibrateNotch();
-    }
-    
-    tries++;
-  }
-  Serial.println("+");
-
-  //small notch uniquely determined
-  if(minLen > 0) {
-    //shift values in array so that notch is at "0" location
-    for(i = minLen; i < 15; i++) {
-      times[i - minLen] = times[i];
-      lengths[i - minLen] = lengths[i];
-    }
-
-    //adjust currNotch so it is "pointing" after the last read notch time
-    currNotch = 14 - minLen + 1;
-  }
-
-  //continue reading notches
-  readNotch();
-
-  /*
-  Serial.print("Times:\t");
-  //print times and lengths
-  for(i = 0; i < 15; i++) {
-    Serial.print(times[i]);
-    Serial.print(" ");
-  }
-  Serial.print('\n');
-
-  Serial.print("Lens:\t");
-  for(i = 0; i < 15; i++) {
-    Serial.print(lengths[i]);
-    Serial.print(" ");
-  }
-  Serial.print('\n');
-  */
+    Serial.print('\n');
   
-  /*
-  now = nh.now();
-  nowArd = millis();
+    Serial.print("Lens:\t");
+    for(i = 0; i < 15; i++) {
+      Serial.print(lengths[i]);
+      Serial.print(" ");
+    }
+    Serial.print('\n');
+    */
     
-  message.time = now;
-  message.angle = getAngle(nowArd, true);
-  message.avg_angular_velocity = message.angle / ((double) (nowArd - lastArd) / 1000);
-  
-  lastArd = nowArd;
-  */
-  
-  //p.publish(&message);
-  //nh.spinOnce();
+    /*
+    now = nh.now();
+    nowArd = millis();
+      
+    message.time = now;
+    message.angle = getAngle(nowArd, true);
+    message.avg_angular_velocity = message.angle / ((double) (nowArd - lastArd) / 1000);
+    
+    lastArd = nowArd;
+    */
+    
+    //p.publish(&message);
+    //nh.spinOnce();
+  } else {
+    analogWrite(motorPin, 0);
+  }
 }
 
  /********************************************************************
