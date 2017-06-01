@@ -3,7 +3,7 @@
 Project Drive is a year long student run project hosted and funded by the IEEE Branch of the
 University of California, San Diego. The premise of this project is to build a 1/10 scale fully
 autonomous RC vehicle that will compete in this year's 2017
-[SparkFun Classic AVC](https://avc.sparkfun.com/2016/rules#AVC) Competition.
+[SparkFun Speed Demons Autonomous Vehicle Competition](https://avc.sparkfun.com/2017).
 
 For this year's competition, the team will be focusing on designing and implementing a vehicle that
 could explore and map out any given flat environment. We therefore will be building our own 360
