@@ -21,6 +21,7 @@
 const int STEERING_SERVO_PIN = 9;
 const int ESC_SERVO_PIN = 10;
 
+//80 - 100
 const float MIN_THROTTLE = 80;            // min throttle (0-180)
 const float MAX_THROTTLE = 100;           // max throttle (0-180)
 
@@ -39,6 +40,7 @@ void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann 
 ros::Subscriber<ackermann_msgs::AckermannDriveStamped> ackermannSubscriber("/ackermann_cmd", &ackermannCallback);
 ros::NodeHandle nodeHandle;
 
+int lastDirection = 1; //1 = forward, 0 = backward
 
 /**
  * Function:    ackermannCallback()
@@ -55,10 +57,28 @@ void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann 
   
   // Get throttle in range of 0-180 and offset the weight
   float throttle = ackermann.drive.speed * 10 + 90;
+
+  if(throttle > 90) {
+    throttle += THROTTLE_WEIGHT_OFFSET * 10;
+    lastDirection = 1;
+  }
+  else if(throttle < 90) {
+    if(lastDirection == 1) {
+      electronicSpeedController.write(90);
+      electronicSpeedController.write(70);
+      electronicSpeedController.write(90);
+    }
+    throttle -= THROTTLE_WEIGHT_OFFSET * 10;
+    lastDirection = 0;
+  }
+  
+  /*
+  float throttle = ackermann.drive.speed * 10 + 90;
   if (throttle > 90)
     throttle += THROTTLE_WEIGHT_OFFSET * 10;
   if (throttle < 90)
     throttle -= THROTTLE_WEIGHT_OFFSET * 10;
+  */
   
   // Check for allowed min steering angle
   if( steering_angle < MIN_STEERING_ANGLE )

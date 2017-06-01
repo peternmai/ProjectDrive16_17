@@ -28,7 +28,7 @@
 #include <iostream>
 
 // Constant Variables
-#define PUBLISH_RATE      3
+#define PUBLISH_RATE      1
 #define LASER_FREQUENCY   1000
 #define MAX_READINGS      long(LASER_FREQUENCY / PUBLISH_RATE)
 

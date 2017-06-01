@@ -21,6 +21,15 @@ ensure power is delivered to all the components of our vehicle in a safe and rel
 Our next step would be to attach the power system  to our vehicle and begin testing spatial
 mapping while the 360 LIDAR system is in motion.
 
+As of May 31st, 2017, the team has successfully mapped out small hallways while
+the vehicle is in motion. The picture of the map is shown below. However, we are
+having some difficulties getting reliable distance reading from obstacles/walls
+that are further away due to the slower refresh rate of our sensor. As a result,
+we are looking into using an IMU and odometer to help increase the accuracy of
+SLAM.
+
+![PICTURE](/doc/SLAM_Small_Hallways.png?raw=true)
+
 #### Full Progress Report
 * **Fall Quarter** *(Planning and Purchasing)*
   * [Progress Report 1](https://drive.google.com/file/d/0B6vZS7zdEvhlTzF2VnpMY3hNbzQ/view?usp=sharing)
@@ -32,6 +41,7 @@ mapping while the 360 LIDAR system is in motion.
   * [Progress Report 3](https://drive.google.com/file/d/0B6CW6u5gBz_JcG5YcWlhSWw2ZGM/view?usp=sharing)
 * **Spring Quarter** *(SLAM Testing and Navigation)*
   * [Progress Report 1](https://drive.google.com/file/d/0B6CW6u5gBz_JOVlabW1iZTRVNjA/view?usp=sharing)
+  * [Progress Report 2](https://drive.google.com/file/d/0B6CW6u5gBz_JZG1KNmNDZWJFdlE/view?usp=sharing)
   * Coming Soon!
 
 #### 360 LIDAR System And SLAM
@@ -53,7 +63,6 @@ it with you in a comprehensive website in the future. Stay tune!
 * Peter Mai - *p1mai [at] ucsd.edu*
 
 #### Software Team
-* Luzanne Batoon - *lbatoon [at] ucsd.edu*
 * Shirley Han - *smh022 [at] ucsd.edu*
 * Jason Ma - *jam043 [at] ucsd.edu*
 * William Ma - *wim001 [at] ucsd.edu*

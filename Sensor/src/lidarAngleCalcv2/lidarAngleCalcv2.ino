@@ -88,10 +88,10 @@ void setup() {
 void loop() {
   
   //set motor speed
-  //if(nh.connected())
+  if(nh.connected())
     analogWrite(PIN_MOTOR, analogRead(PIN_POTEN) / 4);
-  //else
-  //  analogWrite(PIN_MOTOR, 0);
+  else
+    analogWrite(PIN_MOTOR, 0);
   
   //update last points with latest light value
   pollLight();
