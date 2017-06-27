@@ -26,9 +26,10 @@
 #include <math.h>
 
 #include <iostream>
+#include <stdlib.h>
 
 // Constant Variables
-#define PUBLISH_RATE      1
+#define PUBLISH_RATE      3
 #define LASER_FREQUENCY   1000
 #define MAX_READINGS      long(LASER_FREQUENCY / PUBLISH_RATE)
 
@@ -174,6 +175,7 @@ static void displayData( const sensor_msgs::LaserScan & data ) {
   for( int i = 0; i < 5; i++ )
     std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 **/
+  system("clear");
 
   // Figure out max time difference between scan
   ros::Duration maxTimeDiff = ros::Time::now() - ros::Time::now();

@@ -1,7 +1,0 @@
-Go into ~/ProjectDrive16_17/Arduino/libraries
-Delete ./ros_lib directory so it can be regenerated.
-
-Use this to regenerate ros_lib in sketchbook libraries, then include appropriate
-.h file to use msg with arduino.
-rosrun rosserial_arduino make_libraries.py ~/ProjectDrive16_17/Arduino/libraries
-

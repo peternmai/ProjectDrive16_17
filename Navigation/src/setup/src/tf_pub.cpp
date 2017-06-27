@@ -5,28 +5,26 @@
 
 void tfpubCallback(const msg::optical_encoder::ConstPtr& msg) {
   static tf::TransformBroadcaster pub;
-  static unsigned int callback_instance = 0;
 
-  tf::Transform map_baselink_transform;
-  tf::Transform baselink_laserframe_transform;
+  tf::Transform map_odom_t;
+  tf::Transform base_laser_t;
+  tf::Quaternion mto_q;
   tf::Quaternion btl_q;
-  tf::Quaternion mtb_q;
 
-  float angle = msg->angle;
   ros::Time s_t = msg->time;
 
-  baselink_laserframe_transform.setOrigin(tf::Vector3(0, 0, 0));
-  btl_q.setRPY(0, 0, angle);
-  baselink_laserframe_transform.setRotation(btl_q);
-  
-  map_baselink_transform.setOrigin(tf::Vector3(0, 0, 0));
-  mtb_q.setRPY(0, 0, 0);
-  map_baselink_transform.setRotation(mtb_q);
+  map_odom_t.setOrigin(tf::Vector3(0, 0, 0));
+  base_laser_t.setOrigin(tf::Vector3(0, 0, 0));
 
-  pub.sendTransform(tf::StampedTransform(
-  map_baselink_transform, s_t,"/map","/base_link"));
-  pub.sendTransform(tf::StampedTransform(
-  baselink_laserframe_transform, s_t, "/base_link", "/laser_frame"));
+  mto_q.setRPY(0, 0, 0);
+  btl_q.setRPY(0, 0, 0);
+
+  map_odom_t.setRotation(mto_q);
+  base_laser_t.setRotation(btl_q);
+
+  pub.sendTransform(tf::StampedTransform(map_odom_t, s_t,"/map","/odom"));
+  pub.sendTransform(tf::StampedTransform(base_laser_t, s_t,
+    "/base_link", "/laser_frame"));
 } 
 
 int main(int argc, char** argv) {
