@@ -59,6 +59,8 @@ static unsigned int  optical_encoder_callback_instance = 0;
 static float         min_angular_velocity = 12;
 static float         max_angular_velocity = 18;
 
+static float         angle_offset = M_PI;
+
 // Since teraranger's distance readings arent broadcasted at a consistent
 // rate, this array will hold the range readings with respect to time. Each
 // increment in the array has an adjusted time increment of scan duration
@@ -81,14 +83,19 @@ angular_velocity ) {
 // Retrieve information from optical encoder to get sensor angle information
 static void opticalEncoderCallback( const msg::optical_encoder::ConstPtr& msg ) {
 
+  // Calculate the current angle with the offset
+  float cur_angle = msg->angle + angle_offset;
+  if( cur_angle >= (2 * M_PI))
+    cur_angle -= 2 * M_PI;
+
   if( optical_encoder_callback_instance == 0 ) {
     encoder_start_angular_velocity = msg->avg_angular_velocity;
-    encoder_start_angle = msg->angle;
+    encoder_start_angle = cur_angle;
     encoder_start_time  = msg->time;
   }
 
   encoder_latest_angular_velocity = msg->avg_angular_velocity;
-  encoder_latest_angle = msg->angle;
+  encoder_latest_angle = cur_angle;
 
   // std::cout << encoder_latest_angular_velocity << std::endl;
 
@@ -145,12 +152,19 @@ static float calculateEndAngle() {
 static void generateAdjustedRanges() {
 
   int index, i;
-std::cout << "Entering\n";
+
+  /**
+  for( i = 0; i < teraranger_callback_instance; i++ )
+    if( sensor_angles[i] < 0.0873 || sensor_angles[i] > 6.196)
+      sensor_ranges[i] = 10;
+  **/
+
   if( teraranger_callback_instance > 0 ) {
     // Calculate the seconds between each range reading  
     float timeBetweenRange = ( sensor_times[ teraranger_callback_instance - 1 ] -
                   sensor_times[0] ).toSec() / MAX_READINGS;
-    std::cout << "Time between range: " << timeBetweenRange << std::endl;
+    
+    //std::cout << "Time between range: " << timeBetweenRange << std::endl;
     // Clear data in previous array
     for( i = 0; i < MAX_READINGS; i++ )
       sensor_adjusted_ranges[i] = 0;
@@ -160,12 +174,11 @@ std::cout << "Entering\n";
       index = (sensor_times[i] - sensor_times[0]).toSec() / timeBetweenRange;
       if( index >= 0 && index < MAX_READINGS )
         sensor_adjusted_ranges[index] = sensor_ranges[i];
-      else
-        std::cout << "Bad attempt to write tera reading " << i <<" to adjusted "
-	          << "range array index " << index << std::endl;
+      //else
+      //  std::cout << "Bad attempt to write tera reading " << i <<" to adjusted "
+      //          << "range array index " << index << std::endl;
     }
   }
-std::cout << "Exiting\n";
 }
 
 static void displayData( const sensor_msgs::LaserScan & data ) {
@@ -225,7 +238,7 @@ int main( int argc, char ** argv ) {
 
   // Create publisher and subscribers to be used later and send LaserScan to ROS
   ros::NodeHandle n;
-  ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("laser_scan", 1);
+  ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("scan", 1);
   ros::Subscriber teraranger_sub = n.subscribe("terarangerone", MAX_READINGS,
     terarangeroneCallback );
   ros::Subscriber optical_encoder_sub = n.subscribe("optical_encoder",
@@ -268,6 +281,10 @@ int main( int argc, char ** argv ) {
       scan.ranges[i] = sensor_adjusted_ranges[i];
 
     //std::cout << (scan.angle_max - scan.angle_min) << " | " << encoder_latest_angular_velocity << std::endl;
+
+    for(unsigned int i = 0; i < MAX_READINGS; i++ )
+      if( sensor_angles[i] < 0.08 || sensor_angles[i] > 6.19 )
+        scan.ranges[i] = 5;
 
     displayData( scan );
     teraranger_callback_instance = 0;

@@ -1,13 +1,12 @@
 <launch>
   <master auto="start"/>
-  <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"
-  />
+
   <!-- Run the map server -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(find
-  my_map_server)/test_map.bag  my_map_resolution"/>
+  my_map_server)/map.yaml"/>
 
-  <!--- Run AMCL -->
-  <include file="$(find amcl)/examples/amcl_omni.launch" />
+  <!--- Run AMCL for Differential Drive Robot -->
+  <include file="$(find amcl)/examples/amcl_diff.launch" />
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find navigation_stack)/costmap_common_params.yaml" command="load" ns="global_costmap" />
@@ -17,8 +16,7 @@
     <rosparam file="$(find navigation_stack)/base_local_planner_params.yaml"
     command="load" />
 
-    <param name="base_local_planner_params"
-    value="teb_local_planner/TebLocalPlannerROS" />
+    <param name="base_local_planner_params" value="teb_local_planner/TebLocalPlannerROS" />
     <param name="controller_frequency" value="10.0" />
 
  

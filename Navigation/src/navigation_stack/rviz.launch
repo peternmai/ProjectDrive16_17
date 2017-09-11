@@ -3,6 +3,6 @@
 <launch>
 
   <node pkg="rviz" type="rviz" name="rviz"
-    args="-d $(find navigation_stack)/rviz_cfg/mapping_demo.rviz"/>
+    args="-d $(find navigation_stack)/rviz_cfg/mapping.rviz"/>
 
 </launch>
