@@ -27,15 +27,17 @@ const int PIN_LED = 13;
 const int SDA_PIN = 18;
 const int SCL_PIN = 19;
 
-//80 - 100
+const float NEUTRAL_THROTTLE = 90;
+const float NEUTRAL_STEERING_ANGLE = 90;
+
 const float MIN_THROTTLE = 60;            // min throttle (0-180)
 const float MAX_THROTTLE = 100;           // max throttle (0-180)
 
 const float MIN_STEERING_ANGLE = 20;      // min steering angle (0-180)
 const float MAX_STEERING_ANGLE = 160;     // max steering angle (0-180)
 
-const float THROTTLE_WEIGHT_OFFSET = 0.7; // Offset car's weight in throttle
-const int   DELAY = 50;
+const float THROTTLE_WEIGHT_OFFSET = 7;   // Offset car's weight in throttle (m/s) * 10
+const int   DELAY = 5;
 
 Servo steeringServo;
 Servo electronicSpeedController;
@@ -43,10 +45,15 @@ Servo electronicSpeedController;
 // Forward Declaration
 void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann );
 
+// Throttle/Steering Command Subscriber
 ros::Subscriber<ackermann_msgs::AckermannDriveStamped> ackermannSubscriber("/ackermann_cmd", &ackermannCallback);
 ros::NodeHandle nodeHandle;
 
-int lastDirection = 1; //1 = forward, 0 = backward
+// Vehicle State
+const int FORWARD    =  1;
+const int STOP       =  0;
+const int BACKWARD   = -1;
+int lastVehicleState = STOP;
 
 /**
  * Function:    ackermannCallback()
@@ -62,13 +69,11 @@ void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann 
   float steering_angle = ackermann.drive.steering_angle * (180 / M_PI) + 90;
   
   // Get throttle in range of 0-180 and offset the weight
-  
   float throttle = ackermann.drive.speed * 10 + 90;
-  if (throttle > 90)
-    throttle += THROTTLE_WEIGHT_OFFSET * 10;
-  if (throttle < 90)
-    throttle -= THROTTLE_WEIGHT_OFFSET * 10;
-  
+  if (throttle > NEUTRAL_THROTTLE)
+    throttle += THROTTLE_WEIGHT_OFFSET;
+  if (throttle < NEUTRAL_THROTTLE)
+    throttle -= THROTTLE_WEIGHT_OFFSET;
   
   // Check for allowed min steering angle
   if( steering_angle < MIN_STEERING_ANGLE )
@@ -85,7 +90,30 @@ void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann 
   // Check for allowed max throttle
   if( throttle > MAX_THROTTLE )
     throttle = MAX_THROTTLE;
-    
+  
+  // Switches ESC to backward mode if necessary
+  if( throttle <= NEUTRAL_THROTTLE - THROTTLE_WEIGHT_OFFSET ) {
+    if( lastVehicleState != BACKWARD ) {
+      electronicSpeedController.write( NEUTRAL_THROTTLE );
+      delay(50);
+      electronicSpeedController.write( MIN_THROTTLE );
+      delay(50);
+      electronicSpeedController.write( MIN_THROTTLE );
+      delay(50);
+      electronicSpeedController.write( NEUTRAL_THROTTLE );
+      delay(50);
+    }
+  }
+  
+  // Update last vehicle's state
+  if( throttle >= NEUTRAL_THROTTLE + THROTTLE_WEIGHT_OFFSET )
+    lastVehicleState = FORWARD;
+  else if ( throttle <= NEUTRAL_THROTTLE - THROTTLE_WEIGHT_OFFSET )
+    lastVehicleState = BACKWARD;
+  else
+    lastVehicleState = STOP;
+  
+  // Send out steering and throttle commands
   steeringServo.write( steering_angle );
   electronicSpeedController.write( throttle );
 }
@@ -106,16 +134,22 @@ void setup() {
   nodeHandle.initNode();
   nodeHandle.subscribe( ackermannSubscriber );
   
-  
   // Initialize steering and throttle to neutral
-  steeringServo.write(90);
-  electronicSpeedController.write(90);
+  steeringServo.write( NEUTRAL_STEERING_ANGLE );
+  electronicSpeedController.write( NEUTRAL_THROTTLE );
   
   delay(1000);
   
 }
 
-void loop() { 
+void loop() {
+  
+  // Stop car if ROS connection lost
+  if( !nodeHandle.connected() ) {
+    steeringServo.write( NEUTRAL_STEERING_ANGLE );
+    electronicSpeedController.write( NEUTRAL_THROTTLE );
+  }
+  
   nodeHandle.spinOnce();
   delay(DELAY);
 }
