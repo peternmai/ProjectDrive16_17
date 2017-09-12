@@ -1,10 +1,11 @@
 /**
  * Arduino ROS Node for Ackermann Steering
- * Used for controlling car like RC vehicle. For using with with ROS Navigation
- * Stack, please convert geometry_msgs::Twist to ackermann_msgs::AckermannDrive
- * using...
+ * Used for controlling car like RC vehicle. Please convert geometry_msgs::Twist
+ * to ackermann_msgs::AckermannDrive using...
  *
  *    rosrun teb_local_planner_tutorials cmd_vel_to_ackermann_drive.py
+ *
+ * Note: This was tested on the XERUN SCT PRO ESC.
  * 
  * MIT License
  * University of California, San Diego
@@ -30,13 +31,15 @@ const int SCL_PIN = 19;
 const float NEUTRAL_THROTTLE = 90;
 const float NEUTRAL_STEERING_ANGLE = 90;
 
-const float MIN_THROTTLE = 60;            // min throttle (0-180)
-const float MAX_THROTTLE = 100;           // max throttle (0-180)
+const float MIN_THROTTLE = 60;             // min throttle (0-180)
+const float MAX_THROTTLE = 100;            // max throttle (0-180)
 
-const float MIN_STEERING_ANGLE = 20;      // min steering angle (0-180)
-const float MAX_STEERING_ANGLE = 160;     // max steering angle (0-180)
+const float MIN_STEERING_ANGLE = 20;       // min steering angle (0-180)
+const float MAX_STEERING_ANGLE = 160;      // max steering angle (0-180)
 
-const float THROTTLE_WEIGHT_OFFSET = 7;   // Offset car's weight in throttle (m/s) * 10
+const float THROTTLE_FORWARD_OFFSET  = 7;  // Offset car's weight in throttle (m/s) * 10
+const float THROTTLE_BACKWARD_OFFSET = 28; // Offset car's weight in throttle (m/s) * 10
+
 const int   DELAY = 5;
 
 Servo steeringServo;
@@ -71,9 +74,9 @@ void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann 
   // Get throttle in range of 0-180 and offset the weight
   float throttle = ackermann.drive.speed * 10 + 90;
   if (throttle > NEUTRAL_THROTTLE)
-    throttle += THROTTLE_WEIGHT_OFFSET;
+    throttle += THROTTLE_FORWARD_OFFSET;
   if (throttle < NEUTRAL_THROTTLE)
-    throttle -= THROTTLE_WEIGHT_OFFSET;
+    throttle -= THROTTLE_BACKWARD_OFFSET;
   
   // Check for allowed min steering angle
   if( steering_angle < MIN_STEERING_ANGLE )
@@ -92,7 +95,7 @@ void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann 
     throttle = MAX_THROTTLE;
   
   // Switches ESC to backward mode if necessary
-  if( throttle <= NEUTRAL_THROTTLE - THROTTLE_WEIGHT_OFFSET ) {
+  if( throttle <= NEUTRAL_THROTTLE - THROTTLE_BACKWARD_OFFSET ) {
     if( lastVehicleState != BACKWARD ) {
       electronicSpeedController.write( NEUTRAL_THROTTLE );
       delay(50);
@@ -106,9 +109,9 @@ void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann 
   }
   
   // Update last vehicle's state
-  if( throttle >= NEUTRAL_THROTTLE + THROTTLE_WEIGHT_OFFSET )
+  if( throttle >= NEUTRAL_THROTTLE + THROTTLE_FORWARD_OFFSET )
     lastVehicleState = FORWARD;
-  else if ( throttle <= NEUTRAL_THROTTLE - THROTTLE_WEIGHT_OFFSET )
+  else if ( throttle <= NEUTRAL_THROTTLE - THROTTLE_BACKWARD_OFFSET )
     lastVehicleState = BACKWARD;
   else
     lastVehicleState = STOP;
