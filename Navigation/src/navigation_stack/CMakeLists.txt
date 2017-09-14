@@ -6,6 +6,11 @@ project(navigation_stack)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  rospy
+  std_msgs
+  sensor_msgs
+  ackermann_msgs
   setup
   move_base
 )
@@ -19,8 +24,15 @@ catkin_package(
 ###########
 ## Build ##
 ###########
+add_compile_options(-std=c++11)
 
 ## Specify additional locations of header files
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
+
+## Make Main Navigation Module Executable
+add_executable(drive src/drive.cpp src/util.cpp src/SpeedController.cpp )
+add_dependencies(drive ${catkin_EXPORTED_TARGETS})
+target_link_libraries(drive ${catkin_LIBRARIES} ${GSL_LIBRARIES})
+

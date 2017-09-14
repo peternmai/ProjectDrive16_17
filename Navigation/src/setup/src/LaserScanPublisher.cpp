@@ -282,9 +282,11 @@ int main( int argc, char ** argv ) {
 
     //std::cout << (scan.angle_max - scan.angle_min) << " | " << encoder_latest_angular_velocity << std::endl;
 
+    /**
     for(unsigned int i = 0; i < MAX_READINGS; i++ )
       if( sensor_angles[i] < 0.08 || sensor_angles[i] > 6.19 )
         scan.ranges[i] = 5;
+    **/
 
     displayData( scan );
     teraranger_callback_instance = 0;
