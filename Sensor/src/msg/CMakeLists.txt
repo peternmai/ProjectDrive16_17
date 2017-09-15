@@ -14,12 +14,14 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    FILES
    optical_encoder.msg
+   imu_orientation.msg
   )
 
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
    DEPENDENCIES
    std_msgs
+
  )
 
 catkin_package(

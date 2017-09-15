@@ -8,6 +8,7 @@ project(navigation_stack)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  msg
   std_msgs
   sensor_msgs
   ackermann_msgs
@@ -32,7 +33,8 @@ include_directories(
 )
 
 ## Make Main Navigation Module Executable
-add_executable(drive src/drive.cpp src/util.cpp src/SpeedController.cpp )
+add_executable(drive src/drive.cpp src/util.cpp src/CruiseControl.cpp
+src/QuickTurning)
 add_dependencies(drive ${catkin_EXPORTED_TARGETS})
 target_link_libraries(drive ${catkin_LIBRARIES} ${GSL_LIBRARIES})
 

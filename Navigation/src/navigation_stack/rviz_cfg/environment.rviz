@@ -140,19 +140,19 @@ Visualization Manager:
         Derotate acceleration: true
         Enable acceleration: false
       Axes properties:
-        Axes scale: 1
-        Enable axes: false
+        Axes scale: 0.5
+        Enable axes: true
       Box properties:
         Box alpha: 1
         Box color: 255; 0; 0
         Enable box: true
-        x_scale: 1
-        y_scale: 0.5
-        z_scale: 0.5
+        x_scale: 0.5
+        y_scale: 0.300000012
+        z_scale: 0.25
       Class: rviz_imu_plugin/Imu
       Enabled: true
       Name: Imu
-      Topic: ""
+      Topic: /imu
       Unreliable: false
       Value: true
       fixed_frame_orientation: true
@@ -198,7 +198,7 @@ Visualization Manager:
       Pitch: 1.56979632
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz)
-      Yaw: 5.03358555
+      Yaw: 5.21358347
     Saved: ~
 Window Geometry:
   Displays:
@@ -216,5 +216,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 36
+  X: 35
   Y: 24

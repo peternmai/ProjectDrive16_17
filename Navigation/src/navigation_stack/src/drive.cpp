@@ -13,32 +13,111 @@
 
 #include "drive.h"
 
+static DriveMode mode = DriveMode::reorientate;
+
 static float speed = 0;
 static float steering = 0;
-static long  pubCount = 0;
+static long  frame_id = 0;
 
-static void printProgressBar( std::string title, float percentage ) {
-  if( percentage < 0 )
-    std::cout << title << ": [" << std::string( 50 - (int) (-50 * percentage), ' ' )
-              << std::string( (int) (-50 * percentage) + 1, '=' )
-              << std::string( 50, ' ') << "] " << percentage * 100 << "%" << std::endl;
-  else
-    std::cout << title << ": [" << std::string( 50, ' ')
-              << std::string( (int) (50 * percentage) + 1, '=' )
-              << std::string( 50 - (int) (50 * percentage), ' ') << "] " 
-              << percentage * 100 << "%" << std::endl;
-}
+static float currentOrientation = -1;
 
 static void VisualizeAckermannDrive( float throttle, float steering ) {
-  printProgressBar( "THROTTLE", speed / 1 );
-  printProgressBar( "STEERING", steering / (M_PI/2));
+  std::cout << std::endl << "Mode: " << mode << std::endl << std::endl;
+  printProgressBar( "THROTTLE", speed / MAX_SPEED_FORWARD );
+  printProgressBar( "STEERING", -steering / (M_PI/2));
 }
 
 
 static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
-  speed = GetCruiseSpeed( scan, 1, 5 );
-  steering = LaneKeepingAssistance( scan );
-  std::cout << "Steering: " << steering << std::endl;
+  
+  // Make sure laser scan has valid data points
+  if( scan->ranges.size() == 0 || scan->angle_increment == 0 ) {
+    speed = 0;
+    steering = 0;
+    return;
+  }
+
+  // Get cruise control information for both forward and backward
+  CruiseControl forwardCruiseControl  = GetCruiseControl( scan, VehicleGear::forward );
+  CruiseControl backwardCruiseControl = GetCruiseControl( scan, VehicleGear::backward );
+
+  // Convert LaserScan to Cartesian Map
+  std::vector<CartesianCoordinate> CartesianMap = LaserScanToCartesianMap( scan );
+
+  // Other Variables
+  TurningCommands turningCommands;
+  
+
+  // Determine throttle and steering base on current drive mode
+  switch( mode ) {
+    case DriveMode::cruise:
+
+      // If can go forward, use forward cruise control
+      if( forwardCruiseControl.proposed_speed >= 0 ) {
+        speed    = forwardCruiseControl.proposed_speed;
+	steering = forwardCruiseControl.proposed_steering_angle;
+      }
+
+      // Cannot go forward, use backward cruise control
+      else {
+        speed    = backwardCruiseControl.proposed_speed;
+	steering = backwardCruiseControl.proposed_steering_angle;
+      }
+
+      break;
+
+    case DriveMode::reorientate:
+      
+      // Get suggested turning commands to get vehicle in right orientation
+      turningCommands = TurnVehicle( CartesianMap, M_PI, currentOrientation );
+      std::cout << "Current Orientation: " << currentOrientation << std::endl;
+      std::cout << "Gear: " << turningCommands.gear << std::endl;
+      std::cout << "Direction: " << turningCommands.direction << std::endl;
+
+      // Check to see if commands are valid
+      if( turningCommands.gear == VehicleGear::forward && 
+        turningCommands.direction == Direction::front ) {
+
+	// Commands not valid. Figure out if car should go straight for backward
+	if( std::abs(forwardCruiseControl.closestCoordinate.y) >=
+	    std::abs(backwardCruiseControl.closestCoordinate.y) ) {
+	  speed    = forwardCruiseControl.proposed_speed;
+	  steering = forwardCruiseControl.proposed_steering_angle;
+	}
+	else {
+	  speed    = backwardCruiseControl.proposed_speed;
+	  steering = backwardCruiseControl.proposed_steering_angle;
+	}
+
+        // Exit the rest of the code
+	break;
+      }
+
+      // Set speed based on forward or backward motion
+      if( turningCommands.gear == VehicleGear::forward )
+        speed = 2;//forwardCruiseControl.proposed_speed;
+      else if( turningCommands.gear == VehicleGear::backward )
+        speed = -2;//backwardCruiseControl.proposed_speed;
+      else
+        speed = 0;
+
+      // Set steering accordingly
+      if( turningCommands.direction == Direction::left )
+        steering = MAX_STEERING_LEFT;
+      else
+        steering = MAX_STEERING_RIGHT;
+      
+      break;
+
+    case DriveMode::precise_nav:
+      speed = 0;
+      steering = 0;
+      break;
+  }
+}
+
+static void OrientationCallback( const msg::imu_orientation::ConstPtr & orientation ) {
+  currentOrientation = orientation->orientation;
 }
 
 int main( int argc, char ** argv ) {
@@ -52,6 +131,8 @@ int main( int argc, char ** argv ) {
     nh.advertise<ackermann_msgs::AckermannDriveStamped>("ackermann_cmd", 1);
   ros::Subscriber LaserScanSubscriber = 
     nh.subscribe("scan", 1, LaserScanCallback );
+  ros::Subscriber Orientation = 
+    nh.subscribe("orientation", 1, OrientationCallback );
 
   ros::Rate r( PUBLISH_RATE );
 
@@ -60,6 +141,7 @@ int main( int argc, char ** argv ) {
     system("clear");
     ros::spinOnce();
 
+    // Generate AckermannDrive message for steering / throttle
     ackermann_msgs::AckermannDrive AckermannDrive;
     AckermannDrive.steering_angle = steering;
     AckermannDrive.steering_angle_velocity = 0;
@@ -67,11 +149,13 @@ int main( int argc, char ** argv ) {
     AckermannDrive.acceleration = 0;
     AckermannDrive.jerk = 0;
 
+    // Attach AckermannDrive message to AckermannDriveStamped message
     ackermann_msgs::AckermannDriveStamped AckermannDriveStamped;
     AckermannDriveStamped.header.stamp = ros::Time::now();
-    AckermannDriveStamped.header.frame_id = std::to_string( pubCount++ );
+    AckermannDriveStamped.header.frame_id = std::to_string( frame_id++ );
     AckermannDriveStamped.drive = AckermannDrive;
 
+    // Publish drive commands
     AckermannDrivePublisher.publish( AckermannDriveStamped );
 
     VisualizeAckermannDrive( speed, steering );

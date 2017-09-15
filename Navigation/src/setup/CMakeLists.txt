@@ -36,3 +36,6 @@ target_link_libraries(tf_sub ${catkin_LIBRARIES})
 
 add_executable(odom src/odom.cpp)
 target_link_libraries(odom ${catkin_LIBRARIES})
+
+add_executable(orien_pub src/imu_to_orientation.cpp)
+target_link_libraries(orien_pub ${catkin_LIBRARIES})
