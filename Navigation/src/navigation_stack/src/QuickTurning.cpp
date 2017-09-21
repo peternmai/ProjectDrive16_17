@@ -14,7 +14,7 @@
  */
 
 TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianMap,
-  float desiredOrientation, float currentOrientation ) {
+  float desiredOrientation, float currentOrientation, bool forward ) {
 
   std::vector<CartesianCoordinate> map;
   float smallestTurningAngle = std::numeric_limits<float>::max();
@@ -62,7 +62,7 @@ TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianM
     map = CartesianMapBoxFilter( CartesianMap, FORWARD_LEFT_BOX );
 
     // Car can go forward left
-    if( map.size() == 0 ) {
+    if( map.size() == 0 && forward ) {
       turningCommands.gear      = VehicleGear::forward;
       turningCommands.direction = Direction::left;
     }
@@ -72,7 +72,7 @@ TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianM
       map = CartesianMapBoxFilter( CartesianMap, BACKWARD_RIGHT_BOX );
 
       // Car can go backward right
-      if( map.size() == 0 ) {
+      if( map.size() == 0 && !forward ) {
         turningCommands.gear      = VehicleGear::backward;
 	turningCommands.direction = Direction::right;
       }
@@ -89,7 +89,7 @@ TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianM
     map = CartesianMapBoxFilter( CartesianMap, FORWARD_RIGHT_BOX );
 
     // Car can go forward right
-    if( map.size() == 0 ) {
+    if( map.size() == 0 && forward ) {
       turningCommands.gear      = VehicleGear::forward;
       turningCommands.direction = Direction::right;
     }
@@ -99,7 +99,7 @@ TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianM
       map = CartesianMapBoxFilter( CartesianMap, BACKWARD_LEFT_BOX );
 
       // Car can go backward left
-      if( map.size() == 0 ) {
+      if( map.size() == 0 && !forward ) {
         turningCommands.gear      = VehicleGear::backward;
 	turningCommands.direction = Direction::left;
       }
@@ -110,6 +110,8 @@ TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianM
       }
     }
   }
+
+  std::cout << "Going Forward: " << forward << std::endl;
 
   // Return turning commands
   if( canTurn )

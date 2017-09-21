@@ -9,7 +9,7 @@
 #include "VehicleState.h"
 #include "util.h"
 
-static const float CAR_BUFFER     =  0.4;
+static const float CAR_BUFFER     =  0.5;
 
 static const float FORWARD_MIN_X  = -0.3048;
 static const float FORWARD_MAX_X  =  0.3048;

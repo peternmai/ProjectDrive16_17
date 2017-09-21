@@ -13,13 +13,15 @@
 
 #include "drive.h"
 
-static DriveMode mode = DriveMode::cruise;
+static DriveMode mode = DriveMode::reorientate;
 
 static float speed = 0;
 static float steering = 0;
 static long  frame_id = 0;
 
 static float currentOrientation = -1;
+
+static bool reorientateCarForward = true;
 
 static void VisualizeAckermannDrive( float throttle, float steering ) {
   std::cout << std::endl << "Mode: " << mode << std::endl << std::endl;
@@ -77,7 +79,7 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
     case DriveMode::reorientate:
       
       // Get suggested turning commands to get vehicle in right orientation
-      turningCommands = TurnVehicle( CartesianMap, M_PI, currentOrientation );
+      turningCommands = TurnVehicle( CartesianMap, M_PI, currentOrientation, reorientateCarForward );
       std::cout << "Current Orientation: " << currentOrientation << std::endl;
       std::cout << "Gear: " << turningCommands.gear << std::endl;
       std::cout << "Direction: " << turningCommands.direction << std::endl;
@@ -86,16 +88,11 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
       if( turningCommands.gear == VehicleGear::forward && 
         turningCommands.direction == Direction::front ) {
 
-	// Commands not valid. Figure out if car should go straight for backward
-	if( std::abs(forwardCruiseControl.closestCoordinate.y) >=
-	    std::abs(backwardCruiseControl.closestCoordinate.y) ) {
-	  speed    = forwardCruiseControl.proposed_speed;
-	  steering = forwardCruiseControl.proposed_steering_angle;
-	}
-	else {
-	  speed    = backwardCruiseControl.proposed_speed;
-	  steering = backwardCruiseControl.proposed_steering_angle;
-	}
+	// Commands not valid - Make car go the opposite direction
+	std::cout << "Changing Direction" << std::endl;
+	reorientateCarForward = !reorientateCarForward;
+	speed    = 0;
+	steering = 0;
 
         // Exit the rest of the code
 	break;
@@ -148,9 +145,6 @@ int main( int argc, char ** argv ) {
   while(nh.ok()) {
     system("clear");
     ros::spinOnce();
-
-    steering = 0;
-    speed = 0;
 
     // Generate AckermannDrive message for steering / throttle
     ackermann_msgs::AckermannDrive AckermannDrive;
