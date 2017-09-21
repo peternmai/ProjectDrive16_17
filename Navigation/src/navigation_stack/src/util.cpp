@@ -77,15 +77,65 @@ std::vector<CartesianCoordinate> CartesianMapBoxFilter(
   return filteredCartesianMap;
 }
 
+float getClosestObstacleInRectangleBeam(
+  const std::vector<CartesianCoordinate> & CartesianMap, 
+  float beamAngle, float beamWidth, float lidarToFrontDistance, float carWidth){
+
+  // Generate the two parallel lines to check the points between
+  CartesianCoordinate beamAngleCartesian = PolarToCartesian(1, beamAngle);
+  float slope = beamAngleCartesian.y / beamAngleCartesian.x;
+  float upperYOffset, upperXOffset, lowerYOffset, lowerXOffset;
+  CartesianCoordinate coordinate, closestObstacle;
+
+  // Equation: (y + yOffset) = slope * ( x + xOffset )
+  if( slope < 0 ) {
+    lowerXOffset = -carWidth / 2;
+    upperXOffset =  carWidth / 2;
+  }
+  else if( slope > 0 ) {
+    lowerXOffset =  carWidth / 2;
+    upperXOffset = -carWidth / 2;
+
+  }
+  else {
+    lowerXOffset = -carWidth / 2;
+    upperXOffset =  carWidth / 2;
+  }
+/**
+  float closestObstacle = std::numeric_limits<float>::max();
+  for( int i = 0; i < CartesianMap.size(); i++ ) {
+    if( slope < 0 ) {
+      // Check if x coordinate is within the two parallel lines
+      if(coordinate.x >= ((coordinate.y + lowerYOffset)/slope - lowerXOffset) &&
+         coordinate.x <= ((coordinate.y + upperYOffset)/slope - upperYOffset) &&
+	 coordinate.y <= (slope*(coordinate.x + upperXOffset) - upperYOffset) &&
+	 coordinate.y >= (slope*(coordinate.x + lowerXOffset) - lowerYOffset) {
+	   if( CartesianToPolar.
+	   closestObstacle = coordinate;
+	 }
+    }
+    else {
+    }
+
+  }
+
+
+**/
+}
+
 void printProgressBar( std::string title, float percentage ) {
   if( percentage < 0 )
-    std::cout << title << ": [" << std::string( PROGRESSBAR_SIZE - (int) (-PROGRESSBAR_SIZE * percentage), ' ' )
-              << std::string( (int) (-PROGRESSBAR_SIZE * percentage) + 1, '=' )
+    std::cout << title << ": [" << std::string( std::max(0, 
+                 PROGRESSBAR_SIZE -(int) (-PROGRESSBAR_SIZE * percentage)), ' ' )
+              << std::string( std::max(0, 
+	         (int) (-PROGRESSBAR_SIZE * percentage) + 1), '=' )
               << std::string( PROGRESSBAR_SIZE, ' ') << "] " << percentage * 100 << "%" << std::endl;
   else
     std::cout << title << ": [" << std::string( PROGRESSBAR_SIZE, ' ')
-              << std::string( (int) (PROGRESSBAR_SIZE * percentage) + 1, '=' )
-              << std::string( PROGRESSBAR_SIZE - (int) (PROGRESSBAR_SIZE * percentage), ' ') << "] " 
+              << std::string( std::max(0,
+	         (int) (PROGRESSBAR_SIZE * percentage) + 1), '=' )
+              << std::string( std::max(0, 
+	         PROGRESSBAR_SIZE - (int) (PROGRESSBAR_SIZE * percentage)), ' ') << "] " 
               << percentage * 100 << "%" << std::endl;
 }
 

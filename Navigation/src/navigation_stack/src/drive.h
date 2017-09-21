@@ -11,6 +11,7 @@
 
 #include "CruiseControl.h"
 #include "QuickTurning.h"
+#include "WallDetection.h"
 #include "util.h"
 
 enum DriveMode {

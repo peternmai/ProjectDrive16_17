@@ -10,6 +10,9 @@
 
 #define PROGRESSBAR_SIZE 50
 
+#define sind(x) (sin(fmod(x, 360)) * M_PI / 180)
+#define cosd(x) (cos(fmod(x, 360)) * M_PI / 180)
+
 
 struct CartesianCoordinate {
   float x;         // Positive X = to right of center. (meter)
@@ -39,6 +42,13 @@ static struct CartesianCoordinate PolarToCartesian( float distance, float radian
   return coordinate;
 }
 
+static struct PolarCoordinate CartesianToPolar( float x, float y ) {
+  PolarCoordinate coordinate;
+  coordinate.distance = sqrt( pow(x, 2) + pow(y, 2) );
+  coordinate.radian = fmod( atan( y / x ) -  M_PI/2, 2 * M_PI );
+  return coordinate;
+}
+
 
 // Forward Declarations
 void FilterLaserScanAngles(const sensor_msgs::LaserScan::ConstPtr & scan,
@@ -50,6 +60,10 @@ std::vector<CartesianCoordinate> LaserScanToCartesianMap(
 std::vector<CartesianCoordinate> CartesianMapBoxFilter(
   const std::vector<CartesianCoordinate> & CartesianMap,
   BoxCoordinates boxCoordinates );
+
+float getClosestObstacleInRectangleBeam(
+  const std::vector<CartesianCoordinate> & CartesianMap, 
+  float beamAngle, float beamWidth, float lidarToFrontDistance, float carWidth);
 
 void printProgressBar( std::string title, float percentage );
 

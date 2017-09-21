@@ -14,8 +14,11 @@ enum Direction {
   right
 };
 
-#define MAX_SPEED_FORWARD  2           // meters per second
-#define MAX_SPEED_BACKWARD 2           // meters per second
-#define MAX_VISIBLE_RANGE  5           // meters
+static const float MAX_SPEED_FORWARD  =  2;          // meters per second
+static const float MAX_SPEED_BACKWARD = -2;          // meters per second
+static const float MAX_VISIBLE_RANGE  =  5;          // meters
+
+static const float MIN_SPEED_FORWARD  =  0.5;
+static const float MIN_SPEED_BACKWARD = -0.5;
 
 #endif

@@ -14,6 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
   ackermann_msgs
   setup
   move_base
+  cv_bridge
+  image_transport
 )
 
 ###################################
@@ -34,7 +36,10 @@ include_directories(
 
 ## Make Main Navigation Module Executable
 add_executable(drive src/drive.cpp src/util.cpp src/CruiseControl.cpp
-src/QuickTurning)
+src/QuickTurning src/WallDetection.cpp)
 add_dependencies(drive ${catkin_EXPORTED_TARGETS})
 target_link_libraries(drive ${catkin_LIBRARIES} ${GSL_LIBRARIES})
 
+add_executable(lra_pub src/LaneKeepingAssistance.cpp)
+add_dependencies(lra_pub ${catkin_EXPORTED_TARGETS})
+target_link_libraries(lra_pub ${catkin_LIBRARIES})

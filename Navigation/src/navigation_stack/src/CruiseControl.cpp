@@ -82,7 +82,7 @@ CruiseControl GetCruiseControl(
   CruiseControl cruiseControl;
   cruiseControl.closestCoordinate       = closestCoordinate;
   cruiseControl.proposed_speed          = proposed_speed;
-  cruiseControl.proposed_steering_angle = LaneKeepingAssistance( scan );
+  cruiseControl.proposed_steering_angle = LaneKeepingAssistance( scan, true );
  
   return cruiseControl;
 }

@@ -23,26 +23,43 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
-#include <math.h>
 
+#include <math.h>
 #include <iostream>
 #include <stdlib.h>
+#include <string>
 
 #define MAX_LENGTH 5
 #define PUBLISH_RATE 3
 #define LASER_FREQUENCY 1000
 #define MAX_READINGS long(LASER_FREQUENCY / PUBLISH_RATE)
 
+//these are the start and end angles for the area we are looking for
+#define lf_start 0.0
+#define lf_end M_PI / 2.0
+#define lr_start M_PI / 2.0
+#define lr_end M_PI
+
+//the first letter represents the side of the area and the second is 
+//for forward or reverse 
+#define rf_start 3.0 * M_PI / 2.0
+#define rf_end 2.0 * M_PI
+#define rr_start M_PI
+#define rr_end 3.0 * M_PI / 2.0
+
 static double angle_inc;
 static int num_reads;
+static bool forw = false;
 
-static float ranges[MAX_READINGS] = {0};
-static float angles[MAX_READINGS] = {0};
+float ranges[MAX_READINGS] = {0};
+float angles[MAX_READINGS] = {0};
+
+
 
 /* The laserCallback is the data parser for the scan message. These
    functions require the ranges, angles, and angle increment
    variables from the message.
-   This function also mods the angles to limit them to 2 * PI
+   This function also mods the angles to limit them to 2 * PI */
  
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
   num_reads = msg->ranges.size();
@@ -60,7 +77,6 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     angles[i] = curr;
   }
 }
-*/
 
 /* This function finds the area of the triangle by calculating the
    base * height. The base can be chosen but the height may not be
@@ -72,20 +88,25 @@ double findArea(int startIdx, int endIdx, double angleInc) {
   double a, b;
   double C;
   double area = 0;
+  int angle_count = 1;
   C = angleInc;
 
   for(int i = startIdx; i < endIdx; i++) {
+    angle_count = 1;
     a = ranges[i];
     b = ranges[i+1];
 
-    if(a == 0 && i != 0)
-      a = ranges[i-1];
+    if(a == 0)
+      continue;
 
-    if(b == 0 && i+2 < endIdx)
-      b = ranges[i+2];
+    while(b == 0) {
+      b = ranges[i+angle_count+1];
+      angle_count++;
+    }
 
-    area += (b * a * sin(C) / 2);
-  } 
+    area += (b * a * sin(C * angle_count) / 2);
+  }
+  return area;
 }
 
 /* The next collection of functions are to help find the indicies of
@@ -98,17 +119,37 @@ double findArea(int startIdx, int endIdx, double angleInc) {
  */
 int findREnd() {
   int REnd = 0;
-  for(int i = 0; i < sizeof(angles); i++) {
-    if(angles[i] < 5.85 && angles[i] > 5.7)
-     REnd =  i; 
+  double str_angle = 0, end_angle = 0;
+
+  if(forw) {
+    str_angle = rf_end - 0.15;
+    end_angle = rf_end;
+  } else {
+    str_angle = rr_end - 0.15;
+    end_angle = rr_end;
+  }
+
+  for(int i = num_reads; i > 0; i--) {
+      if(angles[i] > str_angle && angles[i] < end_angle)
+        return i;
   }
   return REnd;
 }
 
 int findRStart(int REnd) {
   int RStart = 0;
+  double str_angle = 0, end_angle = 0;
+
+  if(forw) {
+    str_angle = rf_start ;
+    end_angle = rf_start + 0.1;
+  } else {
+    str_angle = rr_start;
+    end_angle = rr_start + 0.1;
+  }
+
   for(int i = 0; i < REnd; i++) {
-    if(angles[i] > 3 * M_PI / 2 && angles[i] < 4.8)
+    if(angles[i] > str_angle && angles[i] < end_angle)
       RStart = i;
   }
   return RStart;
@@ -116,17 +157,36 @@ int findRStart(int REnd) {
 
 int findLEnd() {
   int LEnd = 0;
-  for(int i = 0; i < sizeof(angles); i++) {
-    if(angles[i] < M_PI / 2 && angles[i] > 1.5)
-      LEnd = i;
+  double str_angle = 0, end_angle = 0;
+
+  if(forw) {
+    str_angle = lf_end - 0.15;
+    end_angle = lf_end;
+  } else {
+    str_angle = lr_end - 0.15;
+    end_angle = lr_end;
+  }
+
+  for(int i = num_reads; i > 0; i--) {
+    if(angles[i] > str_angle && angles[i] < end_angle)
+      return i;
   }
   return LEnd;
 }
 
 int findLStart(int LEnd) {
   int LStart = 0;
+  double str_angle = 0, end_angle = 0;
+
+  if(forw) {
+    str_angle = lf_start;
+    end_angle = lf_start + 0.1;
+  } else {
+    str_angle = lr_start;
+    end_angle = lr_start + 0.1;
+  }
   for(int i = 0; i < LEnd; i++) {
-    if(angles[i] < 0.65 && angles[i] > 0.5)
+    if(angles[i] > str_angle && angles[i] < end_angle)
       LStart = i;
   }
   return LStart;
@@ -138,7 +198,6 @@ int findLStart(int LEnd) {
 double findLArea() {
   int LEnd = findLEnd();
   int LStart = findLStart(LEnd);
-
   return findArea(LStart, LEnd, angle_inc);
 }
 
@@ -149,9 +208,58 @@ double findRArea() {
   return findArea(RStart, REnd, angle_inc);
 }
 
+/*
+  This function returns the results of all the calculations performed
+  in these functions. start and end indicies, the area, and the
+  suggested steering angle are the results of this funciton.
+*/
+void displayResults(double left, double right, double total, double diff) {
+  std::string dir;
+  double l_start = 0, l_end = 0;
+  double r_start = 0, r_end = 0;
+
+  if(forw)
+    dir = "forward";
+  else
+    dir = "reverse";
+
+  if(forw) {
+    l_start = lf_start;
+    l_end = lf_end;
+    r_start = rf_start;
+    r_end = rf_end;
+  } else {
+    l_start = lr_start;
+    l_end = lr_end;
+    r_start = rr_start;
+    r_end = rr_end;
+  }
+
+  std::cout << "The car is currently going: " << dir << "\n";
+  std::cout << "Measuring the left area from: " << l_start << " to: ";
+  std::cout << l_end << " has an area of: " << left << "\n";
+  std::cout << "l_start: " << findLStart(findLEnd());
+  std::cout << " l_end: " << findLEnd() << "\n";
+  std::cout << "Measuring the right area from: " << r_start << " to: ";
+  std::cout << r_end << " has an area of: " << right << "\n";
+  std::cout << "r_start: " << findRStart(findREnd());
+  std::cout << " r_end: " << findREnd() << "\n";
+  std::cout << "There is a total area of: " << total << "\n";
+  std::cout << "The suggested steering angle is: " << M_PI / 2.0 * diff;
+  std::cout << "\n";
+}
+
+/*
+  This is the main function. It requires a laserscan message.
+  It parses the laser scan message for ranges, angles,
+  angle incremenets, and the direction the vehicle is heading.
+  Lastly, it returns a recommended steering angle
+*/
 double LaneKeepingAssistance(const 
-       sensor_msgs::LaserScan::ConstPtr& msg) {
+  sensor_msgs::LaserScan::ConstPtr& msg, bool forward) {
+  
   num_reads = msg->ranges.size();
+  forw = forward;
 
   for(int i = 0; i < num_reads; i++) {
     ranges[i] = msg->ranges[i] > 5 ? 5 : msg->ranges[i];
@@ -173,11 +281,16 @@ double LaneKeepingAssistance(const
 
   double diff = (L_Area - R_Area) / T_Area;
 
-  std::cout << "L_AREA: " << L_Area << " R_AREA: " << R_Area;
-  std::cout << " T_AREA: " << T_Area << " diff: " << diff << "\n";
-  std::cout << "Output: " << M_PI / 2 * diff << "\n";
-  
-  return M_PI / 2 * diff;
+//  displayResults(L_Area, R_Area, T_Area, diff);
+
+  double steering_angle = 0;
+
+  if(forward)
+   steering_angle = M_PI / 2.0 * diff;
+  else
+   steering_angle = M_PI / 2.0 * diff * -1;
+
+  return steering_angle;
 }
 
 #endif

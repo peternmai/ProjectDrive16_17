@@ -13,7 +13,7 @@
 
 #include "drive.h"
 
-static DriveMode mode = DriveMode::reorientate;
+static DriveMode mode = DriveMode::cruise;
 
 static float speed = 0;
 static float steering = 0;
@@ -46,6 +46,8 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
 
   // Other Variables
   TurningCommands turningCommands;
+
+  WallDetection( CartesianMap, currentOrientation );
   
 
   // Determine throttle and steering base on current drive mode
@@ -54,14 +56,20 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
 
       // If can go forward, use forward cruise control
       if( forwardCruiseControl.proposed_speed >= 0 ) {
-        speed    = forwardCruiseControl.proposed_speed;
+        speed    = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
 	steering = forwardCruiseControl.proposed_steering_angle;
       }
 
       // Cannot go forward, use backward cruise control
       else {
-        speed    = backwardCruiseControl.proposed_speed;
-	steering = backwardCruiseControl.proposed_steering_angle;
+        if( backwardCruiseControl.proposed_speed < 0 ) {
+          speed    = std::min(MIN_SPEED_BACKWARD, backwardCruiseControl.proposed_speed);
+	  steering = backwardCruiseControl.proposed_steering_angle * -1;
+	}
+	else {
+	  speed    = 0;
+	  steering = 0;
+	}
       }
 
       break;
@@ -141,6 +149,9 @@ int main( int argc, char ** argv ) {
     system("clear");
     ros::spinOnce();
 
+    steering = 0;
+    speed = 0;
+
     // Generate AckermannDrive message for steering / throttle
     ackermann_msgs::AckermannDrive AckermannDrive;
     AckermannDrive.steering_angle = steering;
@@ -164,4 +175,9 @@ int main( int argc, char ** argv ) {
   }
 
   return 0;
+}
+
+static void OptimizeAckermannDrive() {
+  speed = (0.2 + 0.8 * (MAX_STEERING_LEFT - std::abs(steering) /
+          MAX_STEERING_LEFT)) * speed;
 }
