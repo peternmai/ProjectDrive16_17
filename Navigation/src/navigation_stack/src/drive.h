@@ -17,7 +17,7 @@
 enum DriveMode {
   cruise,
   reorientate,
-  precise_nav
+  obstacle_avoidance
 };
 
 // Constant Variables
@@ -25,5 +25,7 @@ enum DriveMode {
 
 static const float MAX_STEERING_LEFT  =  M_PI / 2;
 static const float MAX_STEERING_RIGHT = -M_PI / 2;
+
+static const float MIN_RADIUS_LASER_SCAN_FILTER = 0.3;
 
 #endif

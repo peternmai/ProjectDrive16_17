@@ -39,3 +39,6 @@ target_link_libraries(odom ${catkin_LIBRARIES})
 
 add_executable(orien_pub src/imu_to_orientation.cpp)
 target_link_libraries(orien_pub ${catkin_LIBRARIES})
+
+add_executable(LaserScanFilter src/LaserScanFilter.cpp)
+target_link_libraries(LaserScanFilter ${catkin_LIBRARIES})

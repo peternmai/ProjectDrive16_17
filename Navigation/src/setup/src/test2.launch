@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="tera" />
+  <arg name="optic" />
+  <arg name="steering" />
+  <arg name="sweep" />
+
+  <include file="$(find sweep_ros)/launch/sweep2scan.launch">
+    <arg name="portname" value="$(arg sweep)"/>
+  </include>
+  <include file="$(find rtimulib_ros)/launch/rtimulib_ros.launch" />
+
+  <node name="oe_ardiuno" pkg="rosserial_python"
+  type="serial_node.py" args="$(arg optic)" output="screen" />
+
+  <node name="steering_arduino" pkg="rosserial_python"
+  type="serial_node.py" args="$(arg steering)" output="screen" />
+
+  <node name="tf_pub" pkg="setup" type="tf_pub" />
+  <node name="odom" pkg="setup" type="odom" />
+  <node name="imu2orien" pkg="setup" type="orien_pub" />
+  <node name="laserfilter" pkg="setup" type="LaserScanFilter" />
+
+  <!--node name="ackermann_converter" pkg="teb_local_planner_tutorials"
+    type="cmd_vel_to_ackermann_drive.py" output="screen"/-->
+
+
+  <!--node pkg="tf" type="static_transform_publisher" name="odom_base" args="0 0 0 0
+  0 0 /odom /base_link 100"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="odom_base" args="0 0 0
+  0 0 0 0 /odom /base_link 100"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="base_laser" args="0 0 0
+  0 0 0 0 /base_link /laser_frame 100"/-->
+
+</launch>

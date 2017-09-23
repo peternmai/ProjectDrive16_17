@@ -65,17 +65,9 @@ float WallDetection( const std::vector<CartesianCoordinate> & CartesianMap,
       radian += M_PI;
 
     // Only take into consideration those walls within the MIN and MAX angle
-    if( MIN_ANGLE <= MAX_ANGLE ) {
-      if( radian >= MIN_ANGLE && radian <= MAX_ANGLE ) {
-        totalLinesUsed++;
-        combinedRadian += radian;
-      }
-    }
-    else {
-      if( radian >= MIN_ANGLE || radian <= MAX_ANGLE ) {
-        totalLinesUsed++;
-        combinedRadian += radian;
-      } 
+    if( slope <= LEFT_SLOPE || slope >= RIGHT_SLOPE ) {
+      totalLinesUsed++;
+      combinedRadian += radian;
     }
   }
 

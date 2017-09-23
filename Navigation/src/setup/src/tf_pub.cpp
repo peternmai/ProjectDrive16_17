@@ -1,9 +1,8 @@
 #include "nav_headers.h"
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/LaserScan.h>
-#include <msg/optical_encoder.h>
 
-void tfpubCallback(const msg::optical_encoder::ConstPtr& msg) {
+void tfpubCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
   static tf::TransformBroadcaster pub;
 
   tf::Transform map_odom_t;
@@ -11,7 +10,7 @@ void tfpubCallback(const msg::optical_encoder::ConstPtr& msg) {
   tf::Quaternion mto_q;
   tf::Quaternion btl_q;
 
-  ros::Time s_t = msg->time;
+  ros::Time s_t = msg->header.stamp;
 
   map_odom_t.setOrigin(tf::Vector3(0, 0, 0));
   base_laser_t.setOrigin(tf::Vector3(0, 0, 0));
@@ -32,7 +31,7 @@ int main(int argc, char** argv) {
   ros::NodeHandle n;
 
 
-  ros::Subscriber sub = n.subscribe("optical_encoder", 600, tfpubCallback);
+  ros::Subscriber sub = n.subscribe("scan", 600, tfpubCallback);
 
   ros::spin();
   return 0;

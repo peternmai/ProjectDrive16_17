@@ -1,0 +1,8 @@
+#
+# Used to find USB port for TeraRanger One
+# The modified file should be placed into /etc/udev/rules.d/
+# Allows the TeraRanger One to be referred to as /dev/terarangerone
+#
+SUBSYSTEM=="tty", ATTRS(idVendor}=="0403", ATTRS{idProduct)=="6001", 
+ATTRS(serial)=="AL0339KD",
+SYMLINK+="terarangerone"

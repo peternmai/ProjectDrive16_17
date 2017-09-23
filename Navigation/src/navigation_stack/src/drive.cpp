@@ -13,18 +13,24 @@
 
 #include "drive.h"
 
-static DriveMode mode = DriveMode::reorientate;
+static DriveMode curMode  = DriveMode::cruise;
+static DriveMode prevMode = DriveMode::cruise;
+static DriveMode tmpMode  = DriveMode::cruise;
 
 static float speed = 0;
 static float steering = 0;
 static long  frame_id = 0;
 
-static float currentOrientation = -1;
+static float currentOrientation         = -1;
+static float desiredOrientation         = -1;
+static float wallDetectionOrientation   = -1;
 
 static bool reorientateCarForward = true;
+static bool obstacleAvoidanceReorientateRequest = false;
+static bool requestNewDriveMode = false;
 
 static void VisualizeAckermannDrive( float throttle, float steering ) {
-  std::cout << std::endl << "Mode: " << mode << std::endl << std::endl;
+  std::cout << std::endl << "Mode: " << curMode << std::endl << std::endl;
   printProgressBar( "THROTTLE", speed / MAX_SPEED_FORWARD );
   printProgressBar( "STEERING", -steering / (M_PI/2));
 }
@@ -49,13 +55,65 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
   // Other Variables
   TurningCommands turningCommands;
 
-  WallDetection( CartesianMap, currentOrientation );
+  wallDetectionOrientation = WallDetection( CartesianMap, currentOrientation );
+
+  if( requestNewDriveMode ) {
+
+    switch( curMode ) {
+      case DriveMode::cruise:
+        
+        desiredOrientation = fmod(currentOrientation + M_PI, 2 * M_PI);
+        prevMode           = curMode;
+	curMode            = DriveMode::reorientate;
+
+        break;
+
+      case DriveMode::reorientate:
+
+        tmpMode  = curMode;
+	curMode  = prevMode;
+	prevMode = tmpMode;
+
+        break;
+
+      case DriveMode::obstacle_avoidance:
+
+        if( obstacleAvoidanceReorientateRequest ) {
+	  prevMode = curMode;
+	  curMode  = DriveMode::reorientate;
+	  obstacleAvoidanceReorientateRequest = false;
+	}
+	else {
+	  prevMode = curMode;
+	  curMode  = DriveMode::cruise;
+	}
+     
+        break;
+    }
+
+    requestNewDriveMode = false;
+  }
   
 
   // Determine throttle and steering base on current drive mode
-  switch( mode ) {
+  switch( curMode ) {
     case DriveMode::cruise:
 
+      // If car can go forward, use forward cruise control
+      if( forwardCruiseControl.proposed_speed > 0 ) {
+        speed    = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
+        steering = forwardCruiseControl.proposed_steering_angle;
+      }
+
+      // Car has reached obstacles
+      else {
+        requestNewDriveMode = true;
+        speed               = 0;
+	steering            = 0;
+      }
+
+
+      /**
       // If can go forward, use forward cruise control
       if( forwardCruiseControl.proposed_speed >= 0 ) {
         speed    = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
@@ -73,6 +131,7 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
 	  steering = 0;
 	}
       }
+      **/
 
       break;
 
@@ -114,10 +173,11 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
       
       break;
 
-    case DriveMode::precise_nav:
+    case DriveMode::obstacle_avoidance:
       speed = 0;
       steering = 0;
       break;
+
   }
 }
 

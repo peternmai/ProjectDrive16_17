@@ -22,6 +22,8 @@ static const float MIN_LINE_LENGTH = 15;
 static const float MAX_LINE_GAP    = 10;
 
 // Specify angle we want to consider as part of wall going straight (-PI to PI)
+static const float LEFT_SLOPE = -1;
+static const float RIGHT_SLOPE = 1;
 static const float MIN_ANGLE = -M_PI / 2;  
 static const float MAX_ANGLE =  M_PI / 2;
 

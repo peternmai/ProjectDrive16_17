@@ -49,7 +49,6 @@ static struct PolarCoordinate CartesianToPolar( float x, float y ) {
   return coordinate;
 }
 
-
 // Forward Declarations
 void FilterLaserScanAngles(const sensor_msgs::LaserScan::ConstPtr & scan,
   float * filtered_scan, float min_radian, float max_radian);
@@ -64,6 +63,11 @@ std::vector<CartesianCoordinate> CartesianMapBoxFilter(
 float getClosestObstacleInRectangleBeam(
   const std::vector<CartesianCoordinate> & CartesianMap, 
   float beamAngle, float beamWidth, float lidarToFrontDistance, float carWidth);
+
+int totalPointsInPolygon(
+  const CartesianCoordinate & tl, const CartesianCoordinate & tr,
+  const CartesianCoordinate & bl, const CartesianCoordinate & br,
+  const std::vector<CartesianCoordinate> & v);
 
 void printProgressBar( std::string title, float percentage );
 
