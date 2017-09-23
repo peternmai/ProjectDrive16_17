@@ -19,8 +19,9 @@ using std::vector;
 using std::cout;
 using std::endl;
 
-
-double beamPath(double width, int numRects) {
+//note: angleOffset is the relative difference between the front of the vehicle and forward on track
+//left should be positive, right negative
+double beamPath(double angleOffset, double width, int numRects) {
   cout << "Generating: " << numRects << " rectangles" << endl;
   
   //determine angles of all lines and calculate a central pair of points
@@ -31,7 +32,7 @@ double beamPath(double width, int numRects) {
   
   for(int i = 0; i < numRects; i++) {
     //calc angle
-    double angle = angleInc * i;
+    double angle = angleInc * i + angleOffset;
     angles.push_back(angle);
 
     //calc central pair of points
@@ -97,7 +98,7 @@ double beamPath(double width, int numRects) {
 }
 
 int main() {
-  beamPath(WIDTH, 9);
+  beamPath(0, WIDTH, 9);
 
   return 0;
 }
