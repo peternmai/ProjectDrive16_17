@@ -31,6 +31,7 @@ CartesianCoordinate ClosestObstacleBehind(
   const sensor_msgs::LaserScan::ConstPtr & scan, float min_x, float max_X);
 
 CruiseControl GetCruiseControl(
+  const std::vector<CartesianCoordinate> & CartesianMap,
   const sensor_msgs::LaserScan::ConstPtr & scan, VehicleGear gear );
 
 #endif

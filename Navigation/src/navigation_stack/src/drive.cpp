@@ -45,21 +45,24 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
     return;
   }
 
-  // Get cruise control information for both forward and backward
-  CruiseControl forwardCruiseControl  = GetCruiseControl( scan, VehicleGear::forward );
-  CruiseControl backwardCruiseControl = GetCruiseControl( scan, VehicleGear::backward );
-
-  // Convert LaserScan to Cartesian Map
+   // Convert LaserScan to Cartesian Map
   std::vector<CartesianCoordinate> CartesianMap = LaserScanToCartesianMap( scan );
+
+  // Get cruise control information for both forward and backward
+  CruiseControl forwardCruiseControl  = GetCruiseControl( CartesianMap, scan, VehicleGear::forward );
+  CruiseControl backwardCruiseControl = GetCruiseControl( CartesianMap, scan, VehicleGear::backward );
+
 
   // Other Variables
   TurningCommands turningCommands;
 
-  wallDetectionOrientation = WallDetection( CartesianMap, currentOrientation );
+  //wallDetectionOrientation = WallDetection( CartesianMap, currentOrientation );
 
   if( requestNewDriveMode ) {
 
-    switch( curMode ) {
+    std::cout << "Switching drive mode..." << std::endl;
+  
+  switch( curMode ) {
       case DriveMode::cruise:
         
         desiredOrientation = fmod(currentOrientation + M_PI, 2 * M_PI);
@@ -98,7 +101,7 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
   // Determine throttle and steering base on current drive mode
   switch( curMode ) {
     case DriveMode::cruise:
-
+/**
       // If car can go forward, use forward cruise control
       if( forwardCruiseControl.proposed_speed > 0 ) {
         speed    = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
@@ -111,9 +114,9 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
         speed               = 0;
 	steering            = 0;
       }
+**/
 
-
-      /**
+      
       // If can go forward, use forward cruise control
       if( forwardCruiseControl.proposed_speed >= 0 ) {
         speed    = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
@@ -131,7 +134,7 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
 	  steering = 0;
 	}
       }
-      **/
+      
 
       break;
 
@@ -195,7 +198,7 @@ int main( int argc, char ** argv ) {
   ros::Publisher AckermannDrivePublisher =  
     nh.advertise<ackermann_msgs::AckermannDriveStamped>("ackermann_cmd", 1);
   ros::Subscriber LaserScanSubscriber = 
-    nh.subscribe("scan", 1, LaserScanCallback );
+    nh.subscribe("filtered_scan", 1, LaserScanCallback );
   ros::Subscriber Orientation = 
     nh.subscribe("orientation", 1, OrientationCallback );
 
@@ -205,6 +208,8 @@ int main( int argc, char ** argv ) {
   while(nh.ok()) {
     system("clear");
     ros::spinOnce();
+
+    speed = 0;
 
     // Generate AckermannDrive message for steering / throttle
     ackermann_msgs::AckermannDrive AckermannDrive;

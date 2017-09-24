@@ -27,8 +27,12 @@ float WallDetection( const std::vector<CartesianCoordinate> & CartesianMap,
     CartesianCoordinate coordinate = CartesianMap.at(i);
     if( coordinate.x >= SCAN_MIN_X && coordinate.x <= SCAN_MAX_X &&
         coordinate.y >= SCAN_MIN_Y && coordinate.y <= SCAN_MAX_Y ) {
-          mapArray[ Y_AXIS_RANGE - (int) ((coordinate.y - SCAN_MIN_Y) * SPACING_IN_METER) ]
-	          [ (int) ((coordinate.x - SCAN_MIN_X) * SPACING_IN_METER) ] = 255;
+
+	  int y = Y_AXIS_RANGE - (int) ((coordinate.y - SCAN_MIN_Y) * SPACING_IN_METER);
+	  int x = (int) ((coordinate.x - SCAN_MIN_X) * SPACING_IN_METER);
+
+	  if( x >= 0 && x < X_AXIS_RANGE && y >= 0 && y < Y_AXIS_RANGE )
+	    mapArray[y][x] = 255;
 	}
   }
 
@@ -45,7 +49,7 @@ float WallDetection( const std::vector<CartesianCoordinate> & CartesianMap,
   int   totalLinesUsed  = 0;
   float combinedRadian  = 0;
   float averageRadian   = 0;
-  
+
   //cv::HoughLines(obstacleMatrix, lines, 1, CV_PI/180, 100, 0, 0);
   for( size_t i = 0; i < lines.size(); i++ ) {
 

@@ -2,23 +2,18 @@
 #include "LaneKeepingAssistance.h"
 
 CartesianCoordinate ClosestObstacleAhead(
-  const sensor_msgs::LaserScan::ConstPtr & scan, float min_x, float max_x) {
-
-  // Create evenly spaced array to store ranges from -90 degrees to +90 degree
-  float ranges[ (int) (M_PI / scan->angle_increment) ] = {0};
+  const std::vector<CartesianCoordinate> & CartesianMap, float min_x, float max_x) {
+  
   float closestPointY = std::numeric_limits<float>::max();
   CartesianCoordinate point;
   CartesianCoordinate closestCoordinate;
 
-  FilterLaserScanAngles(scan, ranges, M_PI * 1.5, M_PI * 0.5 );
-  for( int i = 0; i < (int) (M_PI / scan->angle_increment); i++ ) {
-    if( ranges[i] != 0 ) {
-      point = PolarToCartesian( ranges[i], M_PI * 1.5 + i * scan->angle_increment );
-      if( point.x >= min_x && point.x <= max_x ) {
-        if( point.y < closestPointY ) {
-          closestPointY = point.y;
-          closestCoordinate = point;
-        }
+  for( int i = 0; i < CartesianMap.size(); i++ ) {
+    point = CartesianMap.at(i);
+    if( point.x >= min_x && point.x <= max_x && point.y >= 0.1 ) {
+      if( point.y < closestPointY ) {
+        closestPointY = point.y;
+        closestCoordinate = point;
       }
     }
   }
@@ -27,23 +22,18 @@ CartesianCoordinate ClosestObstacleAhead(
 }
 
 CartesianCoordinate ClosestObstacleBehind(
-  const sensor_msgs::LaserScan::ConstPtr & scan, float min_x, float max_x) {
+  const std::vector<CartesianCoordinate> & CartesianMap, float min_x, float max_x) {
 
-  // Create evenly spaced array to store ranges from +90 degree to +270 degree
-  float ranges[ (int) (M_PI / scan->angle_increment) ] = {0};
   float closestPointY = -std::numeric_limits<float>::max();
   CartesianCoordinate point;
   CartesianCoordinate closestCoordinate;
 
-  FilterLaserScanAngles(scan, ranges, M_PI * 0.5, M_PI * 1.5 );
-  for( int i = 0; i < (int) (M_PI / scan->angle_increment); i++ ) {
-    if( ranges[i] != 0 ) {
-      point = PolarToCartesian( ranges[i], M_PI * 0.5 + i * scan->angle_increment );
-      if( point.x >= min_x && point.x <= max_x ) {
-        if( point.y > closestPointY ) {
-	  closestPointY = point.y;
-      	  closestCoordinate = point;
-        }
+  for( int i = 0; i < CartesianMap.size(); i++ ) {
+    point = CartesianMap.at(i);
+    if( point.x >= min_x && point.x <= max_x ) {
+      if( point.y > closestPointY ) {
+        closestPointY = point.y;
+        closestCoordinate = point;
       }
     }
   }
@@ -52,6 +42,7 @@ CartesianCoordinate ClosestObstacleBehind(
 }
 
 CruiseControl GetCruiseControl( 
+  const std::vector<CartesianCoordinate> & CartesianMap,
   const sensor_msgs::LaserScan::ConstPtr & scan, VehicleGear gear ) {
 
   CartesianCoordinate closestCoordinate;
@@ -59,9 +50,9 @@ CruiseControl GetCruiseControl(
 
   // Determine closest obstacle ahead or behind vehicle
   if( gear == VehicleGear::backward )
-    closestCoordinate = ClosestObstacleBehind(scan, BACKWARD_MIN_X, BACKWARD_MAX_X);
+    closestCoordinate = ClosestObstacleBehind(CartesianMap, BACKWARD_MIN_X, BACKWARD_MAX_X);
   else
-    closestCoordinate = ClosestObstacleAhead(scan, FORWARD_MIN_X, FORWARD_MAX_X);
+    closestCoordinate = ClosestObstacleAhead(CartesianMap, FORWARD_MIN_X, FORWARD_MAX_X);
   
   std::cout << "x = " << (closestCoordinate.x * 3.28) << " ft \t|\ty = " << (closestCoordinate.y * 3.28) << " ft" << std::endl;
 
@@ -76,14 +67,15 @@ CruiseControl GetCruiseControl(
     proposed_speed = (closestCoordinate.y - CAR_BUFFER) * slope;
   }
 
-  std::cout << "Speed: " << proposed_speed << " m/s" << std::endl;
+  std::cout << "Speed " << ((gear == VehicleGear::backward) ? "backward: " : "forward: ") 
+    << proposed_speed << " m/s" << std::endl;
 
   // Fill in cruise control data fields
   CruiseControl cruiseControl;
   cruiseControl.closestCoordinate       = closestCoordinate;
   cruiseControl.proposed_speed          = proposed_speed;
   cruiseControl.proposed_steering_angle = LaneKeepingAssistance( scan, true );
- 
+
   return cruiseControl;
 }
 

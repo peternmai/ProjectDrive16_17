@@ -1,6 +1,8 @@
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 
+#include <math.h>
+
 static const float PUBLISH_RATE = 3;
 static const float MIN_LASER_SCAN_RADIUS = 0.3;
 
@@ -10,10 +12,10 @@ static sensor_msgs::LaserScan filtered_scan;
 static void laserScanCallback( const sensor_msgs::LaserScan::ConstPtr & raw ) {
   filtered_scan = *raw;
   for( int i = 0; i < raw->ranges.size(); i++ ) {
-    if( raw->ranges[i] < MIN_LASER_SCAN_RADIUS )
-      filtered_scan.ranges[i] = 0;
+    if( raw->ranges[i] < MIN_LASER_SCAN_RADIUS || 
+      raw->ranges[i] == std::numeric_limits<float>::infinity()  )
+        filtered_scan.ranges[i] = 0;
   }
-
 }
 
 int main( int argc, char ** argv ) {

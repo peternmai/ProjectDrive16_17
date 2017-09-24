@@ -32,7 +32,7 @@
 #define MAX_LENGTH 5
 #define PUBLISH_RATE 3
 #define LASER_FREQUENCY 1000
-#define MAX_READINGS long(LASER_FREQUENCY / PUBLISH_RATE)
+#define MAX_READINGS 10000
 
 //these are the start and end angles for the area we are looking for
 #define lf_start 0.0
@@ -42,10 +42,10 @@
 
 //the first letter represents the side of the area and the second is 
 //for forward or reverse 
-#define rf_start 3.0 * M_PI / 2.0
-#define rf_end 2.0 * M_PI
-#define rr_start M_PI
-#define rr_end 3.0 * M_PI / 2.0
+#define rf_start -1 * M_PI / 2.0
+#define rf_end  0
+#define rr_start -1 * M_PI
+#define rr_end -1* M_PI / 2.0
 
 static double angle_inc;
 static int num_reads;
@@ -99,7 +99,7 @@ double findArea(int startIdx, int endIdx, double angleInc) {
     if(a == 0)
       continue;
 
-    while(b == 0) {
+    while(b == 0 && i + angle_count + 1 < endIdx) {
       b = ranges[i+angle_count+1];
       angle_count++;
     }
@@ -262,10 +262,16 @@ double LaneKeepingAssistance(const
   forw = forward;
 
   for(int i = 0; i < num_reads; i++) {
-    ranges[i] = msg->ranges[i] > 5 ? 5 : msg->ranges[i];
+    ranges[i] = msg->ranges[i] > 10 ? 10 : msg->ranges[i];
     angles[i] = msg->angle_min + msg->angle_increment * i;
     angle_inc = msg->angle_increment;
   }
+
+  std::cout << "Array: [";
+  for(int i = 0; i < num_reads; i++) {
+    std::cout << ranges[i] << ", ";
+  }
+  std::cout << "]\n";
 
   for(int i = 0; i < num_reads; i++) {
     double curr = angles[i];
@@ -281,7 +287,7 @@ double LaneKeepingAssistance(const
 
   double diff = (L_Area - R_Area) / T_Area;
 
-//  displayResults(L_Area, R_Area, T_Area, diff);
+  displayResults(L_Area, R_Area, T_Area, diff);
 
   double steering_angle = 0;
 
