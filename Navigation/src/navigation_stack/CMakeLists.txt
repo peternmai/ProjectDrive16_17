@@ -36,7 +36,7 @@ include_directories(
 
 ## Make Main Navigation Module Executable
 add_executable(drive src/drive.cpp src/util.cpp src/CruiseControl.cpp
-src/QuickTurning src/WallDetection.cpp)
+src/QuickTurning.cpp src/WallDetection.cpp src/beam.cpp)
 add_dependencies(drive ${catkin_EXPORTED_TARGETS})
 target_link_libraries(drive ${catkin_LIBRARIES} ${GSL_LIBRARIES})
 

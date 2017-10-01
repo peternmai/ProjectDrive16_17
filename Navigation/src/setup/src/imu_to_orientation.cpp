@@ -56,7 +56,7 @@ int main(int argc, char ** argv) {
   ros::Subscriber imu_sub = n.subscribe("imu", 1, imuCallback);
   ros::Publisher imu_pub = n.advertise<msg::imu_orientation>("orientation", 1);
 
-  ros::Rate r(3);
+  ros::Rate r(5);
 
   while(n.ok()) {
 
@@ -69,8 +69,6 @@ int main(int argc, char ** argv) {
     msg::imu_orientation imu_msg;
     imu_msg.header.stamp = r_time;
     imu_msg.header.frame_id = "orientation";
-    //imu_msg.roll = roll;
-    //imu_msg.pitch = pitch;
     imu_msg.orientation = yaw;
     imu_msg.avg_orientation = avg_orien;
     imu_msg.old_orientations = old_oriens;

@@ -11,11 +11,11 @@
 
 static const float CAR_BUFFER     =  0.5;
 
-static const float FORWARD_MIN_X  = -0.3048;
-static const float FORWARD_MAX_X  =  0.3048;
+static const float FORWARD_MIN_X  = -0.2;
+static const float FORWARD_MAX_X  =  0.2;
 
-static const float BACKWARD_MIN_X = -0.3048;
-static const float BACKWARD_MAX_X =  0.3408;
+static const float BACKWARD_MIN_X = -0.2;
+static const float BACKWARD_MAX_X =  0.2;
 
 struct CruiseControl {
   CartesianCoordinate closestCoordinate;

@@ -12,7 +12,7 @@ int main(int argc, char ** argv) {
   ros::init(argc, argv, "lra_pub");
   
   ros::NodeHandle n;
-  ros::Subscriber scansub = n.subscribe("scan", MAX_READINGS,
+  ros::Subscriber scansub = n.subscribe("filtered_scan", MAX_READINGS,
     laserCallback);
   ros::Rate r(PUBLISH_RATE);
 

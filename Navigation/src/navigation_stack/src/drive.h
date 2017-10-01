@@ -13,6 +13,7 @@
 #include "QuickTurning.h"
 #include "WallDetection.h"
 #include "util.h"
+#include "beam.h"
 
 enum DriveMode {
   cruise,
@@ -21,7 +22,7 @@ enum DriveMode {
 };
 
 // Constant Variables
-#define PUBLISH_RATE 3
+#define PUBLISH_RATE 5
 
 static const float MAX_STEERING_LEFT  =  M_PI / 2;
 static const float MAX_STEERING_RIGHT = -M_PI / 2;

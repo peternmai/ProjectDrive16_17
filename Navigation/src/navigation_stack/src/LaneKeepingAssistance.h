@@ -49,7 +49,7 @@
 
 static double angle_inc;
 static int num_reads;
-static bool forw = false;
+static bool forw = true;
 
 float ranges[MAX_READINGS] = {0};
 float angles[MAX_READINGS] = {0};
@@ -64,7 +64,7 @@ float angles[MAX_READINGS] = {0};
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
   num_reads = msg->ranges.size();
   for(int i = 0; i < num_reads; i++) {
-    ranges[i] = msg->ranges[i] > 5 ? 5 : msg->ranges[i];
+    ranges[i] = msg->ranges[i] > 10 ? 10 : msg->ranges[i];
     angles[i] = msg->angle_min + msg->angle_increment * i;
     angle_inc = msg->angle_increment;
   }
@@ -91,21 +91,28 @@ double findArea(int startIdx, int endIdx, double angleInc) {
   int angle_count = 1;
   C = angleInc;
 
+
   for(int i = startIdx; i < endIdx; i++) {
     angle_count = 1;
     a = ranges[i];
     b = ranges[i+1];
 
-    if(a == 0)
-      continue;
-
-    while(b == 0 && i + angle_count + 1 < endIdx) {
-      b = ranges[i+angle_count+1];
+   while(b == 0 && i+1 < endIdx) {
+      i++;
+      b = ranges[i+1];
       angle_count++;
-    }
+   }
 
     area += (b * a * sin(C * angle_count) / 2);
   }
+
+  return area;
+}
+
+double findArea2(int startIdx, int endIdx) {
+  double area = 0;
+  for(int i = startIdx; i < endIdx; i++)
+    area += ranges[i];
   return area;
 }
 
@@ -198,14 +205,17 @@ int findLStart(int LEnd) {
 double findLArea() {
   int LEnd = findLEnd();
   int LStart = findLStart(LEnd);
+
   return findArea(LStart, LEnd, angle_inc);
+  //return findArea2(LStart, LEnd);
 }
 
 double findRArea() {
   int REnd = findREnd();
   int RStart = findRStart(REnd);
 
-  return findArea(RStart, REnd, angle_inc);
+  return findArea(RStart,REnd, angle_inc);
+  //return findArea2(RStart, REnd);
 }
 
 /*
@@ -265,20 +275,6 @@ double LaneKeepingAssistance(const
     ranges[i] = msg->ranges[i] > 10 ? 10 : msg->ranges[i];
     angles[i] = msg->angle_min + msg->angle_increment * i;
     angle_inc = msg->angle_increment;
-  }
-
-  std::cout << "Array: [";
-  for(int i = 0; i < num_reads; i++) {
-    std::cout << ranges[i] << ", ";
-  }
-  std::cout << "]\n";
-
-  for(int i = 0; i < num_reads; i++) {
-    double curr = angles[i];
-    while(curr > 2 * M_PI) {
-      curr -= 2 * M_PI;
-    }
-  angles[i] = curr;
   }
 
   double L_Area = findLArea();

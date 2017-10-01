@@ -4,7 +4,7 @@
 #include <math.h>
 
 static const float PUBLISH_RATE = 3;
-static const float MIN_LASER_SCAN_RADIUS = 0.3;
+static const float MIN_LASER_SCAN_RADIUS = 0.22;
 
 static sensor_msgs::LaserScan filtered_scan;
 

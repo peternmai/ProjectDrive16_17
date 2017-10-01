@@ -69,6 +69,13 @@ int totalPointsInPolygon(
   const CartesianCoordinate & bl, const CartesianCoordinate & br,
   const std::vector<CartesianCoordinate> & v);
 
+CartesianCoordinate closestPointInPolygon(
+  const CartesianCoordinate & tl, const CartesianCoordinate & tr,
+  const CartesianCoordinate & bl, const CartesianCoordinate & br,
+  const std::vector<CartesianCoordinate> & v);
+
 void printProgressBar( std::string title, float percentage );
+
+float orientationDiff(float currentOrientation, float desiredOrientation);
 
 #endif

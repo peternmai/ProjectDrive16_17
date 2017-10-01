@@ -185,6 +185,77 @@ int totalPointsInPolygon(
   return inside_count;
 }
 
+CartesianCoordinate closestPointInPolygon(
+  const CartesianCoordinate & tl, const CartesianCoordinate & tr,
+  const CartesianCoordinate & bl, const CartesianCoordinate & br,
+  const std::vector<CartesianCoordinate> & v) {
+
+  float s1, s2, s3, s4;
+  float b1, b2, b3, b4;
+
+  s1 = (tl.y - tr.y) / (tl.x - tr.x);
+
+  if(tl.x - bl.x == 0)
+    s2 = 100000;
+  else
+    s2 = (tl.y - bl.y) / (tl.x - bl.x);
+
+  if(tr.x - br.x == 0)
+    s3 = 100000;
+  else
+    s3 = (tr.y - br.y) / (tr.x - br.x);
+
+  s4 = (bl.y - br.y) / (bl.x - br.x);
+    
+  b1 = tl.y - s1 * tl.x;
+  
+  if(s2 < 1000)
+    b2 = tl.y - s2 * tl.x;
+
+  if(s3 < 1000)
+    b3 = tr.y - s3 * tr.x;
+
+  b4 = bl.y - s4 * bl.x;
+
+  CartesianCoordinate temp;
+  std::vector<CartesianCoordinate> valid;
+
+  for(int i = 0; i < v.size(); i++) {
+    temp = v[i];
+    if(temp.y > s1 * temp.x + b1)
+      continue;
+    if(s2 < 10000) {
+      if(temp.x < (temp.y - b2) / s2)
+        continue;
+    } else {
+      if(temp.x < bl.x)
+        continue;
+    }
+    if(s3 < 10000) {
+      if(temp.x > (temp.y - b3) / s3)
+        continue;
+    } else {
+      if(temp.x > br.x)
+        continue;
+    }
+    if(temp.y < s4 * temp.x + b4)
+      continue;
+
+    valid.push_back(temp);
+  }
+
+  CartesianCoordinate closest_point{10000, 10000};
+  float minDist = 100000000;
+  for(int i = 0; i < valid.size(); i++) {
+    if(valid[i].x * valid[i].x + valid[i].y * valid[i].y < minDist) {
+      minDist = valid[i].x * valid[i].x + valid[i].y * valid[i].y;
+      closest_point = valid[i];
+    }
+  }
+
+  return closest_point;
+}
+
 void printProgressBar( std::string title, float percentage ) {
   if( percentage < 0 )
     std::cout << title << ": [" << std::string( std::max(0, 
@@ -201,3 +272,43 @@ void printProgressBar( std::string title, float percentage ) {
               << percentage * 100 << "%" << std::endl;
 }
 
+float orientationDiff( float currentOrientation, float desiredOrientation ) {
+
+  std::cout << "Current Orientation: " << currentOrientation << std::endl;
+  std::cout << "Desired Orientation: " << desiredOrientation << std::endl;
+
+  float smallestTurningAngle = std::numeric_limits<float>::max();
+  bool goRight = false;
+
+  // Figure out if car should head left or right
+  if( currentOrientation <= desiredOrientation ) {
+    if( desiredOrientation - currentOrientation < smallestTurningAngle ) {
+      smallestTurningAngle = desiredOrientation - currentOrientation;
+      goRight = false;;
+    }
+
+    if( currentOrientation + 2 * M_PI - desiredOrientation < smallestTurningAngle ) {
+      smallestTurningAngle = currentOrientation + 2 * M_PI - desiredOrientation;
+      goRight = true;;
+    }
+  }
+  else {
+    if( currentOrientation - desiredOrientation < smallestTurningAngle ) {
+      smallestTurningAngle = currentOrientation - desiredOrientation;
+      goRight = true;;
+    }
+    
+    if( desiredOrientation + 2 * M_PI - currentOrientation < smallestTurningAngle ) {
+      smallestTurningAngle = currentOrientation - desiredOrientation;
+      goRight = false;;
+    }
+  }
+
+  if( goRight )
+    smallestTurningAngle *= -1;
+
+  std::cout << "Orientation diff from straight wall: " << smallestTurningAngle
+  << std::endl;
+
+  return smallestTurningAngle;
+}

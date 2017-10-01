@@ -4,9 +4,13 @@
 CartesianCoordinate ClosestObstacleAhead(
   const std::vector<CartesianCoordinate> & CartesianMap, float min_x, float max_x) {
   
-  float closestPointY = std::numeric_limits<float>::max();
+  float closestPointY = MAX_VISIBLE_RANGE;
   CartesianCoordinate point;
   CartesianCoordinate closestCoordinate;
+
+  // Initialize closest coordinate
+  closestCoordinate.x = 0;
+  closestCoordinate.y = MAX_VISIBLE_RANGE;
 
   for( int i = 0; i < CartesianMap.size(); i++ ) {
     point = CartesianMap.at(i);
@@ -24,13 +28,17 @@ CartesianCoordinate ClosestObstacleAhead(
 CartesianCoordinate ClosestObstacleBehind(
   const std::vector<CartesianCoordinate> & CartesianMap, float min_x, float max_x) {
 
-  float closestPointY = -std::numeric_limits<float>::max();
+  float closestPointY = -MAX_VISIBLE_RANGE;
   CartesianCoordinate point;
   CartesianCoordinate closestCoordinate;
 
+  // Initialize closest coordinate
+  closestCoordinate.x = 0;
+  closestCoordinate.y = -MAX_VISIBLE_RANGE;
+
   for( int i = 0; i < CartesianMap.size(); i++ ) {
     point = CartesianMap.at(i);
-    if( point.x >= min_x && point.x <= max_x ) {
+    if( point.x >= min_x && point.x <= max_x && point.y <= -0.1 ) {
       if( point.y > closestPointY ) {
         closestPointY = point.y;
         closestCoordinate = point;

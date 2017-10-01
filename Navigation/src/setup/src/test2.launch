@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="tera" />
-  <arg name="optic" />
   <arg name="steering" />
   <arg name="sweep" />
 
@@ -9,9 +7,6 @@
     <arg name="portname" value="$(arg sweep)"/>
   </include>
   <include file="$(find rtimulib_ros)/launch/rtimulib_ros.launch" />
-
-  <node name="oe_ardiuno" pkg="rosserial_python"
-  type="serial_node.py" args="$(arg optic)" output="screen" />
 
   <node name="steering_arduino" pkg="rosserial_python"
   type="serial_node.py" args="$(arg steering)" output="screen" />
