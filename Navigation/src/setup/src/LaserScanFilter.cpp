@@ -3,7 +3,6 @@
 
 #include <math.h>
 
-static const float PUBLISH_RATE = 3;
 static const float MIN_LASER_SCAN_RADIUS = 0.22;
 
 static sensor_msgs::LaserScan filtered_scan;
@@ -28,7 +27,9 @@ int main( int argc, char ** argv ) {
   ros::Publisher filtered_scan_pub = n.advertise<sensor_msgs::LaserScan>("filtered_scan", 1);
   ros::Subscriber raw_scan_sub = n.subscribe("scan", 1, laserScanCallback );
 
-  ros::Rate r( PUBLISH_RATE );
+  int rate = 0;
+  n.getParam("/sweep_node/rotation_speed", rate);  
+  ros::Rate r( rate );
 
   while(n.ok()) {
     ros::spinOnce();

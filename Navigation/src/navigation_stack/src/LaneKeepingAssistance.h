@@ -214,7 +214,7 @@ double findRArea() {
   int REnd = findREnd();
   int RStart = findRStart(REnd);
 
-  return findArea(RStart,REnd, angle_inc);
+ return findArea(RStart,REnd, angle_inc);
   //return findArea2(RStart, REnd);
 }
 
@@ -283,7 +283,7 @@ double LaneKeepingAssistance(const
 
   double diff = (L_Area - R_Area) / T_Area;
 
-  displayResults(L_Area, R_Area, T_Area, diff);
+//  displayResults(L_Area, R_Area, T_Area, diff);
 
   double steering_angle = 0;
 

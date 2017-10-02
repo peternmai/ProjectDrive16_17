@@ -12,6 +12,7 @@
  */
 
 #include "drive.h"
+#include <ctime>
 
 static DriveMode curMode  = DriveMode::obstacle_avoidance;
 static DriveMode prevMode = DriveMode::cruise;
@@ -37,6 +38,8 @@ static void VisualizeAckermannDrive( float throttle, float steering ) {
 
 
 static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
+
+  clock_t startTime = std::clock();
   
   // Make sure laser scan has valid data points
   if( scan->ranges.size() == 0 || scan->angle_increment == 0 ) {
@@ -55,7 +58,7 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
 
   // Other Variables
   TurningCommands turningCommands;
-
+  
   wallDetectionOrientation = WallDetection( CartesianMap, currentOrientation );
   float straightOrientation = 
     orientationDiff( currentOrientation, wallDetectionOrientation );
@@ -107,7 +110,7 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
       if( forwardCruiseControl.proposed_speed > 0 ) {
         speed    = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
         steering = (forwardCruiseControl.proposed_steering_angle + 
-                    straightOrientation * 2) / 2;
+                    straightOrientation) / 2;
       }
 
       // Car has reached obstacles
@@ -123,7 +126,7 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
       if( forwardCruiseControl.proposed_speed >= 0 ) {
         speed    = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
         steering = (forwardCruiseControl.proposed_steering_angle +
-                    straightOrientation * 2) / 2;
+                    straightOrientation) / 2;
 
       }
 
@@ -132,7 +135,7 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
         if( backwardCruiseControl.proposed_speed < 0 ) {
           speed    = std::min(MIN_SPEED_BACKWARD, backwardCruiseControl.proposed_speed);
           steering = (backwardCruiseControl.proposed_steering_angle -
-                      straightOrientation * 2) / 2;
+                      straightOrientation) / 2;
         }
         else {
           speed    = 0;
@@ -184,10 +187,14 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
 
     case DriveMode::obstacle_avoidance:
       speed = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
-      steering = beamPath(straightOrientation, 0.4, 21, CartesianMap);
+      steering = beamPath(straightOrientation, 0.6, 20, CartesianMap);
       break;
 
   }
+
+  clock_t endTime   = std::clock();
+  double  duration  = double(endTime - startTime) / CLOCKS_PER_SEC;
+  std::cout << "Total calculation time: " << duration << std::endl;
 }
 
 static void OrientationCallback( const msg::imu_orientation::ConstPtr & orientation ) {
@@ -208,10 +215,15 @@ int main( int argc, char ** argv ) {
   ros::Subscriber Orientation = 
     nh.subscribe("orientation", 1, OrientationCallback );
 
-  ros::Rate r( PUBLISH_RATE );
+  int rate = 0;
+  nh.getParam("/sweep_node/rotation_speed", rate);
+  ros::Rate r( rate );
 
   // Continuously publish new sensor data
   while(nh.ok()) {
+    
+    std::cout << "Current Time: " << ros::Time::now() << std::endl;
+
     system("clear");
     ros::spinOnce();
 

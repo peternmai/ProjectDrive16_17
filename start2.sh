@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ $# -ne 1 ]; then
+  echo "usage:  $0: [rotation_speed]"
+  exit -1
+fi
+
+echo $1
+
 if [ -f usbList.txt ]; then
   rm usbList.txt
 fi
@@ -34,7 +41,9 @@ ROSCORE_PID=$1
 sleep 1
 rosrun setup ActivateScanseSweep.py ${sweep} &
 sleep 5
-roslaunch setup test2.launch steering:=${steer} sweep:=${sweep} &
+roslaunch sweep_ros sweep2scan.launch portname:=${sweep} rotation_speed:=$1 &
+sleep 5
+roslaunch setup test2.launch steering:=${steer} &
 sleep 5
 
 while true; do

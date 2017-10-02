@@ -20,12 +20,15 @@ int main(int argc, char ** argv) {
 
     ros::spinOnce();
 
-    double l_area = findLArea();
-    double r_area = findRArea();
-    double total = l_area + r_area;
-    double diff = (l_area - r_area) / total;
+    int rotation_speed = 0;
+    n.getParam("/sweep_node/rotation_speed", rotation_speed);
+    std::cout << "Rotation Speed: " << rotation_speed << "\n";
+    //double l_area = findLArea();
+    //double r_area = findRArea();
+    //double total = l_area + r_area;
+    //double diff = (l_area - r_area) / total;
 
-    displayResults(l_area, r_area, total, diff);
+    //displayResults(l_area, r_area, total, diff);
     
     r.sleep();
   }

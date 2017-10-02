@@ -22,7 +22,7 @@ enum DriveMode {
 };
 
 // Constant Variables
-#define PUBLISH_RATE 5
+#define PUBLISH_RATE 10
 
 static const float MAX_STEERING_LEFT  =  M_PI / 2;
 static const float MAX_STEERING_RIGHT = -M_PI / 2;

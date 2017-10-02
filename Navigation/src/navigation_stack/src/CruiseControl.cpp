@@ -68,7 +68,7 @@ CruiseControl GetCruiseControl(
   float vision_range = std::max(MAX_VISIBLE_RANGE - CAR_BUFFER, (float) 0.1);
   if( gear == VehicleGear::backward ) {
     slope = MAX_SPEED_BACKWARD / vision_range;
-    proposed_speed = (closestCoordinate.y + CAR_BUFFER) * slope;
+    proposed_speed = (closestCoordinate.y + CAR_BUFFER) * slope * -1;
   }
   else {
     slope = MAX_SPEED_FORWARD / vision_range;
@@ -82,7 +82,11 @@ CruiseControl GetCruiseControl(
   CruiseControl cruiseControl;
   cruiseControl.closestCoordinate       = closestCoordinate;
   cruiseControl.proposed_speed          = proposed_speed;
-  cruiseControl.proposed_steering_angle = LaneKeepingAssistance( scan, true );
+
+  if( gear == VehicleGear::forward )
+    cruiseControl.proposed_steering_angle = LaneKeepingAssistance( scan, true );
+  else
+    cruiseControl.proposed_steering_angle = LaneKeepingAssistance( scan, false );
 
   return cruiseControl;
 }

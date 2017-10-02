@@ -78,4 +78,6 @@ void printProgressBar( std::string title, float percentage );
 
 float orientationDiff(float currentOrientation, float desiredOrientation);
 
+bool between(float val, float bound1, float bound2);
+
 #endif

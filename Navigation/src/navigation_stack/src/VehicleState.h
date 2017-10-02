@@ -14,11 +14,11 @@ enum Direction {
   right
 };
 
-static const float MAX_SPEED_FORWARD  =  0.1;          // meters per second
-static const float MAX_SPEED_BACKWARD = -0.1;          // meters per second
+static const float MAX_SPEED_FORWARD  =  0.25;          // meters per second
+static const float MAX_SPEED_BACKWARD = -0.25;          // meters per second
 static const float MAX_VISIBLE_RANGE  =  5;          // meters
 
-static const float MIN_SPEED_FORWARD  =  0.01;
-static const float MIN_SPEED_BACKWARD = -0.01;
+static const float MIN_SPEED_FORWARD  =  0.05;
+static const float MIN_SPEED_BACKWARD = -0.05;
 
 #endif

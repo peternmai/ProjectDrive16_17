@@ -123,67 +123,83 @@ float getClosestObstacleInRectangleBeam(
 **/
 }
 
+bool CCC(CartesianCoordinate p1, CartesianCoordinate p2) {
+  if(p1.y == p2.y)
+    return(p1.x < p2.x);
+  else
+    return(p1.y > p2.y);
+}
+/*
 int totalPointsInPolygon(
-  const CartesianCoordinate & tl, const CartesianCoordinate & tr,
-  const CartesianCoordinate & bl, const CartesianCoordinate & br,
+  const CartesianCoordinate & p1, const CartesianCoordinate & p2,
+  const CartesianCoordinate & p3, const CartesianCoordinate & p4,
   const std::vector<CartesianCoordinate> & v) {
 
-  float s1, s2, s3, s4;
-  float b1, b2, b3, b4;
+  std::vector<CartesianCoordinate> sortCoord;
+  int total_points = 0;
 
-  s1 = (tl.y - tr.y) / (tl.x - tr.x);
+  double l_y = 0;
+  CartesianCoordinate temp;
 
-  if(tl.x - bl.x == 0)
-    s2 = 100000;
-  else
-    s2 = (tl.y - bl.y) / (tl.x - bl.x);
+  sortCoord.push_back(p1);
+  sortCoord.push_back(p2);
+  sortCoord.push_back(p3);
+  sortCoord.push_back(p4);
 
-  if(tr.x - br.x == 0)
-    s3 = 100000;
-  else
-    s3 = (tr.y - br.y) / (tr.x - br.x);
+  std::sort(sortCoord.begin(), sortCoord.end(), CCC);
 
-  s4 = (bl.y - br.y) / (bl.x - br.x);
-    
-  b1 = tl.y - s1 * tl.x;
-  
-  if(s2 < 1000)
-    b2 = tl.y - s2 * tl.x;
+  double s1, s2, s3, s4;
+  double b1, b2, b3, b4;
 
-  if(s3 < 1000)
-    b3 = tr.y - s3 * tr.x;
-
-  b4 = bl.y - s4 * bl.x;
-
-  CartesianCoordinate  temp;
-  int inside_count = 0;
-
-  for(int i = 0; i < v.size(); i++) {
-    temp = v[i];
-    if(temp.y > s1 * temp.x + b1)
-      continue;
-    if(s2 < 10000) {
-      if(temp.x < (temp.y - b2) / s2)
-        continue;
-    } else {
-      if(temp.x < bl.x)
-        continue;
-    }
-    if(s3 < 10000) {
-      if(temp.x > (temp.y - b3) / s3)
-        continue;
-    } else {
-      if(temp.x > br.x)
-        continue;
-    }
-    if(temp.y < s4 * temp.x + b4)
-      continue;
-
-    inside_count++;
+  if(sortCoord[0].x - sortCoord[1].x == 0) {
+    s1 = 100000;
+    b1 = sortCoord[0].y;
+  }
+  else {
+    s1 = (sortCoord[0].y - sortCoord[1].y) / (sortCoord[0].x - sortCoord[1].x);
+    b1 = sortCoord[0].y - s1 * sortCoord[0].x;
   }
 
-  return inside_count;
+  if(sortCoord[0].x - sortCoord[2].x == 0) {
+    s2 = 100000;
+    b2 = sortCoord[0].y;
+  }
+  else {
+    s2 = (sortCoord[0].y - sortCoord[2].y) / (sortCoord[0].x - sortCoord[2].x);
+    b2 = sortCoord[0].y - s1 * sortCoord[0].x;
+  }
+
+  if(sortCoord[1].x - sortCoord[3].x == 0) {
+    s3 = 100000;
+    b3 = sortCoord[1].y;
+  }
+  else {
+    s3 = (sortCoord[1].y - sortCoord[3].y) / (sortCoord[1].x - sortCoord[3].x);
+    b3 = sortCoord[1].y - s1 * sortCoord[3].x;
+  }
+
+  if(sortCoord[3].x - sortCoord[1].x == 4) {
+    s4 = 100000;
+    b4 = sortCoord[3].y;
+  }
+  else {
+    s4 = (sortCoord[3].y - sortCoord[4].y) / (sortCoord[3].x - sortCoord[4].x);
+    b4 = sortCoord[3].y - s1 * sortCoord[4].x;
+  }
+
+  for(std::vector<CartesianCoordinate> it = v.begin(); it != v.end(); it++) {
+    if(it->y > s1 * it->x + b1 || it->y < s4 * it->x + b1)
+      continue;
+    if(it->x < (it->y - b2) / s2 || it->x > (it->y - b3) / s3)
+      continue;
+
+    total_points++;
+  }
+
+  return total_points; 
+
 }
+*/
 
 CartesianCoordinate closestPointInPolygon(
   const CartesianCoordinate & tl, const CartesianCoordinate & tr,
@@ -222,6 +238,24 @@ CartesianCoordinate closestPointInPolygon(
 
   for(int i = 0; i < v.size(); i++) {
     temp = v[i];
+    int count = 0;
+
+    //draw straight line up and count num of lines that intersects it
+    if(between(v[i].x, tl.x, tr.x) && v[i].y < v[i].x * s1 + b1)
+      count++;
+
+    if(between(v[i].x, tl.x, bl.x) && v[i].y < v[i].x * s2 + b2)
+      count++;
+
+    if(between(v[i].x, tr.x, br.x) && v[i].y < v[i].x * s3 + b3)
+      count++;
+
+    if(between(v[i].x, bl.x, br.x) && v[i].y < v[i].x * s4 + b4)
+      count++;
+
+    if(count % 2 == 1 && v[i].y > 0)
+      valid.push_back(temp);
+    /*
     if(temp.y > s1 * temp.x + b1)
       continue;
     if(s2 < 10000) {
@@ -240,11 +274,13 @@ CartesianCoordinate closestPointInPolygon(
     }
     if(temp.y < s4 * temp.x + b4)
       continue;
-
-    valid.push_back(temp);
+    
+    if(temp.y > 0)
+      valid.push_back(temp);
+    */
   }
 
-  CartesianCoordinate closest_point{10000, 10000};
+  CartesianCoordinate closest_point{10000000, 10000000};
   float minDist = 100000000;
   for(int i = 0; i < valid.size(); i++) {
     if(valid[i].x * valid[i].x + valid[i].y * valid[i].y < minDist) {
@@ -252,7 +288,7 @@ CartesianCoordinate closestPointInPolygon(
       closest_point = valid[i];
     }
   }
-
+  
   return closest_point;
 }
 
@@ -311,4 +347,14 @@ float orientationDiff( float currentOrientation, float desiredOrientation ) {
   << std::endl;
 
   return smallestTurningAngle;
+}
+
+bool between(float val, float bound1, float bound2) {
+  if(val < bound1 && val < bound2)
+    return false;
+
+  if(val > bound1 && val > bound2)
+    return false;
+
+  return true;
 }
