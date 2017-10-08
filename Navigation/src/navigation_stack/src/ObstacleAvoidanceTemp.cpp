@@ -82,7 +82,6 @@ float beamPath(const float & angleOffset, const float & width,
     points.push_back(point4);
   }
 
-  
   /*
   cout << "Angles: " << endl;
   vector<float>::iterator i;
@@ -96,9 +95,6 @@ float beamPath(const float & angleOffset, const float & width,
   vector<CartesianCoordinate> results;
   //cout << "Points: " << endl;
 
-  float x_offset = 0;//cos(angleOffset) * 0.1;
-  float y_offset = 0;//sin(angleOffset) * 0.1;
-  cout << "Offsets: " << x_offset << " " << y_offset << endl;
   //Print points used in rectangle, then find closestPointInPolygon
   vector<vector<float> >::iterator j;
   for (j = points.begin(); j != points.end(); j += 4) {
@@ -111,10 +107,10 @@ float beamPath(const float & angleOffset, const float & width,
     cout << endl;
     */
 
-    CartesianCoordinate p1{(*j)[0] + x_offset, (*j)[1] + y_offset};
-    CartesianCoordinate p2{(*(j + 1))[0] + x_offset, (*(j + 1))[1] + y_offset};
-    CartesianCoordinate p3{(*(j + 2))[0] + x_offset, (*(j + 2))[1] + y_offset};
-    CartesianCoordinate p4{(*(j + 3))[0] + x_offset, (*(j + 3))[1] + y_offset};
+    CartesianCoordinate p1{(*j)[0], (*j)[1]};
+    CartesianCoordinate p2{(*(j + 1))[0], (*(j + 1))[1]};
+    CartesianCoordinate p3{(*(j + 2))[0], (*(j + 2))[1]};
+    CartesianCoordinate p4{(*(j + 3))[0], (*(j + 3))[1]};
 
     CartesianCoordinate result = closestPointInPolygon(p2, p1, p4, p3, map);
     results.push_back(result);
@@ -125,43 +121,41 @@ float beamPath(const float & angleOffset, const float & width,
   count = 1;
   vector<float> best_angles;
   float best_angle = 0;
+
   vector<CartesianCoordinate>::iterator k;
-  
-  //find furthest angles
   for(k = results.begin(); k != results.end(); k++) {
 
-    cout << "Angle: " << count * angleInc + angleOffset - PI / 2 << " | Result: " << k->x << " " << k->y << " " << k->x * k->x + k->y * k->y << endl;
+    //cout << "Angle: " << count * angleInc + angleOffset - PI / 2 << " | Result: " << k->x << " " << k->y << " " << k->x * k->x + k->y * k->y << endl;
     if(k->x * k->x + k->y * k->y > maxDist) {
       maxDist = k->x * k->x + k->y * k->y;
-    }
-
-    count++;
-  }
-  
-  float distThreshold = 0.5f;
-  count = 1;
-
-  //push all good distances onto array
-  for(k = results.begin(); k != results.end(); k++) {
-    if(k->x * k->x + k->y * k->y >= maxDist - distThreshold) {
+      best_angles.clear();
       best_angles.push_back(count * angleInc + angleOffset - PI / 2);
-
-      cout << "Good angle: " << count * angleInc + angleOffset - PI / 2 << " Dist: " << k->x * k->x + k->y * k->y << endl;
+    }
+    else if(k->x * k->x + k->y * k->y == maxDist) {
+      best_angles.push_back(count * angleInc + angleOffset - PI / 2);
     }
     count++;
   }
-  
-  //choose best angle closest to straight
+
   vector<float>::iterator angle;
   float minAngle = 100;
   for(angle = best_angles.begin(); angle < best_angles.end(); angle++) {
-    if(*angle - angleOffset < minAngle || angleOffset - *angle < minAngle) {
-      best_angle = *angle;
+    if(*angle < 0) {
+      if(*angle * -1 < minAngle) {
+        minAngle = *angle * -1;
+        best_angle = *angle;
+      }
+    }
+    else {
+      if(*angle < minAngle) {
+        minAngle = *angle;
+        best_angle = *angle;
+      }
     }
   }
   
-  cout << "Max Dist  : " << maxDist << endl;
-  cout << "Best Angle: " << (best_angle) << endl;
+  //cout << "Max Dist  : " << maxDist << endl;
+  //cout << "Best Angle: " << (best_angle) << endl;
   
   auto t_end = std::chrono::high_resolution_clock::now();
 
@@ -177,9 +171,7 @@ float obstacleAvoidance(const vector<CartesianCoordinate> & CartesianMap,
   // Figure out the furthest path out the car should go to
   float furthestAngleOut = beamPath(
     beamAngleOffset, beamWidth, numBeams, CartesianMap );
-  
-  return furthestAngleOut;
-  /*
+
   // If there are obstacles right in front of car
   int leftPoints   = CartesianMapBoxFilter( CartesianMap, frontLeftBox ).size();
   int middlePoints = CartesianMapBoxFilter( CartesianMap, frontMiddleBox ).size();
@@ -197,5 +189,4 @@ float obstacleAvoidance(const vector<CartesianCoordinate> & CartesianMap,
 
 
   return desiredSteering;
-  */
 }

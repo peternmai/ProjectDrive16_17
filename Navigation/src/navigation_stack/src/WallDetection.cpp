@@ -102,8 +102,8 @@ float WallDetection( const std::vector<CartesianCoordinate> & CartesianMap,
   //cv::imshow( "Source", obstacleMatrix );
   
   // Show the wall map
-  cv::namedWindow( "Wall Detection Module", CV_WINDOW_NORMAL );
-  cv::imshow( "Wall Detection Module", detectedWalls );
+  //cv::namedWindow( "Wall Detection Module", CV_WINDOW_NORMAL );
+  //cv::imshow( "Wall Detection Module", detectedWalls );
 
   cv::waitKey(1);
 

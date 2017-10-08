@@ -2,7 +2,7 @@
 
                                                          Author: Jason Ma
                                                          Date:   Sep 19 2017
-                                      TODO
+                                      drive
 
   File Name:      beam.cpp
   Description:    Provides function for finding the angle that will allow the
@@ -26,7 +26,7 @@ using std::endl;
 //left should be positive, right negative
 float beamPath(float angleOffset, float width, int numRects, vector<CartesianCoordinate> map) {
   auto t_start = std::chrono::high_resolution_clock::now();
-  cout << "Generating: " << numRects << " rectangles" << endl;
+  //cout << "Generating: " << numRects << " rectangles" << endl;
   
   //determine angles of all lines and calculate a central pair of points
   float angleInc = PI / (numRects - 1);
@@ -121,7 +121,7 @@ float beamPath(float angleOffset, float width, int numRects, vector<CartesianCoo
   vector<CartesianCoordinate>::iterator k;
   for(k = results.begin(); k != results.end(); k++) {
 
-    cout << "Angle: " << count * angleInc + angleOffset - PI / 2 << " | Result: " << k->x << " " << k->y << " " << k->x * k->x + k->y * k->y << endl;
+    //cout << "Angle: " << count * angleInc + angleOffset - PI / 2 << " | Result: " << k->x << " " << k->y << " " << k->x * k->x + k->y * k->y << endl;
     if(k->x * k->x + k->y * k->y > maxDist) {
       maxDist = k->x * k->x + k->y * k->y;
       best_angles.clear();
@@ -150,11 +150,11 @@ float beamPath(float angleOffset, float width, int numRects, vector<CartesianCoo
     }
   }
   
-  cout << "Max Dist  : " << maxDist << endl;
-  cout << "Best Angle: " << (best_angle) << endl;
+  //cout << "Max Dist  : " << maxDist << endl;
+  //cout << "Best Angle: " << (best_angle) << endl;
   
   auto t_end = std::chrono::high_resolution_clock::now();
 
-  cout << "BeamPath Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_end - t_start).count() << endl;
+  //cout << "BeamPath Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_end - t_start).count() << endl;
   return best_angle;
 }

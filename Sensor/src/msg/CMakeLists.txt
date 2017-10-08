@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    optical_encoder.msg
    imu_orientation.msg
+   vehicle_status.msg
   )
 
 ## Generate added messages and services with any dependencies listed here

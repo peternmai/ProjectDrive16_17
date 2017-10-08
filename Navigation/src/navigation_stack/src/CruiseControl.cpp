@@ -1,6 +1,10 @@
 #include "CruiseControl.h"
 #include "LaneKeepingAssistance.h"
 
+/**
+ * Given a cartesian map, determine the coordinate of the closest obstacle ahead
+ * of the vehicle and return it. 
+ */
 CartesianCoordinate ClosestObstacleAhead(
   const std::vector<CartesianCoordinate> & CartesianMap, float min_x, float max_x) {
   
@@ -25,6 +29,10 @@ CartesianCoordinate ClosestObstacleAhead(
   return closestCoordinate;
 }
 
+/**
+ * Given a cartesian map, determine the coordinate of the closest obstacle behind
+ * the vehicle and return it.
+ */
 CartesianCoordinate ClosestObstacleBehind(
   const std::vector<CartesianCoordinate> & CartesianMap, float min_x, float max_x) {
 
@@ -49,6 +57,11 @@ CartesianCoordinate ClosestObstacleBehind(
   return closestCoordinate;
 }
 
+/**
+ * Given the cartesian map, polar coordinates, and direction the car is interested in,
+ * determine the appropriate speed and steering angle the car should take in order to
+ * avoid slamming into the obstacle.
+ */
 CruiseControl GetCruiseControl( 
   const std::vector<CartesianCoordinate> & CartesianMap,
   const sensor_msgs::LaserScan::ConstPtr & scan, VehicleGear gear ) {
@@ -62,20 +75,20 @@ CruiseControl GetCruiseControl(
   else
     closestCoordinate = ClosestObstacleAhead(CartesianMap, FORWARD_MIN_X, FORWARD_MAX_X);
   
-  std::cout << "x = " << (closestCoordinate.x * 3.28) << " ft \t|\ty = " << (closestCoordinate.y * 3.28) << " ft" << std::endl;
+  //std::cout << "x = " << (closestCoordinate.x * 3.28) << " ft \t|\ty = " << (closestCoordinate.y * 3.28) << " ft" << std::endl;
 
   // Calculate the speed of the vehicle
   float vision_range = std::max(MAX_VISIBLE_RANGE - CAR_BUFFER, (float) 0.1);
   if( gear == VehicleGear::backward ) {
-    slope = MAX_SPEED_BACKWARD / vision_range;
+    slope = MAX_OBSTACLE_AVOIDANCE_SPEED_BACKWARD / vision_range;
     proposed_speed = (closestCoordinate.y + CAR_BUFFER) * slope * -1;
   }
   else {
-    slope = MAX_SPEED_FORWARD / vision_range;
+    slope = MAX_OBSTACLE_AVOIDANCE_SPEED_FORWARD / vision_range;
     proposed_speed = (closestCoordinate.y - CAR_BUFFER) * slope;
   }
 
-  std::cout << "Speed " << ((gear == VehicleGear::backward) ? "backward: " : "forward: ") 
+  std::cout << "Proposed speed " << ((gear == VehicleGear::backward) ? "backward: " : "forward: ") 
     << proposed_speed << " m/s" << std::endl;
 
   // Fill in cruise control data fields
@@ -83,6 +96,11 @@ CruiseControl GetCruiseControl(
   cruiseControl.closestCoordinate       = closestCoordinate;
   cruiseControl.proposed_speed          = proposed_speed;
 
+  // If no obstacles detected, sent to the maximum possible cruise speed
+  if( proposed_speed == MAX_OBSTACLE_AVOIDANCE_SPEED_FORWARD )
+    cruiseControl.proposed_speed = MAX_CRUISE_SPEED;
+
+  // Determine the steering angle based on the lane keeping assistance module
   if( gear == VehicleGear::forward )
     cruiseControl.proposed_steering_angle = LaneKeepingAssistance( scan, true );
   else

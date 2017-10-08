@@ -48,7 +48,7 @@ TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianM
     }
   }
 
-  std::cout << "turning diff: " << smallestTurningAngle << std::endl;
+  //std::cout << "turning diff: " << smallestTurningAngle << std::endl;
 
   // Check to see if car has already reached desired orientation
   if( smallestTurningAngle < TURNING_ANGLE_BUFFER ) {
@@ -74,7 +74,7 @@ TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianM
       // Car can go backward right
       if( map.size() == 0 && !forward ) {
         turningCommands.gear      = VehicleGear::backward;
-	turningCommands.direction = Direction::right;
+      	turningCommands.direction = Direction::right;
       }
 
       // Car cannot turn
@@ -101,7 +101,7 @@ TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianM
       // Car can go backward left
       if( map.size() == 0 && !forward ) {
         turningCommands.gear      = VehicleGear::backward;
-	turningCommands.direction = Direction::left;
+      	turningCommands.direction = Direction::left;
       }
 
       // Car cannot turn
@@ -111,7 +111,7 @@ TurningCommands TurnVehicle( const std::vector<CartesianCoordinate> & CartesianM
     }
   }
 
-  std::cout << "Going Forward: " << forward << std::endl;
+  //std::cout << "Going Forward: " << forward << std::endl;
 
   // Return turning commands
   if( canTurn )

@@ -14,16 +14,22 @@
 #include <math.h>
 #include <tf/transform_broadcaster.h>
 #include <msg/imu_orientation.h>
+#include <msg/vehicle_status.h>
 #include <tf/transform_datatypes.h>
+#include <list>
 
-float old[30] = {0};
-int it_idx = 0;
-int cont = 0;
 float yaw = 0;
 float prev_yaw = 0;
+float cont = 0;
 float avg_orien = 0;
+float old_avg = 0;
+std::list<float> o;
+float old[30];
+int it_idx = 0;
 ros::Time r_time;
 
 void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
+
+void modeCallback(const msg::vehicle_status::ConstPtr & msg);
 
 #endif

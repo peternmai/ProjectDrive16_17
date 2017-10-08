@@ -2,10 +2,11 @@
 
                                                          Author: Jason Ma
                                                          Date:   Sep 30 2017
-                                      TODO
+                                      drive
 
  File Name:       beam.h
- Description:     TODO
+ Description:     Provides function for finding the angle that will allow the
+                  vehicle to move furthest forwards.
  *****************************************************************************/
 
 #ifndef BEAM_H

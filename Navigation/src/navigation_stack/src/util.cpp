@@ -129,6 +129,7 @@ bool CCC(CartesianCoordinate p1, CartesianCoordinate p2) {
   else
     return(p1.y > p2.y);
 }
+
 /*
 int totalPointsInPolygon(
   const CartesianCoordinate & p1, const CartesianCoordinate & p2,
@@ -201,6 +202,73 @@ int totalPointsInPolygon(
 }
 */
 
+int totalPointsInPolygon(
+  const CartesianCoordinate & tl, const CartesianCoordinate & tr,
+  const CartesianCoordinate & bl, const CartesianCoordinate & br,
+  const std::vector<CartesianCoordinate> & v) {
+
+  float s1, s2, s3, s4;
+  float b1, b2, b3, b4;
+
+  s1 = (tl.y - tr.y) / (tl.x - tr.x);
+
+  if(tl.x - bl.x == 0)
+    s2 = 100000;
+  else
+    s2 = (tl.y - bl.y) / (tl.x - bl.x);
+
+  if(tr.x - br.x == 0)
+    s3 = 100000;
+  else
+    s3 = (tr.y - br.y) / (tr.x - br.x);
+
+  s4 = (bl.y - br.y) / (bl.x - br.x);
+    
+  b1 = tl.y - s1 * tl.x;
+  
+  if(s2 < 1000)
+    b2 = tl.y - s2 * tl.x;
+
+  if(s3 < 1000)
+    b3 = tr.y - s3 * tr.x;
+
+  b4 = bl.y - s4 * bl.x;
+
+  CartesianCoordinate temp;
+  std::vector<CartesianCoordinate> valid;
+
+  for(int i = 0; i < v.size(); i++) {
+    temp = v[i];
+    int count = 0;
+
+    //draw straight line up and count num of lines that intersects it
+    if(between(v[i].x, tl.x, tr.x) && v[i].y < v[i].x * s1 + b1)
+      count++;
+
+    if(between(v[i].x, tl.x, bl.x) && v[i].y < v[i].x * s2 + b2)
+      count++;
+
+    if(between(v[i].x, tr.x, br.x) && v[i].y < v[i].x * s3 + b3)
+      count++;
+
+    if(between(v[i].x, bl.x, br.x) && v[i].y < v[i].x * s4 + b4)
+      count++;
+
+    if(count % 2 == 1)
+      valid.push_back(temp);
+    /*
+    if(temp.y > s1 * temp.x + b1)
+      continue;
+    if(s2 < 10000) {
+      if(temp.x < (temp.y - b2) / s2)
+        continue;
+    */
+  }
+  
+  return valid.size();
+
+}
+
 CartesianCoordinate closestPointInPolygon(
   const CartesianCoordinate & tl, const CartesianCoordinate & tr,
   const CartesianCoordinate & bl, const CartesianCoordinate & br,
@@ -253,7 +321,7 @@ CartesianCoordinate closestPointInPolygon(
     if(between(v[i].x, bl.x, br.x) && v[i].y < v[i].x * s4 + b4)
       count++;
 
-    if(count % 2 == 1 && v[i].y > 0)
+    if(count % 2 == 1 && v[i].y != 0)
       valid.push_back(temp);
     /*
     if(temp.y > s1 * temp.x + b1)
@@ -310,8 +378,8 @@ void printProgressBar( std::string title, float percentage ) {
 
 float orientationDiff( float currentOrientation, float desiredOrientation ) {
 
-  std::cout << "Current Orientation: " << currentOrientation << std::endl;
-  std::cout << "Desired Orientation: " << desiredOrientation << std::endl;
+  //std::cout << "Current Orientation: " << currentOrientation << std::endl;
+  //std::cout << "Desired Orientation: " << desiredOrientation << std::endl;
 
   float smallestTurningAngle = std::numeric_limits<float>::max();
   bool goRight = false;
@@ -335,7 +403,7 @@ float orientationDiff( float currentOrientation, float desiredOrientation ) {
     }
     
     if( desiredOrientation + 2 * M_PI - currentOrientation < smallestTurningAngle ) {
-      smallestTurningAngle = currentOrientation - desiredOrientation;
+      smallestTurningAngle = desiredOrientation + 2 * M_PI - currentOrientation;
       goRight = false;;
     }
   }
@@ -343,8 +411,8 @@ float orientationDiff( float currentOrientation, float desiredOrientation ) {
   if( goRight )
     smallestTurningAngle *= -1;
 
-  std::cout << "Orientation diff from straight wall: " << smallestTurningAngle
-  << std::endl;
+  //std::cout << "Orientation diff from straight wall: " << smallestTurningAngle
+  //<< std::endl;
 
   return smallestTurningAngle;
 }
