@@ -18,10 +18,10 @@ enum Direction {
 
 static const float MAX_CRUISE_SPEED       =  1;
 
-static const float MAX_OBSTACLE_AVOIDANCE_SPEED_FORWARD  =  0.5;
-static const float MAX_OBSTACLE_AVOIDANCE_SPEED_BACKWARD = -0.5;
+static const float MAX_OBSTACLE_AVOIDANCE_SPEED_FORWARD  =  0.75;
+static const float MAX_OBSTACLE_AVOIDANCE_SPEED_BACKWARD = -0.75;
 
-static const float MAX_VISIBLE_RANGE  =  5;
+static const float MAX_VISIBLE_RANGE  =  10;
 
 static const float MIN_SPEED_FORWARD  =  0.15;
 static const float MIN_SPEED_BACKWARD = -0.15;

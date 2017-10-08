@@ -32,136 +32,140 @@ float beamPath(const float & angleOffset, const float & width,
   auto t_start = std::chrono::high_resolution_clock::now();
   //cout << "Generating: " << numRects << " rectangles" << endl;
   
+  vector<vector<float> >::iterator j;
+  vector<vector<float> > points;
+  vector<CartesianCoordinate>::iterator k;
+  vector<CartesianCoordinate> results;
+  vector<float> best_angles;
+  vector<float> scores;
+
+  int count = 0;
+  float maxScore = 0;
+  float best_angle = 0;
+  
+  float x_offset = 0;//cos(angleOffset) * 0.1;
+  float y_offset = 0;//sin(angleOffset) * 0.1;
+  
   //determine angles of all lines and calculate a central pair of points
   float angleInc = PI / (numRects - 1);
-
-  vector<float> angles;
-  vector<vector<float> > points;
-  
   for(int i = 1; i < numRects - 1; i++) {
     //calc angle
     float angle = angleInc * i + angleOffset;
-    angles.push_back(angle);
 
     //calc central pair of points
     float xCen, yCen;
-    xCen = cos(angle) * 1000;
-    yCen = sin(angle) * 1000;
+    xCen = cos(angle) * 100;
+    yCen = sin(angle) * 100;
 
     //calc side points
-    float temp_angle1 = angle - PI / 2;
-    float temp_angle2 = angle + PI / 2;
-    
-    float x1, y1;
+    float x1, y1, x2, y2, temp_angle1, temp_angle2;
+    temp_angle1 = angle - PI / 2;
+    temp_angle2 = angle + PI / 2;
     x1 = cos(temp_angle1) * width / 2;
     y1 = sin(temp_angle1) * width / 2;
 
-    float x2, y2;
     x2 = cos(temp_angle2) * width / 2;
     y2 = sin(temp_angle2) * width / 2;
     
     //parallel line endpoint calculations
-    vector<float> point1;
-    point1.push_back(xCen + x1);
-    point1.push_back(yCen + y1);
-    points.push_back(point1);
-
-    vector<float> point2;
-    point2.push_back(xCen + x2);
-    point2.push_back(yCen + y2);
-    points.push_back(point2);
-
-    vector<float> point3;
-    point3.push_back(0 + x1);
-    point3.push_back(0 + y1);
-    points.push_back(point3);
-
-    vector<float> point4;
-    point4.push_back(0 + x2);
-    point4.push_back(0 + y2);
-    points.push_back(point4);
-  }
-
-  
-  /*
-  cout << "Angles: " << endl;
-  vector<float>::iterator i;
-  for (i = angles.begin(); i != angles.end(); ++i)
-    cout << *i << ' ';
-
-  cout << endl;
-  */
-
-  int count = 0;
-  vector<CartesianCoordinate> results;
-  //cout << "Points: " << endl;
-
-  float x_offset = 0;//cos(angleOffset) * 0.1;
-  float y_offset = 0;//sin(angleOffset) * 0.1;
-  cout << "Offsets: " << x_offset << " " << y_offset << endl;
-  //Print points used in rectangle, then find closestPointInPolygon
-  vector<vector<float> >::iterator j;
-  for (j = points.begin(); j != points.end(); j += 4) {
-    
-    /*
-    cout << (*j)[0] << " " << (*j)[1] << endl;
-    cout << (*(j + 1))[0] << " " << (*(j + 1))[1] << endl;
-    cout << (*(j + 2))[0] << " " << (*(j + 2))[1] << endl;
-    cout << (*(j + 3))[0] << " " << (*(j + 3))[1] << endl;
-    cout << endl;
-    */
-
-    CartesianCoordinate p1{(*j)[0] + x_offset, (*j)[1] + y_offset};
-    CartesianCoordinate p2{(*(j + 1))[0] + x_offset, (*(j + 1))[1] + y_offset};
-    CartesianCoordinate p3{(*(j + 2))[0] + x_offset, (*(j + 2))[1] + y_offset};
-    CartesianCoordinate p4{(*(j + 3))[0] + x_offset, (*(j + 3))[1] + y_offset};
+    CartesianCoordinate p1{xCen + x1 + x_offset, yCen + y1 + y_offset};
+    CartesianCoordinate p2{xCen + x2 + x_offset, yCen + y2 + y_offset};
+    CartesianCoordinate p3{x1 + x_offset, y1 + y_offset};
+    CartesianCoordinate p4{x2 + x_offset, y2 + y_offset};
 
     CartesianCoordinate result = closestPointInPolygon(p2, p1, p4, p3, map);
     results.push_back(result);
   }
-
-  //Determine best angle from closest point found
-  float maxDist = 0;
-  count = 1;
-  vector<float> best_angles;
-  float best_angle = 0;
-  vector<CartesianCoordinate>::iterator k;
   
-  //find furthest angles
+  float leftDist = results[numRects * 3 / 4].x * results[numRects * 3 / 4].x + results[numRects * 3 / 4].y * results[numRects * 3 / 4].y;
+
+  float rightDist = results[numRects / 4].x * results[numRects / 4].x + results[numRects / 4].y * results[numRects / 4].y;
+
+  count = 1;
+  //Determine best angle using score based on distance and straightness.
   for(k = results.begin(); k != results.end(); k++) {
+    float dist = k->x * k->x + k->y * k->y;
+    float currAngle = count * angleInc + angleOffset - PI / 2;
+    float currScore;
+    
+    float straightBonus = angleOffset - currAngle;
+    if(straightBonus < 0) straightBonus *= -1;
+    straightBonus = sqrt(1 / straightBonus);
+    
+    /*
+    float correctionAngle = 3 / (rightDist - leftDist);
+    if(correctionAngle < -0.5) correctionAngle = -0.5;
+    if(correctionAngle > 0.5) correctionAngle = 0.5;
+    correctionAngle = correctionAngle * PI;
+    
+    float correctionBonus = correctionAngle - currAngle;
+    if(correctionBonus < 0) correctionBonus *= -1;
+    correctionBonus = sqrt(0.1 / correctionBonus);
+    */
+    //correctionBonus = 0;
 
-    cout << "Angle: " << count * angleInc + angleOffset - PI / 2 << " | Result: " << k->x << " " << k->y << " " << k->x * k->x + k->y * k->y << endl;
-    if(k->x * k->x + k->y * k->y > maxDist) {
-      maxDist = k->x * k->x + k->y * k->y;
+    currScore = dist + straightBonus;
+
+    scores.push_back(currScore);
+
+    if(currScore > maxScore) {
+      maxScore = currScore;
+      best_angle = currAngle;
     }
-
+    
     count++;
+
+    cout << "[beamPath] Angle: " << currAngle << " | Dist: " << dist << endl;
   }
   
-  float distThreshold = 0.5f;
+  /*
+  float threshold = 0.5;
   count = 1;
 
   //push all good distances onto array
-  for(k = results.begin(); k != results.end(); k++) {
-    if(k->x * k->x + k->y * k->y >= maxDist - distThreshold) {
+  for(k = scores.begin(); k < scores.end(); k++) {
+    if(*k >= maxScore - threshold) {
       best_angles.push_back(count * angleInc + angleOffset - PI / 2);
 
-      cout << "Good angle: " << count * angleInc + angleOffset - PI / 2 << " Dist: " << k->x * k->x + k->y * k->y << endl;
+      cout << "[beamPath] Good angle: " << count * angleInc + angleOffset - PI / 2 << " | Score: " << *k << endl;
     }
     count++;
   }
   
-  //choose best angle closest to straight
-  vector<float>::iterator angle;
-  float minAngle = 100;
-  for(angle = best_angles.begin(); angle < best_angles.end(); angle++) {
-    if(*angle - angleOffset < minAngle || angleOffset - *angle < minAngle) {
-      best_angle = *angle;
+  
+  CartesianCoordinate frontp1{-0.4, 1};
+  CartesianCoordinate frontp2{0.4, 1};
+  CartesianCoordinate frontp3{-0.4, 0.1};
+  CartesianCoordinate frontp4{0.4, 1};
+  */
+
+  /*
+  if(totalPointsInPolygon(frontp1, frontp2, frontp3, frontp4, map) > 0) {
+    
+    cout << "[beamPath] Front Obstacle: +" << endl;
+    //choose best angle not close to straight
+    vector<float>::iterator angle;
+    float maxAngle = 0;
+    for( angle = best_angles.begin(); angle < best_angles.end(); angle++) {
+      if(*angle - angleOffset > maxAngle || angleOffset - *angle > maxAngle) {
+        best_angle = *angle;
+      }
     }
   }
+  else {
+    cout << "[beamPath] Front Obstacle: -" << endl;
+    //choose best angle closest to straight
+    vector<float>::iterator angle;
+    float minAngle = 100;
+    for(angle = best_angles.begin(); angle < best_angles.end(); angle++) {
+      if(*angle - angleOffset < minAngle || angleOffset - *angle < minAngle) {
+        best_angle = *angle;
+      }
+    }
+  }
+  */
   
-  cout << "Max Dist  : " << maxDist << endl;
-  cout << "Best Angle: " << (best_angle) << endl;
+  cout << "[beamPath] Best Angle: " << (best_angle) << " | Max Score: " << maxScore << endl;
   
   auto t_end = std::chrono::high_resolution_clock::now();
 

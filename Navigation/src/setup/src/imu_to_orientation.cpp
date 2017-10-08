@@ -131,10 +131,13 @@ void modeCallback(const msg::vehicle_status::ConstPtr & msg) {
   std::list<float>::iterator it;
 
   if(mode == 1) {
-    for(it = o.begin(); it != o.end(); it++)
-      *it = yaw;
+    for(int i = 0; i < o.size(); i++) {
+      o.push_back(yaw);
+      o.pop_front();
+      
   }
   mode = 0;
+}
 
 //  if(mode == 1) {
 //    for(int i = 0; i < sizeof(old) / sizeof(old[i]); i++)
@@ -165,10 +168,10 @@ int main(int argc, char ** argv) {
       else
         old_oriens.push_back(*it);
     }
-/*
-    for(int i = 0; i < sizeof(old) / sizeof(old[i]); i++)
-      old_oriens.push_back(old[i]);
-*/
+    yaw = o.back();
+    yaw = fmod(yaw, 2 * M_PI);
+    if(yaw < 0)
+      yaw += 2 * M_PI;
     msg::imu_orientation imu_msg;
     imu_msg.header.stamp = r_time;
     imu_msg.header.frame_id = "orientation";

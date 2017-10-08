@@ -348,8 +348,8 @@ CartesianCoordinate closestPointInPolygon(
     */
   }
 
-  CartesianCoordinate closest_point{10000000, 10000000};
-  float minDist = 100000000;
+  CartesianCoordinate closest_point{100, 100};
+  float minDist = 10000;
   for(int i = 0; i < valid.size(); i++) {
     if(valid[i].x * valid[i].x + valid[i].y * valid[i].y < minDist) {
       minDist = valid[i].x * valid[i].x + valid[i].y * valid[i].y;

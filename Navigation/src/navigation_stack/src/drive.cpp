@@ -66,7 +66,7 @@ static CartesianCoordinate p4_right{0.7, -0.15};
 
 
 static void VisualizeAckermannDrive( float throttle, float steering ) {
-  std::cout << std::endl << "Mode: " << curMode << std::endl << std::endl;
+  std::cout << "Mode: " << curMode << std::endl << std::endl;
   printProgressBar( "THROTTLE", speed / MAX_CRUISE_SPEED );
   printProgressBar( "STEERING", -steering / (M_PI/2));
 }
@@ -212,7 +212,8 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
       }
       **/
       speed = forwardCruiseControl.proposed_speed;
-      steering = obstacleAvoidance( CartesianMap, straightOrientation, 0.5, 30);
+      steering = (obstacleAvoidance( CartesianMap, straightOrientation, 0.5, 30)
+                 + straightOrientation) / 2;
       
       
 
@@ -261,7 +262,7 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
 
     case DriveMode::obstacle_avoidance:
       speed = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
-      steering = obstacleAvoidance(CartesianMap, straightOrientation, 0.6, 20);
+      steering = obstacleAvoidance(CartesianMap, straightOrientation, 0.45, 40);
 
       // Check if can go straight
       if( CartesianMapBoxFilter( CartesianMap, frontBuffer ).size() > 0 ) {
@@ -342,9 +343,9 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
   int obstaclesToLeft  = CartesianMapBoxFilter( CartesianMap, leftBuffer  ).size();
 
   if( obstaclesToRight > 0 )
-    steering = std::max((float) 0, steering);
+    steering = std::max((float) 0.07, steering);
   if( obstaclesToLeft > 0 )
-    steering = std::min((float) 0, steering);
+    steering = std::min((float) -0.07, steering);
 
   clock_t endTime   = std::clock();
   double  duration  = double(endTime - startTime) / CLOCKS_PER_SEC;

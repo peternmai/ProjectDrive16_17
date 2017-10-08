@@ -262,7 +262,7 @@ void displayResults(double left, double right, double total, double diff) {
 double t_area(const sensor_msgs::LaserScan::ConstPtr& msg) {
   num_reads = msg->ranges.size();
   for(int i = 0; i < num_reads; i++) {
-    ranges[i] = msg->ranges[i] > 10 ? 5 : msg->ranges[i];
+    ranges[i] = msg->ranges[i] > 10 ? 10 : msg->ranges[i];
     if(ranges[i] == 0)
       ranges[i] = 5;
     angles[i] = msg->angle_min + msg->angle_increment * i;
