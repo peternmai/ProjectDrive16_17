@@ -69,18 +69,23 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   if(yaw < 0)
     yaw += 2 * M_PI;
 
+  o.push_back(yaw);
+
+  if(o.size() > 30)
+    o.pop_front();
+
   if(prev_yaw > 5.5 && yaw < 1.5 && prev_yaw != 0)
     cont++;
   if(prev_yaw < 1.5 && yaw > 5.5 && prev_yaw != 0)
     cont--;
 
-  prev_yaw = yaw;
+  prev_yaw = o.back();
   yaw += cont * 2 * M_PI;
 
-  o.push_back(yaw);
+  scaled_o.push_back(yaw);
 
-  if(o.size() > 30)
-    o.pop_front();
+  if(scaled_o.size() > 30)
+    scaled_o.pop_front();
 
   avg_orien = 0;
   old_avg = 0;
@@ -89,23 +94,22 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   float dur = 0;
 
   std::list<float>::iterator it;
-  for(it = o.begin(); it != o.end(); it++) {
+  for(it = scaled_o.begin(); it != scaled_o.end(); it++) {
     tot_orien += *it;
     dur = dur + 1;
   }
 
   avg_orien = tot_orien / dur;
   avg_orien = fmod(avg_orien, 2 * M_PI);
-  yaw = fmod(yaw, 2 * M_PI);
 
   tot_orien = dur = 0;
-  it = o.begin();
+  it = scaled_o.begin();
 
   for(int i = 0; i < 15; i++) {
     tot_orien += *it;
     dur += 1;
     it++;
-    if(it == o.end())
+    if(it == scaled_o.end())
       break;
   }
 
@@ -118,9 +122,8 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   if(old_avg < 0)
     old_avg += 2 * M_PI;
 
-  if(yaw < 0)
-    yaw += 2 * M_PI;
-  
+  yaw = o.back();
+
   std::cout << "Yaw: " << yaw << " Prev_Yaw: " << prev_yaw << "\n";
   std::cout << "The average orientation is: " << avg_orien <<"\n";
   std::cout << "The old average orientation is: " << old_avg << "\n";
@@ -135,14 +138,10 @@ void modeCallback(const msg::vehicle_status::ConstPtr & msg) {
       o.push_back(yaw);
       o.pop_front();
       
-  }
+    }
   mode = 0;
-}
+  }
 
-//  if(mode == 1) {
-//    for(int i = 0; i < sizeof(old) / sizeof(old[i]); i++)
-//      old[i] = yaw;
-//  }
 }
 
 /* The way to use the imu to orientation */
@@ -162,16 +161,10 @@ int main(int argc, char ** argv) {
 
     std::vector<float> old_oriens;
     std::list<float>::iterator it;
-    for(it = o.begin(); it != o.end(); it++) {
-      if(*it < 0)
-        old_oriens.push_back(*it + 2 * M_PI);
-      else
+
+    for(it = o.begin(); it != o.end(); it++)
         old_oriens.push_back(*it);
-    }
-    yaw = o.back();
-    yaw = fmod(yaw, 2 * M_PI);
-    if(yaw < 0)
-      yaw += 2 * M_PI;
+
     msg::imu_orientation imu_msg;
     imu_msg.header.stamp = r_time;
     imu_msg.header.frame_id = "orientation";

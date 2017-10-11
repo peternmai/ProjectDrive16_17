@@ -81,6 +81,12 @@ float beamPath(const float & angleOffset, const float & width,
 
   float rightDist = results[numRects / 4].x * results[numRects / 4].x + results[numRects / 4].y * results[numRects / 4].y;
 
+  float score_total = 0;
+
+  for(k = results.begin(); k != results.end(); k++) {
+    score_total += k->x * k->x + k->y * k->y;
+  }
+
   count = 1;
   //Determine best angle using score based on distance and straightness.
   for(k = results.begin(); k != results.end(); k++) {
@@ -88,9 +94,11 @@ float beamPath(const float & angleOffset, const float & width,
     float currAngle = count * angleInc + angleOffset - PI / 2;
     float currScore;
     
-    float straightBonus = angleOffset - currAngle;
+    float straightBonus = (angleOffset - currAngle);
     if(straightBonus < 0) straightBonus *= -1;
-    straightBonus = sqrt(1 / straightBonus);
+    
+    straightBonus = PI / 2 - straightBonus;
+    //straightBonus = sqrt(1 / straightBonus);
     
     /*
     float correctionAngle = 3 / (rightDist - leftDist);
@@ -107,17 +115,30 @@ float beamPath(const float & angleOffset, const float & width,
     currScore = dist + straightBonus;
 
     scores.push_back(currScore);
-
+    
+    /*
     if(currScore > maxScore) {
       maxScore = currScore;
       best_angle = currAngle;
     }
+    */
     
     count++;
-
-    cout << "[beamPath] Angle: " << currAngle << " | Dist: " << dist << endl;
+    
+    cout << "[beamPath] Angle: " << currAngle << " | Dist: " << dist << " | Score: " << currScore << endl;
   }
   
+  maxScore = 0;
+
+  for(int i = 1; i < scores.size() - 1; i++) {
+    float currScore = scores[i - 1] + scores[i] * scores[i] + scores[i + 1];
+    float currAngle = (i + 1) * angleInc + angleOffset - PI / 2;
+    
+    if(currScore > maxScore) {
+      maxScore = currScore;
+      best_angle = currAngle;
+    }
+  }
   /*
   float threshold = 0.5;
   count = 1;

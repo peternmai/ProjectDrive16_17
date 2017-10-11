@@ -261,15 +261,17 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
       break;
 
     case DriveMode::obstacle_avoidance:
-      speed = std::max(MIN_SPEED_FORWARD, forwardCruiseControl.proposed_speed);
+      speed = forwardCruiseControl.proposed_speed;
       steering = obstacleAvoidance(CartesianMap, straightOrientation, 0.45, 40);
 
       // Check if can go straight
-      if( CartesianMapBoxFilter( CartesianMap, frontBuffer ).size() > 0 ) {
+      if( CartesianMapBoxFilter( CartesianMap, frontBuffer ).size() > 0 || speed <= MIN_SPEED_BACKWARD) {
         speed = backwardCruiseControl.proposed_speed;
         steering *= -1;
         numIterationBackward = refreshRate * MIN_BACKUP_TIME;
       }
+      else
+        speed = std::max(MIN_SPEED_FORWARD, speed);
       
       if( numIterationBackward > 0 ) {
         speed = backwardCruiseControl.proposed_speed;

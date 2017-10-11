@@ -24,8 +24,9 @@ float cont = 0;
 float avg_orien = 0;
 float old_avg = 0;
 std::list<float> o;
-float old[30];
-int it_idx = 0;
+std::list<float> scaled_o;
+//float old[30];
+//int it_idx = 0;
 ros::Time r_time;
 
 void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
