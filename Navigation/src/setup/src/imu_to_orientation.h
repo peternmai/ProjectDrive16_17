@@ -20,13 +20,15 @@
 
 float yaw = 0;
 float prev_yaw = 0;
+double roll = 0;
+double pitch  = 0;
 float cont = 0;
 float avg_orien = 0;
 float old_avg = 0;
+double avg_pitch = 0;
+std::list<double> p;
 std::list<float> o;
 std::list<float> scaled_o;
-//float old[30];
-//int it_idx = 0;
 ros::Time r_time;
 
 void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);

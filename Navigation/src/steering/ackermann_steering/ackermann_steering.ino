@@ -32,7 +32,8 @@ const float NEUTRAL_THROTTLE = 90;
 const float NEUTRAL_STEERING_ANGLE = 90;
 
 const float MIN_THROTTLE = 60;             // min throttle (0-180)
-const float MAX_THROTTLE = 100;            // max throttle (0-180)
+const float MAX_THROTTLE = 102;            // max throttle (0-180)
+const float UPHILL_THROTTLE = 108;
 
 const float MIN_STEERING_ANGLE = 20;       // min steering angle (0-180)
 const float MAX_STEERING_ANGLE = 160;      // max steering angle (0-180)
@@ -91,8 +92,13 @@ void ackermannCallback( const ackermann_msgs::AckermannDriveStamped & ackermann 
     throttle = MIN_THROTTLE;
   
   // Check for allowed max throttle
-  if( throttle > MAX_THROTTLE )
-    throttle = MAX_THROTTLE;
+  if( throttle > MAX_THROTTLE ) {
+    // Check if up hill speed requested. request code: 999
+    if( ackermann.drive.speed == 999)
+      throttle = UPHILL_THROTTLE;
+    else
+      throttle = MAX_THROTTLE;
+  }
   
   // Switches ESC to backward mode if necessary
   if( throttle <= NEUTRAL_THROTTLE - THROTTLE_BACKWARD_OFFSET ) {

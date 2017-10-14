@@ -2,6 +2,7 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
+#include <tf/transform_datatypes.h>
 
 void odomCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   static tf::TransformBroadcaster odom;
@@ -12,6 +13,10 @@ void odomCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   tf::Transform odom_baselink;
   tf::Quaternion otb_q;
   tf::quaternionMsgToTF(msg->orientation, otb_q);
+  double roll, pitch, yaw;
+  tf::Matrix3x3 m(otb_q);
+  m.getRPY(roll, pitch, yaw);
+  std::cout << "roll: " << roll << " pitch: " << pitch << " yaw: " << yaw << "\n";
   odom_baselink.setOrigin(tf::Vector3(0.0, 0.0, 0.0));
   odom_baselink.setRotation(otb_q);
 

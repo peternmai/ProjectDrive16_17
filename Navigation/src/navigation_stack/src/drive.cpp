@@ -13,6 +13,7 @@
 
 #include "drive.h"
 #include <ctime>
+#include <ros/master.h>
 
 static DriveMode curMode  = DriveMode::obstacle_avoidance;
 static DriveMode prevMode = DriveMode::cruise;
@@ -29,6 +30,8 @@ static float averageOrientation         = -1;
 static float oldAvgOrientation          = -1;
 static float desiredOrientation         = -1;
 static float wallDetectionOrientation   = -1;
+static float pitch                      = -1;
+static float avgPitch                   = -1;
 
 static float reorientateOrientation     = -1;
 
@@ -349,6 +352,25 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
   if( obstaclesToLeft > 0 )
     steering = std::min((float) -0.07, steering);
 
+  // Uneven slope surface override
+  if(((pitch > 0.15) && (avgPitch > 0.15)) || ((pitch < -0.15) && (avgPitch < -0.15))) {
+
+    // If head is facing down
+    if( pitch > 0 ) {
+      speed = MIN_SPEED_FORWARD;
+      steering = 0;
+    }
+    // If head is facing up and ahead is clear
+    else if( pitch < 0 && speed > 0 )
+      speed = 999;
+
+    // Else go back
+    else {
+      speed = speed;
+      steering = 0;
+    }
+  }
+
   clock_t endTime   = std::clock();
   double  duration  = double(endTime - startTime) / CLOCKS_PER_SEC;
   std::cout << "Total calculation time: " << duration << std::endl;
@@ -358,6 +380,9 @@ static void OrientationCallback( const msg::imu_orientation::ConstPtr & orientat
   currentOrientation = orientation->orientation;
   averageOrientation = orientation->avg_orientation;
   oldAvgOrientation  = orientation->old_avg;
+  pitch              = orientation->pitch;
+  avgPitch           = orientation->avg_pitch;
+
 }
 
 int main( int argc, char ** argv ) {
@@ -380,7 +405,7 @@ int main( int argc, char ** argv ) {
   ros::Rate r( refreshRate );
 
   // Continuously publish new sensor data
-  while(nh.ok()) {
+  while(nh.ok() && ros::master::check()) {
     
     system("clear");
     std::cout << "Current Time: " << ros::Time::now() << std::endl;

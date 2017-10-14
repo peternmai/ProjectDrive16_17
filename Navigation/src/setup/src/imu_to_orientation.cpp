@@ -63,16 +63,26 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 
 void imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 
+  tf::Quaternion q;
+  tf::quaternionMsgToTF(msg->orientation, q);
+  tf::Matrix3x3 m(q);
+  double y1;
   yaw = tf::getYaw(msg->orientation);
+  m.getRPY(roll, pitch, y1);
   r_time = msg->header.stamp;
 
   if(yaw < 0)
     yaw += 2 * M_PI;
 
   o.push_back(yaw);
+  p.push_back(pitch);
 
   if(o.size() > 30)
     o.pop_front();
+
+  if(p.size() > 15)
+    p.pop_front();
+
 
   if(prev_yaw > 5.5 && yaw < 1.5 && prev_yaw != 0)
     cont++;
@@ -116,6 +126,15 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   old_avg = tot_orien / dur;
   old_avg = fmod(old_avg, 2 * M_PI);
 
+  double tot_pit = 0;
+
+  std::list<double>::iterator pit;
+  for(pit = p.begin(); pit != p.end(); pit++) {
+    tot_pit += *pit;
+  }
+
+  avg_pitch = tot_pit / p.size();
+
   if(avg_orien < 0)
     avg_orien += 2 * M_PI;
 
@@ -124,9 +143,8 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 
   yaw = o.back();
 
-  std::cout << "Yaw: " << yaw << " Prev_Yaw: " << prev_yaw << "\n";
-  std::cout << "The average orientation is: " << avg_orien <<"\n";
-  std::cout << "The old average orientation is: " << old_avg << "\n";
+  std::cout << "Pitch: " << pitch << "\n";
+  std::cout << "The average pitch is: " << avg_pitch <<"\n";
 }
 
 void modeCallback(const msg::vehicle_status::ConstPtr & msg) {
@@ -169,7 +187,10 @@ int main(int argc, char ** argv) {
     imu_msg.header.stamp = r_time;
     imu_msg.header.frame_id = "orientation";
     imu_msg.orientation = yaw;
+    imu_msg.roll = roll;
+    imu_msg.pitch = pitch;
     imu_msg.avg_orientation = avg_orien;
+    imu_msg.avg_pitch = avg_pitch;
     imu_msg.old_orientations = old_oriens;
     imu_msg.old_avg = old_avg;
 

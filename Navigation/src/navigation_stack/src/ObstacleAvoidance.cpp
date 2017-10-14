@@ -89,11 +89,17 @@ float beamPath(const float & angleOffset, const float & width,
 
   count = 1;
   //Determine best angle using score based on distance and straightness.
-  for(k = results.begin(); k != results.end(); k++) {
-    float dist = k->x * k->x + k->y * k->y;
+  for(int result = 0; result != results.size(); result++) {
+    float dist = results[result].x * results[result].x + results[result].y * results[result].y;
     float currAngle = count * angleInc + angleOffset - PI / 2;
     float currScore;
     
+    if(result < results.size() / 3 || result > results.size() * 2 / 3) {
+      scores.push_back(-1);
+      count++;
+      continue;
+    }
+
     float straightBonus = (angleOffset - currAngle);
     if(straightBonus < 0) straightBonus *= -1;
     
