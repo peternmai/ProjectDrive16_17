@@ -52,6 +52,8 @@ static float frontWidth = 0.3;
 
 static float bestAngle = 0;
 
+static bool goingThroughRamp = false;
+
 static CartesianCoordinate p1_front{frontWidth / -2, 1};
 static CartesianCoordinate p2_front{frontWidth / 2, 1};
 static CartesianCoordinate p3_front{frontWidth / -2, 0.1};
@@ -353,7 +355,9 @@ static void LaserScanCallback( const sensor_msgs::LaserScan::ConstPtr& scan ) {
     steering = std::min((float) -0.07, steering);
 
   // Uneven slope surface override
-  if(((pitch > 0.15) && (avgPitch > 0.15)) || ((pitch < -0.15) && (avgPitch < -0.15))) {
+  if(((pitch > 0.15)) || ((pitch < -0.15))) {
+
+   goingThroughRamp = true;
 
     // If head is facing down
     if( pitch > 0 ) {
@@ -433,7 +437,11 @@ int main( int argc, char ** argv ) {
     AckermannDrivePublisher.publish( AckermannDriveStamped );
 
     msg::vehicle_status vehicleStatusMsg;
-    vehicleStatusMsg.drive_mode = curMode;
+    if( goingThroughRamp == true )
+      vehicleStatusMsg.drive_mode = DriveMode::reorientate;
+    else
+       vehicleStatusMsg.drive_mode = curMode;
+    goingThroughRamp = false;
     VehicleStatePublisher.publish( vehicleStatusMsg );
 
     VisualizeAckermannDrive( speed, steering );

@@ -80,7 +80,7 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   if(o.size() > 30)
     o.pop_front();
 
-  if(p.size() > 15)
+  if(p.size() > 9)
     p.pop_front();
 
 
