@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!--Our old launch file. Language is in XML.-->
 <launch>
   <arg name="tera" />
   <arg name="optic" />

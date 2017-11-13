@@ -2,6 +2,12 @@
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/LaserScan.h>
 
+/*This publisher tells the current position of the car in relation
+  to the map. This is not used for our final build, but it is used
+  for hector slam. The most important part of these publishers is
+  the odometer readigs. Subscribe to an odometer to change the odom
+  frame. It is currently set to JUST the IMU */
+
 void tfpubCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
   static tf::TransformBroadcaster pub;
 
@@ -29,7 +35,6 @@ void tfpubCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
 int main(int argc, char** argv) {
   ros::init(argc, argv, "tf_pub");
   ros::NodeHandle n;
-
 
   ros::Subscriber sub = n.subscribe("scan", 600, tfpubCallback);
 

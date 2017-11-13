@@ -30,9 +30,7 @@ target_link_libraries(laser_scan_pub ${catkin_LIBRARIES} ${GSL_LIBRARIES} )
 
 ## Make tf_broadcaster and tf_listener Executable
 add_executable(tf_pub src/tf_pub.cpp)
-add_executable(tf_sub src/tf_sub.cpp)
 target_link_libraries(tf_pub ${catkin_LIBRARIES})
-target_link_libraries(tf_sub ${catkin_LIBRARIES})
 
 add_executable(odom src/odom.cpp)
 target_link_libraries(odom ${catkin_LIBRARIES})
