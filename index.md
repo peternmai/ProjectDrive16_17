@@ -4,7 +4,7 @@ layout: default
 
 # Overview
 
-{% include mediaPlayer url="https://www.youtube.com/embed/A-LQ27RtlA4" %}
+{% include mediaPlayer.html url="https://www.youtube.com/embed/A-LQ27RtlA4" %}
 
 Project Drive is a year long student run project hosted and funded by the [IEEE
 Branch of the University of California, San Diego](https://ieee.ucsd.edu/).
