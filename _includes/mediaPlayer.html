@@ -1,24 +1,3 @@
-<!--
-Embedded Media Player
-Match width with parent and maintain video aspect ratio.
--->
-
-<style type="text/css">
-  .mediaPlayerContainer {
-      position: relative;
-      width: 100%;
-      height: 0;
-      padding-bottom: 56.25%;
-  }
-  .mediaPlayer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-  }
-</style>
-
 <div class="mediaPlayerContainer">
   <iframe src="{{ include.url }}"
     frameborder="0" allowfullscreen class="mediaPlayer">
