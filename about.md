@@ -4,7 +4,7 @@ layout: default
 
 # About Us
 
-Hello! We are a diverse group of undergraduates from the University of
+Hello! We are a diverse group of undergraduate students from the University of
 California, San Diego. Though every member from our team came from a
 very different background, we all share one trait together: our deep
 passion and drive to not only learn, but also advance the field of autonomous
@@ -24,26 +24,26 @@ software tasks together. The software team was in charge of three primary tasks:
 (1) sensor interpretation, (2) spatial mapping and localization (SLAM), and
 (3) autonomous navigation algorithm. The four members are listed below.
 
-#### Shirley Han
+**Shirley Han**
 *Cognitive Science - 2020*
 
-#### Jason Ma
+**Jason Ma**
 *Computer Science - 2018*
 
-#### William Ma
+**William Ma**
 *Math Computer Science - 2018*
 
-#### Peter Mai **(Team Lead)**
+**Peter Mai (Team Lead)**
 *Computer Engineer - 2018*
 
 ### Hardware
 
-#### Jason Kelley
-*Electrical Engineer - 2018*
-*Primary Tasks: Designing custom power system, circuit breaker, and 360 LIDAR
+**Jason Kelley**
+*Electrical Engineer - 2018
+Primary Tasks: Designing custom power system, circuit breaker, and 360 LIDAR
 system*
 
-#### John (Jack) Wheelock
-*Aerospace Engineer - 2018*
-*Primary Tasks: Designing custom 3D printed CAD designs to ensure the structural
+**John (Jack) Wheelock**
+*Aerospace Engineer - 2018
+Primary Tasks: Designing custom 3D printed CAD designs to ensure the structural
 integrity of the vehicle as well as the custom 360 LIDAR system*
