@@ -24,26 +24,26 @@ software tasks together. The software team was in charge of three primary tasks:
 (1) sensor interpretation, (2) spatial mapping and localization (SLAM), and
 (3) autonomous navigation algorithm. The four members are listed below.
 
-**Shirley Han**
+**Shirley Han**<br />
 *Cognitive Science - 2020*
 
-**Jason Ma**
+**Jason Ma**<br />
 *Computer Science - 2018*
 
-**William Ma**
+**William Ma**<br />
 *Math Computer Science - 2018*
 
-**Peter Mai (Team Lead)**
+**Peter Mai (Team Lead)**<br />
 *Computer Engineer - 2018*
 
 ### Hardware
 
-**Jason Kelley**
-*Electrical Engineer - 2018
+**Jason Kelley**<br />
+*Electrical Engineer - 2018<br />
 Primary Tasks: Designing custom power system, circuit breaker, and 360 LIDAR
 system*
 
-**John (Jack) Wheelock**
-*Aerospace Engineer - 2018
+**John (Jack) Wheelock** <br />
+*Aerospace Engineer - 2018<br />
 Primary Tasks: Designing custom 3D printed CAD designs to ensure the structural
 integrity of the vehicle as well as the custom 360 LIDAR system*
