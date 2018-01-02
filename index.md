@@ -23,6 +23,8 @@ university staffs, this was truely an incredible feat to achieve for the team
 and we are extremely proud to see how much we have accomplished and learn
 throughout this short yet fast paced journey.
 
+![CompetitionAward](/assets/img/award-both.png)
+
 As a result, we have created this website as a way to not only showcase our work,
 but also shed light on the various challenges and struggles we encountered
 along the way as newcomers to the autonomous vehicle field, as well as how we
