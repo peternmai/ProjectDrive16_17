@@ -15,7 +15,7 @@ Competition](https://avc.sparkfun.com/2017).
 After a full year of incredible hard work and dedication from every member of
 the team, we are proud to say that we have successfully completed in the
 SparkFun Speed Demons Competition, placing [**#1 in the higher education
-category**](https://avc.sparkfun.com/2017/scores) and [**#2
+category**](https://avc.sparkfun.com/blog/2503) and [**#2
 overall**](https://avc.sparkfun.com/2017/scores)!! Given the circumstance, that
 every member came in with very little knowledge on the technology/software we
 were using (ROS, OpenCV, Sensors, etc.) and no additional guidance from any

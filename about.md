@@ -36,14 +36,14 @@ software tasks together. The software team was in charge of three primary tasks:
 **Peter Mai (Team Lead)**<br />
 *Computer Engineer - 2018*
 
-### Hardware
+### Hardware Team
 
 **Jason Kelley**<br />
-*Electrical Engineer - 2018<br />
+*Electrical Engineer - 2018*<br />
 Primary Tasks: Designing custom power system, circuit breaker, and 360 LIDAR
-system*
+system
 
-**John (Jack) Wheelock** <br />
-*Aerospace Engineer - 2018<br />
+**John (Jack) Wheelock**<br />
+*Aerospace Engineer - 2018*<br />
 Primary Tasks: Designing custom 3D printed CAD designs to ensure the structural
 integrity of the vehicle as well as the custom 360 LIDAR system*
