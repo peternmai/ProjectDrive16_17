@@ -45,5 +45,5 @@ system
 
 **John (Jack) Wheelock**<br />
 *Aerospace Engineer - 2018*<br />
-Primary Tasks: Designing custom 3D printed CAD designs to ensure the structural
-integrity of the vehicle as well as the custom 360 LIDAR system*
+Primary Tasks: Designing custom 3D printed CAD designs for the custom 360
+LIDAR system as well as ensuring the structural integrity of the vehicle

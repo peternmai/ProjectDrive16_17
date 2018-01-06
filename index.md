@@ -9,7 +9,7 @@ layout: default
 Project Drive is a year long student run project hosted and funded by the [IEEE
 Branch of the University of California, San Diego](https://ieee.ucsd.edu/).
 The premise of this project is to build a 1/10 scale fully autonomous race car
-that would compete in the [SparkFun 2017 Speed Demons Autonomous Vehicle
+with no GPS that would compete in the [SparkFun 2017 Speed Demons Autonomous Vehicle
 Competition](https://avc.sparkfun.com/2017).
 
 After a full year of incredible hard work and dedication from every member of

@@ -15,7 +15,7 @@ used.
 * [Back Story and Design Ideology](#back-story-and-design-ideology)
 * [Basic Vehicle Setup](#basic-vehicle-setup)
 * [Sensors](#sensors)
-* [Custom Power Regulator and Circuit Breaker](custom-power-regulator-and-circuit-breaker)
+* [Custom Power Regulator and Circuit Breaker](#custom-power-regulator-and-circuit-breaker)
 * [Future Design Changes](#future-design-changes)
 * [Hardware Tips](#hardware-tips)
 
@@ -95,7 +95,7 @@ allowing for more precise control of the vehicle's speed through a
 would also significantly increase the reliability of any spatial mapping
 and localization (SLAM) algorithm. For those interested in controlling their
 ESC in the ROS environment, we have developed a ROS Arduino module that
-can subscribe to (Ackermann ROS messages)[http://wiki.ros.org/ackermann_msgs]
+can subscribe to [Ackermann ROS messages](http://wiki.ros.org/ackermann_msgs)
 and output the appropriate PWM commands to the ESC
 [here](https://github.com/peternmai/ProjectDrive16_17/blob/master/Navigation/src/steering/ackermann_steering/ackermann_steering.ino).
 
@@ -181,7 +181,7 @@ LIDAR sensor as described below.
 
 We were sad to see that our year's worth of tuning and perfecting our custom
 360 LIDAR setup did not make to the final version of the car. However, we
-were very grateful to have the opportunity undergo such task. The sensor does
+were very grateful to have the opportunity to undergo such task. The sensor does
 work very well indoor, outputting very precise and reliable 2D maps at a rate of
 five times per second (limited by motor choice). But as with any engineering
 feat, we do not always stumble upon great innovation on our first attempt.
@@ -203,7 +203,16 @@ vibrated quite a bit, prolong usage of the sensor would result in slightly
 fuzzier map. However, stopping and restarting the sensor would recalibrate
 the sensor and the map would be back to normal. We would highly recommend
 this sensor for future teams looking for a good 2D 360 LIDAR sensor that
-can operate well in various enviornment.
+can operate well in various environment.
+
+*Note: The Scanse Sweep requires that we manually open a serial port connection
+with ROS before we can actually receive any data from it when running on the
+Nvidia Jetson. If you are having problems reading in data using the default
+[ROS package](https://github.com/scanse/sweep-ros) developed by the
+manufacturer, we have developed a ROS node which you can use to establish
+and maintain a serial connection with the Scanse Sweep which can be found
+[here](https://github.com/peternmai/ProjectDrive16_17/blob/master/Navigation/src/setup/src/ActivateScanseSweep.py).
+Just run this node before attempting to read in any data.*
 
 #### IMU: Adafruit BNO055
 Inertial measurement units (IMU) are often found on various autonomous system
