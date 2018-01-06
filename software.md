@@ -7,7 +7,7 @@ layout: default
 ## Topics
 
 * [Environment and Software Requirements](#environment-and-software-requirements)
-* [Spatial Mapping and Localization (SLAM)](#spatial-mapping-and-localization-(SLAM))
+* [Spatial Mapping and Localization (SLAM)](#spatial-mapping-and-localization-slam)
 * [Our Algorithm](#our-algorithm)
 
 * * *
@@ -127,7 +127,7 @@ case of a spin out, and a main driver module that ties everything together.
 ![Algorithm Hierarchy](/assets/img/algorithm-hierarchy.png)
 
 The basic hierarchical structure of our algorithm is shown above and our
-source code can be found [here](https://github.com/peternmai/ProjectDrive16_17/tree/master/Navigation/src/navigation_stack/src).
+source code can be found [on our GitHub](https://github.com/peternmai/ProjectDrive16_17/tree/master/Navigation/src/navigation_stack/src).
 A more detailed description of the four main modules are described below.
 
 
@@ -149,7 +149,7 @@ throttle, we do not have a good understanding of the vehicle's actual speed.
 This meant that a throttle value will result in different real life speed
 based on if the vehicle is on a flat horizontal road, going up hill, or
 down hill. Since we did not have an odometer on board to give us the vehicle's
-exact speed, we improvised by using an IMU to measure pitch axis of the
+exact speed, we improvised by using an IMU to measure the pitch axis of the
 vehicle. The throttle we sent out is then scaled accordingly to take into
 account the additional potential energy factor.
 
@@ -165,7 +165,7 @@ detection, (2) lane keeping assistance, and (3) beam / path decision maker.
 |---|---|
 | ![Wall Detection](/assets/img/wall-detection-01.png) | ![General Course Path Demo](/assets/img/wall-detection-02.gif) |
 
-First up, the wall [detection module](https://github.com/peternmai/ProjectDrive16_17/blob/master/Navigation/src/navigation_stack/src/WallDetection.cpp).
+First up, the [wall detection module](https://github.com/peternmai/ProjectDrive16_17/blob/master/Navigation/src/navigation_stack/src/WallDetection.cpp).
 This module is primarily responsible for determining the *general course direction*.
 It does this by detecting walls and forming straight lines along the walls using
 [Hough transform](https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/hough_lines/hough_lines.html).
@@ -183,19 +183,19 @@ area is greater than the right area, the car is staying too close to the
 right side and should go a little to the left, and vice versa. Though this
 algorithm can keep the vehicle in the course and turn the vehicle accordingly
 if the course is curving, it will not perform well if there are obstacles on
-the course. Therefore, this algorithm is used more as a helper algorithm to
+the course. Therefore, this algorithm is used more as a helper function to
 provide guidance information to the main driver module.
 
 Finally, we have the [obstacle avoidance algorithm](https://github.com/peternmai/ProjectDrive16_17/blob/master/Navigation/src/navigation_stack/src/ObstacleAvoidance.cpp). This algorithm uses a
 greedy approach and basically sends out multiple beams in the 180 degree
-arc centered around by the *general course direction* (calculated by the wall
+arc centered around the *general course direction* (calculated by the wall
 detection module). It then finds the beam with the obstacle that is
 furthest away from the vehicle and chooses that as the path the vehicle
 should take.
 
 ![Obstacle Avoidance 03](/assets/img/obstacle-avoidance-03.png)
 
-This works great except when the vehicle is approaching an obstacle that is
+This works great, except when the vehicle is approaching an obstacle that is
 right in front of it as described by the image above. The vehicle sees that
 there are two paths which are both ideal. It will choose a path randomly,
 say the upper path. However, notice that once the vehicle starts turning
@@ -210,7 +210,7 @@ path is given a score and the algorithm will choose the path with the highest
 score. The scoring algorithm will take into account which path has obstacles
 that are furthest away, and favors paths which are closer to the *general course
 direction* angle and closer to the vehicle's forward direction. Using this
-mechanism, it ensures that the vehicle will always to striving to go
+mechanism, it ensures that the vehicle will always strive to go
 towards the *course general direction* while also being able to definitely
 make up its mind about which is the ideal path to take when given an
 obstacle.
@@ -222,8 +222,8 @@ obstacle.
 The spin out detection module has one primary task, ensuring that the vehicle
 is going in the correct direction. It does this by checking how far of the
 car's orientation is from the general course direction. It also logs a history
-of car orientations values collected by the IMU. When the module detected
-that the car had made a U-Turn, it will notify the main driver and then
+of the car's previous orientation values collected by the IMU. When the module
+detected that the car had made a U-Turn, it will notify the main driver and then
 attempt to reorientate the vehicle towards the correct general course
 direction.
 
@@ -236,7 +236,7 @@ charge of switching between each of the three different modes of the car:
 (1) obstacle avoidance, (2) cruise, and (3) orientation correction. It is
 also in charge of detecting if the vehicle had reached a dead end or is too
 close to an obstacle and needs to back up and recalculate its path. Overall,
-all these different modules have different responsibilities and provides
+all these different modules have unique responsibilities and provides
 solution for different problems, but by meticulously combining them together,
 they are able to form a fully functional autonomous obstacle avoiding race
 car.

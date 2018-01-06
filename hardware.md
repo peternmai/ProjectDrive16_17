@@ -224,7 +224,7 @@ and is now going the wrong way. Though this was the primary intention of using
 the IMU, it proved to be much more helpful at the actual competition. As we
 found out at the competition that the course was not all flat as it had stated in
 the course description. It included ramps, which would for one be higher than
-our 360 LIDAR 2D plain causing our vehicle to think it's a wall, and two,
+our 360 LIDAR 2D plane causing our vehicle to think it's a wall, and two,
 cause our open loop throttle control to not detect an upward ramp and
 increase throttle power. Overall, we believe that using an IMU is an essential
 element to any autonomous system as it allows for redundancy and improved
@@ -256,7 +256,8 @@ cut off state, or has exceeded its cut off state.
 * * *
 
 ## Future Design Changes
-For future design changes, please refer to our reflection page.
+For future design changes, please refer to our
+[reflection page](reflection#future-design-changes).
 
 * * *
 
