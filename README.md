@@ -1,76 +1,57 @@
-# UCSD Project Drive 2016/17 *- [ WORK IN PROGRESS ]*
+# UCSD Project Drive 2016/17 - *Fully Autonomous Obstacle Avoiding Race Car*
 
-Project Drive is a year long student run project hosted and funded by the IEEE Branch of the
-University of California, San Diego. The premise of this project is to build a 1/10 scale fully
-autonomous RC vehicle that will compete in this year's 2017
-[SparkFun Speed Demons Autonomous Vehicle Competition](https://avc.sparkfun.com/2017).
+![Vehicle Image 1](/doc/vehicle_01.jpg)
 
-For this year's competition, the team will be focusing on designing and implementing a vehicle that
-could explore and map out any given flat environment. We therefore will be building our own 360
-LIDAR system which would be used for spatial mapping and localization in conjunction with ROS's Hector
-SLAM. We will also be working with OpenCV to implement various image recognition softwares that will
-further allow our vehicle to interact with its environment by picking up both obstacles and goal
-points scattered throughout the race course.
+Project Drive is a year long student run project hosted and funded by the [IEEE
+Branch of the University of California, San Diego](https://ieee.ucsd.edu/).
+The premise of this project is to build a 1/10 scale fully autonomous race car
+with no GPS that would compete in the [SparkFun 2017 Speed Demons Autonomous Vehicle
+Competition](https://avc.sparkfun.com/2017).
 
-## Progress Update
+![CompetitionAward](/doc/award-both.png)
 
-#### Brief Update
-As of March 31st, 2017, the team currently has spatial mapping and localization up and running while our
-360 LIDAR system is stationary. We have fully completed designing and testing our power system that will
-ensure power is delivered to all the components of our vehicle in a safe and reliable manner.
-Our next step would be to attach the power system  to our vehicle and begin testing spatial
-mapping while the 360 LIDAR system is in motion.
+After a full year of incredible hard work and dedication from every member of
+the team, we are proud to say that we have successfully completed in the
+SparkFun Speed Demons Competition, placing [**#1 in the higher education
+category**](https://avc.sparkfun.com/blog/2503) and [**#2
+overall**](https://avc.sparkfun.com/2017/scores)!! Given the circumstance, that
+every member came in with very little knowledge on the technology/software we
+were using (ROS, OpenCV, Sensors, etc.) and no additional guidance from any
+university staffs, this was truely an incredible feat to achieve for the team
+and we are extremely proud to see how much we have accomplished and learn
+throughout this short yet fast paced journey.
 
-As of May 31st, 2017, the team has successfully mapped out small hallways while
-the vehicle is in motion. The picture of the map is shown below. However, we are
-having some difficulties getting reliable distance reading from obstacles/walls
-that are further away due to the slower refresh rate of our sensor. As a result,
-we are looking into using an IMU and odometer to help increase the accuracy of
-SLAM.
+## Official Website
 
-![PICTURE](/doc/SLAM_Small_Hallways.png?raw=true)
+![Website Preview](/doc/website-preview-01.png)
 
-#### Full Progress Report
+As a result, we have created a [**separate dedicated
+website**](https://peternmai.github.io/ProjectDrive16_17/) to not only
+showcase our work, but also shed light on the various challenges and struggles
+we encountered along the way as newcomers to the autonomous vehicle field.
+By sharing how we tackled each of those challenges, the hardware we used/designed,
+and our underlying algorithm, we hope this site will provide helpful insights
+and tips that will be the catalyst for discovering new autonomous vehicle ideas
+and techniques, while at the same time, inspiring those whom have not worked
+with this field to test the water and take part of this amazing expedition.
+
+*Website Link: [https://peternmai.github.io/ProjectDrive16_17/](https://peternmai.github.io/ProjectDrive16_17/)*
+
+## Timeline
+
+For those whom are interested in the journey we took to get to where we are
+today, we have also documented much of our progress which can be seen below.
+
 * **Fall Quarter** *(Planning and Purchasing)*
   * [Progress Report 1](https://drive.google.com/file/d/0B6vZS7zdEvhlTzF2VnpMY3hNbzQ/view?usp=sharing)
   * [Progress Report 2](https://drive.google.com/file/d/0B6vZS7zdEvhldlNMaVBBRTlmUGM/view?usp=sharing)
   * [Progress Report 3](https://drive.google.com/file/d/0B6vZS7zdEvhlRmlscWU4UElNekU/view?usp=sharing)
-* **Winter Quarter** *(360 LIDAR System and SLAM)*
+* **Winter Quarter** *(Custom 360 LIDAR System and SLAM)*
   * [Progress Report 1](https://drive.google.com/file/d/0B6CW6u5gBz_JWEdfUGZqalpqN0E/view?usp=sharing)
   * [Progress Report 2](https://drive.google.com/file/d/0B6CW6u5gBz_JWXpjdWFvQ19TdEk/view?usp=sharing)
   * [Progress Report 3](https://drive.google.com/file/d/0B6CW6u5gBz_JcG5YcWlhSWw2ZGM/view?usp=sharing)
 * **Spring Quarter** *(SLAM Testing and Navigation)*
   * [Progress Report 1](https://drive.google.com/file/d/0B6CW6u5gBz_JOVlabW1iZTRVNjA/view?usp=sharing)
   * [Progress Report 2](https://drive.google.com/file/d/0B6CW6u5gBz_JZG1KNmNDZWJFdlE/view?usp=sharing)
-  * Coming Soon!
-
-#### 360 LIDAR System And SLAM
-We are currently using the TeraRanger One as the distance sensor for our 360 LIDAR system. The middle
-and right image shows the resulting map we received from running our sensor at 300 Hz vs 1000 Hz.
-![PICTURE](/doc/SensorWithSLAM.png?raw=true)
-
-#### Video Demonstration
-* [Project Drive YouTube Channel](https://www.youtube.com/channel/UCB0ZOK4_Kh5uYzQzQ6bU9nQ)
-
-#### Website
-At the present time, our primary focus is to complete the project in time for the competition in
-September 2017. However, we are documenting all our design process in detail and are excited to share
-it with you in a comprehensive website in the future. Stay tune!
-
-## Contact Us
-#### Team Lead
-
-* Peter Mai - *p1mai [at] ucsd.edu*
-
-#### Software Team
-* Shirley Han - *smh022 [at] ucsd.edu*
-* Jason Ma - *jam043 [at] ucsd.edu*
-* William Ma - *wim001 [at] ucsd.edu*
-* Peter Mai - *p1mai [at] ucsd.edu*
-
-#### Electrical Team
-* Jason Kelley - *jkelley [at] ucsd.edu*
-* Noah Chung - *mwchung [at] ucsd.edu*
-
-#### CAD Team
-* John (Jack) Wheelock - *jwheeloc [at] ucsd.edu*
+* **Summer and Early Fall** *(Custom Navigation Modules and Optimization)*
+  * Please visit our [**official project website**](https://peternmai.github.io/ProjectDrive16_17/) for more information
