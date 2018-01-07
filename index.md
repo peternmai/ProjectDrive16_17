@@ -36,7 +36,7 @@ expedition.
 
 ## Timeline
 
-For those whom are interested on the journey we took to get to where we are
+For those whom are interested in the journey we took to get to where we are
 today, we have also documented much of our progress which can be seen below.
 
 * **Fall Quarter** *(Planning and Purchasing)*

@@ -23,10 +23,13 @@ throughout this short yet fast paced journey.
 
 ## Official Website
 
-As a result, we have created a [**separate dedicated website**] to not only
+![Website Preview](/assets/img/website-preview-01.png)
+
+As a result, we have created a [**separate dedicated
+website**](https://peternmai.github.io/ProjectDrive16_17/) to not only
 showcase our work, but also shed light on the various challenges and struggles
 we encountered along the way as newcomers to the autonomous vehicle field.
-By sharing how we tackled each of those challenges, the hardware we used,
+By sharing how we tackled each of those challenges, the hardware we used/designed,
 and our underlying algorithm, we hope this site will provide helpful insights
 and tips that will be the catalyst for discovering new autonomous vehicle ideas
 and techniques, while at the same time, inspiring those whom have not worked
@@ -36,7 +39,7 @@ with this field to test the water and take part of this amazing expedition.
 
 ## Timeline
 
-For those whom are interested on the journey we took to get to where we are
+For those whom are interested in the journey we took to get to where we are
 today, we have also documented much of our progress which can be seen below.
 
 * **Fall Quarter** *(Planning and Purchasing)*
@@ -51,4 +54,4 @@ today, we have also documented much of our progress which can be seen below.
   * [Progress Report 1](https://drive.google.com/file/d/0B6CW6u5gBz_JOVlabW1iZTRVNjA/view?usp=sharing)
   * [Progress Report 2](https://drive.google.com/file/d/0B6CW6u5gBz_JZG1KNmNDZWJFdlE/view?usp=sharing)
 * **Summer and Early Fall** *(Custom Navigation Modules and Optimization)*
-  * Please visit our [**official website**](https://peternmai.github.io/ProjectDrive16_17/) for more information
+  * Please visit our [**official project website**](https://peternmai.github.io/ProjectDrive16_17/) for more information
