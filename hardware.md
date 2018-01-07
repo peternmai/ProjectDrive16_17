@@ -17,7 +17,6 @@ used.
 * [Sensors](#sensors)
 * [Custom Power Regulator and Circuit Breaker](#custom-power-regulator-and-circuit-breaker)
 * [Future Design Changes](#future-design-changes)
-* [Hardware Tips](#hardware-tips)
 
 * * *
 
@@ -258,8 +257,3 @@ cut off state, or has exceeded its cut off state.
 ## Future Design Changes
 For future design changes, please refer to our
 [reflection page](reflection#future-design-changes).
-
-* * *
-
-## Hardware Tips
-Work in progress

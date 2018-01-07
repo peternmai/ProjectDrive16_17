@@ -27,9 +27,28 @@ throughout this short yet fast paced journey.
 
 As a result, we have created this website as a way to not only showcase our work,
 but also shed light on the various challenges and struggles we encountered
-along the way as newcomers to the autonomous vehicle field, as well as how we
-chose to tackle each scenario. We hope this site will provide helpful insights
+along the way as newcomers to the autonomous vehicle field. By sharing how
+we tackled each of those challenges, we hope this site will provide helpful insights
 and tips that will be the catalyst for discovering new autonomous vehicle
 ideas and techniques, while at the same time, inspiring those whom have not
 worked with this field to test the water and take part of this amazing
 expedition.
+
+## Timeline
+
+For those whom are interested on the journey we took to get to where we are
+today, we have also documented much of our progress which can be seen below.
+
+* **Fall Quarter** *(Planning and Purchasing)*
+  * [Progress Report 1](https://drive.google.com/file/d/0B6vZS7zdEvhlTzF2VnpMY3hNbzQ/view?usp=sharing)
+  * [Progress Report 2](https://drive.google.com/file/d/0B6vZS7zdEvhldlNMaVBBRTlmUGM/view?usp=sharing)
+  * [Progress Report 3](https://drive.google.com/file/d/0B6vZS7zdEvhlRmlscWU4UElNekU/view?usp=sharing)
+* **Winter Quarter** *(360 LIDAR System and SLAM)*
+  * [Progress Report 1](https://drive.google.com/file/d/0B6CW6u5gBz_JWEdfUGZqalpqN0E/view?usp=sharing)
+  * [Progress Report 2](https://drive.google.com/file/d/0B6CW6u5gBz_JWXpjdWFvQ19TdEk/view?usp=sharing)
+  * [Progress Report 3](https://drive.google.com/file/d/0B6CW6u5gBz_JcG5YcWlhSWw2ZGM/view?usp=sharing)
+* **Spring Quarter** *(SLAM Testing and Navigation)*
+  * [Progress Report 1](https://drive.google.com/file/d/0B6CW6u5gBz_JOVlabW1iZTRVNjA/view?usp=sharing)
+  * [Progress Report 2](https://drive.google.com/file/d/0B6CW6u5gBz_JZG1KNmNDZWJFdlE/view?usp=sharing)
+* **Summer and Early Fall** *(Custom Navigation Modules and Optimization)*
+  * Check out [our algorithm section](software#our-algorithm)

@@ -31,8 +31,8 @@ Below is the email sent to the board members on October 16, 2017:
 >
 > We’ve recently came back from the competition on Sunday and the official scores have just been announced this morning. We placed #1 in the higher education category and #2 overall!! As a reward for being #1 in the higher education category, UCSD IEEE will be receiving a LulzBot Mini 3D Printer.
 >
-> Scoreboard: https://avc.sparkfun.com/2017/scores
-> Official Announcement: https://avc.sparkfun.com/blog/2503
+> Scoreboard: [https://avc.sparkfun.com/2017/scores](https://avc.sparkfun.com/2017/scores)<br />
+> Official Announcement: [https://avc.sparkfun.com/blog/2503](https://avc.sparkfun.com/blog/2503)
 >
 > **Team Reflection**
 >
@@ -54,13 +54,13 @@ Below is the email sent to the board members on October 16, 2017:
 >
 > This was probably one of the most stressful time for the team as we witness our one year’s worth of effort unfold. We did a few practice run in the morning and the car was able to complete all of it. However, the pedestrian was never moving in these test runs.
 >
-> **HEAT 1**
+> **HEAT 1**<br />
 > On the first heat, our car made it past the barrels, avoiding other cars while doing so, went through the intersection without making any turn, made it through the hoop, and past the ramp with the pedestrian. With the finish line only a few meters out with no obstacles ahead, we were eagerly anticipating our first successful heat. But, the car had a mind of its own… U-TURN…. back into the pedestrian. WHYYY… We were really confused why it would do this and really had no clue as this never happened in the past. However, our car made it the furthest out of everyone on that first heat, scoring the team 65 points.
 >
-> **HEAT 2**
+> **HEAT 2**<br />
 During the 20 minute break time, we tested the vehicle again, asking the judge to have the pedestrian on. The car still was able to make it by every single test with no hiccup. Befuddled, we placed the car down for its second race, with no change in code, hoping that it was due to a very rare hiccup in our code.  As the car ran off, it dodged all the early vehicles, weaved its way through the barrels, continued for a long stretch, avoided the ramp, made it past the intersection, through the hoop, to where it once again must face the moving pedestrian on the ramp. Heart racing, the car attempted to make it up the ramp as the pedestrian crossed right in front of it. It passed without a glitch! Off the ramp it goes and all of a sudden… RIGHT TURN into the hay bales. Oh wait.. it’s backing up, it’s going towards the pedestrian again. U-TURN mode kicks in. Phew! The car is reorienting itself to the correct path. There is hope!! The crowd cheers on. But no… it over compensated in its reorientation. Trying to reorientate a second round, it finds itself again at the bottom of the pedestrian ramp going in the opposite direction. As the LIDAR is angled forward, the car believes there are no obstacles ahead and tries to make a U-TURN while going up the ramp.  Stress level high. Could the car correctly reorientate itself? Detecting that the car is now at an uphill battle, it increased the throttle to get itself up. A little too much power, the car has now ran off the race track. RIP car. So close yet so far. Regardless, we did make it furthest again on this second heat, giving the team an addition 65 points for a total of 130 points, highest of any team so far.
 >
-> **HEAT 3**
+> **HEAT 3**<br />
 > While reviewing our video recording of the car’s run, we noticed that while going up and down the ramp as the pedestrian crosses, the car had to very quickly turn to avoid the pedestrian and turn back to get itself in the correct straight path. Combine this quick movement with going up and down the ramp, our yaw reading of the car no longer represented the true yaw the car took. This confused our navigation module that was in charge of detecting if the car U-turned and needed to reorientate back to the previous straight forward direction. What to do.. we only had 20 minute to implement, test, and deploy code. This was the last race we had. It’s all or nothing. There is no room to mess up. How good are our problem solving and coding abilities?? Stress level peaking. There was no time to panic.
 >
 > We decided to stop tracking the car’s IMU orientation when it is not on a 0 degree incline surface. Going off the ramp, the car would set its history of IMU orientations to the car’s current orientation. This ensured that the car would not U-turn of the ramp as its past orientations all indicated that it’s going the same direction. Coded. Tested. Deployed!
@@ -122,7 +122,7 @@ the ESC.
 In addition to that, SparkFun AVC and the autonomous system industry in general is
 gradually moving more and more towards incorporating computer vision in their
 products. Though we have tested the water this year using
-[Haar Cascade](https://docs.opencv.org/3.3.0/d7/d8b/tutorial_py_face_detection.html)
+[Haar Cascade](https://github.com/peternmai/ProjectDrive16_17/tree/master/HaarCascade)
 to detect certain objects in images, we haven't actually implemented it in the
 vehicle for use during the competition. If we were continuing this project,
 we would implement more image recognition software to further analyze the
