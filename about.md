@@ -19,7 +19,7 @@ systems. Let's meet the team!
 
 There were four members on the software team whom each had distinct
 responsibilities. However, due to the small size of our team, these
-responsibilities often time overlap, and as a result, we will group the
+responsibilities oftentimes overlapped, so we will group the
 software tasks together. The software team was in charge of three primary tasks:
 (1) sensor interpretation, (2) spatial mapping and localization (SLAM), and
 (3) autonomous navigation algorithm. The four members are listed below.
