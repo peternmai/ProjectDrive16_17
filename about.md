@@ -4,8 +4,8 @@ layout: default
 
 # About Us
 
-Hello! We are a diverse group of undergraduate students from the University of
-California, San Diego. Though every member from our team came from a
+Hello! We are a multidisciplinary group of undergraduate students from the
+University of California, San Diego. Though every member from our team came from a
 very different background, we all share one trait together: our deep
 passion and drive to not only learn, but also advance the field of autonomous
 systems. Let's meet the team!

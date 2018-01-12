@@ -7,7 +7,7 @@ layout: default
 ## Topics
 
 * [Environment and Software Requirements](#environment-and-software-requirements)
-* [Spatial Mapping and Localization (SLAM)](#spatial-mapping-and-localization-slam)
+* [Simultaneous Mapping and Localization (SLAM)](#simultaneous-mapping-and-localization-slam)
 * [Our Algorithm](#our-algorithm)
 
 * * *
@@ -123,7 +123,7 @@ Since we were building a general purpose autonomous obstacle avoiding race car,
 all we really had to do was code four dedicated modules for the vehicle that
 would be in charge of controlling speed, steering the car, reorienting in
 case of a spin out, and a main driver module that ties everything together. By
-the time we started implementing this algorithm, we knew a bit more about the 
+the time we started implementing this algorithm, we knew a bit more about the
 course and were able to simplify things down a bit to our specific use case.
 We knew that by always picking the straight path, we would be able to complete
 the course. Other doubts about our sensors and specifications had been eliminated
@@ -214,8 +214,8 @@ way to remember which path it chose and then stick with it.
 Therefore, our obstacle avoidance algorithm uses a scoring approach. Each
 path is given a score and the algorithm will choose the path with the highest
 score. The scoring algorithm will take into account which path has obstacles
-that are furthest away, but also gives bonuses to paths which are closer to 
-the *general course direction* angle and the vehicle's current forward direction. 
+that are furthest away, but also gives bonuses to paths which are closer to
+the *general course direction* angle and the vehicle's current forward direction.
 Using this mechanism, the vehicle will always strive to go
 towards the *course general direction* while also being able to definitely
 make up its mind about which is the ideal path to take when given an
