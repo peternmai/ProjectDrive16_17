@@ -7,7 +7,7 @@ layout: default
 ## Topics
 
 * [Environment and Software Requirements](#environment-and-software-requirements)
-* [Simultaneous Mapping and Localization (SLAM)](#simultaneous-mapping-and-localization-slam)
+* [Simultaneous Localization and Mapping (SLAM)](#simultaneous-localization-and-mapping-slam)
 * [Our Algorithm](#our-algorithm)
 
 * * *
@@ -57,7 +57,7 @@ sequence to start the autonomous driving.
 
 * * *
 
-## Simultaneous Mapping and Localization (SLAM)
+## Simultaneous Localization and Mapping (SLAM)
 
 Simultaneous localization and mapping (SLAM) is the process of constructing and updating
 a map while keeping an understanding of where the object is at within the
