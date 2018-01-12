@@ -28,7 +28,7 @@ which included a lot more API and drivers to harness the full power
 of the Nvidia Jetson CUDA cores for image processing. Furthermore, running
 a linux environment is very beneficial as it provides many tools for
 working with different type of peripherals and wireless communication.
-But most importantly, it fully supported the ROS development environment.
+Most importantly, it fully supported the ROS development environment.
 
 #### Software Framework: Robot Operating System (ROS)
 [Robot Operating System (ROS)](http://www.ros.org/) is basically a huge
@@ -57,9 +57,9 @@ sequence to start the autonomous driving.
 
 * * *
 
-## Spatial Mapping and Localization (SLAM)
+## Simultaneous Mapping and Localization (SLAM)
 
-Spatial localization and mapping (SLAM) is the process of constructing and updating
+Simultaneous localization and mapping (SLAM) is the process of constructing and updating
 a map while keeping an understanding of where the object is at within the
 constructed environment. This process is very handy and is used by many
 autonomous system as it allows the system to get a sense of where it is
@@ -122,7 +122,13 @@ build our very own navigation module from the ground up!
 Since we were building a general purpose autonomous obstacle avoiding race car,
 all we really had to do was code four dedicated modules for the vehicle that
 would be in charge of controlling speed, steering the car, reorienting in
-case of a spin out, and a main driver module that ties everything together.
+case of a spin out, and a main driver module that ties everything together. By
+the time we started implementing this algorithm, we knew a bit more about the 
+course and were able to simplify things down a bit to our specific use case.
+We knew that by always picking the straight path, we would be able to complete
+the course. Other doubts about our sensors and specifications had been eliminated
+at this point, so it was time to delve into a simple, robust approach to avoiding
+obstacles in the form of other vehicles and randomly placed barrels.
 
 ![Algorithm Hierarchy](/assets/img/algorithm-hierarchy.png)
 
@@ -205,12 +211,12 @@ one is a better choice again. The vehicle will be stuck in this loop
 and will end up never deciding on an ideal path. What it needs is some
 way to remember which path it chose and then stick with it.
 
-Therefore, our obstacle avoidance algorithm uses a scoring technique. Each
+Therefore, our obstacle avoidance algorithm uses a scoring approach. Each
 path is given a score and the algorithm will choose the path with the highest
 score. The scoring algorithm will take into account which path has obstacles
-that are furthest away, and favors paths which are closer to the *general course
-direction* angle and closer to the vehicle's forward direction. Using this
-mechanism, it ensures that the vehicle will always strive to go
+that are furthest away, but also gives bonuses to paths which are closer to 
+the *general course direction* angle and the vehicle's current forward direction. 
+Using this mechanism, the vehicle will always strive to go
 towards the *course general direction* while also being able to definitely
 make up its mind about which is the ideal path to take when given an
 obstacle.

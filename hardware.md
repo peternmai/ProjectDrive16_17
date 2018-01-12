@@ -7,8 +7,8 @@ layout: default
 ![Vehicle Image 1](/assets/img/vehicle_01.jpg)
 
 This page is dedicated to covering the hardware aspects of our vehicle. This
-range from vehicle chassis, batteries, all the way to different sensors we
-used.
+ranges from the vehicle's chassis, batteries, all the way to the various sensors 
+we used.
 
 ## Topics
 
@@ -23,7 +23,7 @@ used.
 ## Back Story and Design Ideology
 
 When tasked to build a vehicle that would compete in the SparkFun AVC 2017
-competition a year ahead of the competition date, the team must finalize on an
+competition a year ahead of the competition date, the team had to decide on an
 official objective / goal the team would strive to achieve. We knew that
 SparkFun hosted various annual competitions near the end of summer, one of
 which centered around autonomous self-driving race cars. We also had an
@@ -31,15 +31,15 @@ impression of what to expect looking through past competitions rules and
 race course. But since SparkFun changes their competition year to year, and
 tend to not release the official rules/course until a few months before the
 actual competition, it was hard to gauge how the course would actually
-turn out.
+look until at least a few precious months had passed.
 
-However, we did noticed a growing trend on how SparkFun was changing their
+However, we did notice a growing trend on how SparkFun was changing their
 competition year to year. They were adding more obstacles that would not
-be stationary, using dirt terrains over concrete for less tractions, and
-penalizing teams whom relied heavily on GPS. Over the years, SparkFun had
-changed their competition to gradually mimic real life self driving
-scenarios, where there were more uncertainties, while at the same time, trying
-to stop teams from resorting to [dead
+be stationary, using dirt terrains over concrete for less traction, and
+rewarding teams for not using GPS. Essentially, an ideal vehicle would have
+more autonomy, facing similar challenges and uncertainties to those of
+industrial self-driving cars. This was also obviously a measure to prevent
+teams from resorting to [dead
 reckoning](https://en.wikipedia.org/wiki/Dead_reckoning), a process of
 pre-recording vehicle's movement (wheel rotations and turning angles) and
 then replaying it during the actual competition.
@@ -47,16 +47,15 @@ then replaying it during the actual competition.
 From this, we concluded that the best way to prepare ourselves for the
 competition was to build a general purpose, fully autonomous, obstacle avoiding
 vehicle. This vehicle should be able to navigate and explore any given flat
-and confined environment under various lighting conditions, while at the
-same time, be able to detect and avoid any obstacles along the way of
-varying material. In this sense, the team was not building a race car, but
-rather, a general purpose obstacle avoiding vehicle. Since we knew the
-SparkFun's race course (along with most other race courses) would be in a
-confined environment with only a few paths to choose from, this design would
-be ideal for the competition as all the vehicle had to do was continue
-exploring until it eventually reach the finish line.
+and confined environment under various lighting conditions while being able to 
+detect and avoid any obstacles of varying materials and sizes along the way. 
+The team was not aiming to build a race car, but rather a robust, general purpose, 
+obstacle avoiding vehicle. Since we knew SparkFun's race course (along with most 
+other race courses) would likely be on an outdoors track with only a few paths 
+to choose from, this design would be ideal for the competition since all the 
+vehicle had to do was explore until it eventually reached the finish line.
 
-Woo-Hoo! With a plan in mind and an end vision to strive for, let's begin
+Woo-Hoo! With a plan in mind and vision of what the end product should be, let's begin
 the next phase of determining the necessary hardware requirements that would
 be needed to bring this idea into reality.
 
@@ -72,38 +71,42 @@ are listed below.
 
 #### Vehicle Chassis: Traxxass
 We used a [Traxxass](https://traxxas.com/) chassis passed on to us from the
-previous year Project Drive team. As the team is given a limited budget from
+previous year Project Drive team. As the team was given a limited budget from
 our sponsors for the project, this was great as it saved us roughly $700
-from buying another chassis kit and building it from scratch. Overall, we
-had a good experience with the chassis, however, the shock absorber we had
-performed poorer than we had hoped. As a result, we had custom 3D printed molds
-to help increase the shock absorber's responsiveness.
+from buying another chassis kit and building it from scratch. The chassis definitely
+could have been better, since the shock absorber performed poorer than we had hoped,
+and the drive system was difficult to work with at the target speeds. We had custom 
+3D printed molds to help increase the shock absorber's responsiveness, and
+compensated for some of the drive system issues through software solutions.
 
 
 #### Electronic Speed Controller (ESC): Hobbywing Xerun SCT Pro
-The ESC is also a very vital part of the vehicle as it outputs throttle to the
+The ESC is also a vital part of the vehicle as it controls throttle to the
 actual wheel and gets the car moving. We used the Hobbywing Xerun SCT Pro,
 which was also passed on from the previous year, as our ESC. The great thing
-about this ESC was that it could be powered by any 2-4S LiPo battery. However,
-we did wish it had much higher torque. Also, a thing to note with this ESC was
-that when outputting PWM commands, the speed changed in a rather exponential
-fashion, rather than linear. Though we did not use any odometer in our setup,
-we would highly encourage future teams to add an odometer to their vehicle,
-allowing for more precise control of the vehicle's speed through a
-[closed-loop system](https://en.wikipedia.org/wiki/Control_theory). An odometer
-would also significantly increase the reliability of any spatial mapping
+about this ESC was that it could be powered by any 2-4S LiPo battery. Also, 
+a thing to note with this ESC was that when outputting PWM commands, the 
+speed changed in a rather exponential fashion, rather than linear. This could have
+been a result of both the ESC combined with the chassis though. We did not use 
+any odometers in our setup due to possible slipping errors, although if future
+teams have time, we highly encourage adding one to get more data to 
+work with on actual movement, which can be fused with readings from an IMU to reduce
+slipping errors. One could potentially use this to implement a [closed-loop system](https://en.wikipedia.org/wiki/Control_theory). 
+An odometer would also significantly increase the reliability of any spatial mapping
 and localization (SLAM) algorithm. For those interested in controlling their
 ESC in the ROS environment, we have developed a ROS Arduino module that
 can subscribe to [Ackermann ROS messages](http://wiki.ros.org/ackermann_msgs)
 and output the appropriate PWM commands to the ESC
 [here](https://github.com/peternmai/ProjectDrive16_17/blob/master/Navigation/src/steering/ackermann_steering/ackermann_steering.ino).
+This controls the vehicle as if it was like a real car, rather than many other
+modules which assume the vehicle is capable of turning on a dime.
 
 #### Control Platform: Nvidia Jetson TX1 and Arduino Nano
 The control platform is very much what gives the vehicle life. It allows the
 vehicle's software to interface with much of the hardware connected to the
 vehicle. We chose the Nvidia Jetson TX1 as our main computing unit as it
-provided us with the power of a small computer, while at the same time,
-running on the linux environment. This would allow us to communicate to
+was an excellent board capable of doing everything we deemed necessary (and much more), 
+while at the same time, running on the linux environment. This would allow us to communicate to
 our vehicle wirelessly through SSH, as well as visualize OpenGL applications
 (e.g. RViz), through services such as VNC server. Furthermore, it supported
 the full ROS platform in which we would be using to build our application
@@ -115,36 +118,38 @@ interpret raw sensor data from our custom 360 LIDAR setup.
 No vehicle would be complete without some way of powering it! As we would be
 developing and testing directly on the vehicle, we needed some way to power
 the system for an extended period of time, while allowing our vehicle to
-move around freely. We therefore resorted to using two batteries in our setup.
-We used one EcoPower "Electron" 2S Li-Poly 30C hard case battery pack to power
-the ESC. We then used another EcoPower "Electron" 4S Li-Poly 35C hard case
-battery pack to power the on board control platform and sensors. With our set
-up, the 2S LiPo battery would last roughly two hours of continuous driving
-while the 4s LiPo battery could power the Nvidia Jetson and all the sensors
-for roughly four hours.
+move around freely. Furthermore, it was important to place the computer on a separate 
+power source from the motors. We used one EcoPower "Electron" 2S Li-Poly 30C 
+hard case battery pack to power the ESC and motors. We then used another EcoPower 
+"Electron" 4S Li-Poly 35C hard case battery pack to power the on-board control 
+platform and sensors. With our set up, the 2S LiPo battery would last roughly 
+two hours of continuous driving while the 4s LiPo battery could power the Nvidia 
+Jetson and all the sensors for roughly four hours.
 
 * * *
 
 ## Sensors
 
-Sensor is the key element to any autonomous system. Sensors allow the system
-to interpret and understand the environment around it, and therefore,
-enable it to respond back in an appropriate manner.
+Sensors are the key element to any autonomous system. They allow the system
+to interpret and understand the environment around it, and therefore enable it 
+to respond in an appropriate manner.
 
-Since we were building a general purpose obstacle avoiding race car that would
+Since we were building a general purpose, obstacle avoiding race car that would
 be navigating in a flat environment, all we really needed to accomplish this
-was a 2D map of the car's environment. Being on a budget, what other way would
-be more cost efficient while providing all these valuable information than
+was a 2D map of the car's environment. Being on a budget, what would
+be more cost efficient while providing all this valuable information than
 a 2D, 360 degree, depth sensor! The sensors we used are listed below.
 
 #### 360 LIDAR: Custom Build [NOT USED IN FINAL PRODUCT]
-Initially, the team wanted to build most of the hardware from scratch to get
-more practical skills and develop a deeper understanding in how sensors worked.
-We ended up building our custom 360 LIDAR sensors from scratched for most of the
+Initially, the team wanted to build most of the hardware from scratch to learn
+more about how each sensor and component worked. 
+We ended up building our custom 360 LIDAR sensors from scratch for most of the
 year, as described in the timeline, and it did fulfill our desires. We learned a
-tons on the inner workings of sensors. We had a much clearer pictures on the
-challenges of signal processing, how to reduce noise, and how there are many
-factors that affected the performance of the sensors.
+ton on the inner workings of the sensors. We had a much clearer picture on the
+challenges of signal processing, how to reduce noise, and how there were many
+factors that affected the performance of the sensors. We actually discovered some
+limitations of the 2D sensor that we were using through this process, which was
+critical to our decision to switch sensors later on.
 
 To give a brief overview, we used the [TeraRanger
 One](http://www.teraranger.com/products/), a pseudo 1D LIDAR sensor, to retrieve
@@ -175,17 +180,17 @@ outdoor. This discovery came when we finally had a reliable working indoor
 custom 360 LIDAR setup at the end of spring quarter. With summer approaching
 and most of the team going separate ways for internships, it was not feasible
 for us to develop a brand new custom 360 LIDAR setup from scratch in time
-for the competition. Therefore, we ended up using a new off the self 360
+for the competition. Therefore, we ended up using a new off-the-self 360
 LIDAR sensor as described below.
 
 We were sad to see that our year's worth of tuning and perfecting our custom
 360 LIDAR setup did not make to the final version of the car. However, we
-were very grateful to have the opportunity to undergo such task. The sensor does
-work very well indoor, outputting very precise and reliable 2D maps at a rate of
-five times per second (limited by motor choice). But as with any engineering
+were very grateful to have the opportunity to undergo such a task. The sensor does
+work very well indoors, outputting very precise and reliable 2D maps at a rate of
+five scans per second (limited by motor choice). But as with any engineering
 feat, we do not always stumble upon great innovation on our first attempt.
-Failure is one of the many keys to success, and with every mistake we make,
-comes great lessons that will spark new and improve innovations.
+Failure is one of the many keys to success, and with every mistake we made,
+we learned great lessons that led to new and improved innovations.
 
 #### 360 LIDAR: Scanse Sweep
 The [Scanse Sweep](http://scanse.io/) was a brand new 2D 360 LIDAR that came
